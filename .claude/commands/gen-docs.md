@@ -23,14 +23,14 @@ Phase 1 format:
 ```
 phase: 1
 type: monorepo
-docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,ai
+docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
 ```
 
 Phase 2+ format (preview appended):
 ```
 phase: 2
 type: monorepo
-docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,ai
+docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
 
 --- PREVIEW ---
 
@@ -108,7 +108,7 @@ Question 2:
 - options (if SINGLE REPO):
   - label: "Skip features/"       description: "One doc per product feature"
   - label: "Skip rules.md"        description: "Principles, conventions, anti-patterns"
-  - label: "Skip ai/"             description: "AI knowledge: decisions log + solved problems"
+  - label: "Skip problems/"       description: "Solved problems log (grows over time)"
 - options (if MONOREPO):
   - label: "Skip features/"       description: "One doc per product feature"
   - label: "Skip rules.md"        description: "Principles, conventions, anti-patterns"
@@ -217,9 +217,9 @@ parts agent (monorepo only):
 - For each top-level part dir: read its package.json, scan entry points
 - Return: per-part summary (what it does, stack, key patterns, conventions)
 
-ai agent:
-- Check for existing decision docs, ADRs, CHANGELOG
-- Return: any existing decisions or solved problems found (usually empty on first gen)
+problems agent:
+- Check for existing solved problem docs, ADRs, CHANGELOG, postmortems
+- Return: any existing solved problems found (usually empty on first gen)
 
 ### Step 2.2 - Build Preview
 
@@ -317,11 +317,8 @@ parts/{name}/:                    (monorepo only)
     - {bullet 1}
     - {bullet 2}
 
-ai/:
-  decisions.md:
-    - (empty template - grows over time)
-  problems/:
-    - (empty - grows over time)
+problems/:
+  - (empty on first gen - grows over time as problems are solved)
 ```
 
 Each file entry in the preview should ALSO include related docs and sources when known:
@@ -436,9 +433,7 @@ docs/
 │   └── {topic}.md (one per guide in preview)
 ├── features/
 │   └── {feature-name}.md (one per feature in preview)
-└── ai/
-    ├── decisions.md
-    └── problems/
+└── problems/
 ```
 
 For monorepo, add:
@@ -470,7 +465,7 @@ docs/
 - If the user interrupts and runs `/gen-docs` again, Phase 0 will resume from the last saved state
 - Do NOT create files that were not selected in Phase 1
 - For rules.md: single file with principles, conventions, anti-patterns sections
-- For ai/: create decisions.md with empty template and empty problems/ folder
+- For problems/: create empty folder (grows over time as problems are solved)
 - For guides/: create one .md file per guide topic listed in the approved preview
 - For guides/ in parts/: create part-specific guides when the preview lists them
 - For features/: create one .md file per feature listed in the approved preview
