@@ -23,14 +23,14 @@ Phase 1 format:
 ```
 phase: 1
 type: monorepo
-docs: overview,architecture,concepts,stack,data-model,environment,rules,features,components,ai
+docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,ai
 ```
 
 Phase 2+ format (preview appended):
 ```
 phase: 2
 type: monorepo
-docs: overview,architecture,concepts,stack,data-model,environment,rules,features,components,ai
+docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,ai
 
 --- PREVIEW ---
 
@@ -81,7 +81,7 @@ Use `AskUserQuestion`:
   - label: "Single Repo"
     description: "One language/concern, personal projects, libraries, single-service apps"
   - label: "Monorepo"
-    description: "Multiple components (api, frontend, infra), multi-team, multiple package.json"
+    description: "Multiple parts (api, frontend, infra), multi-team, multiple package.json"
 
 ### Step 2: Ask which docs to SKIP
 
@@ -97,23 +97,25 @@ Question 1:
 - multiSelect: true
 - options:
   - label: "Skip concepts.md"     description: "Domain glossary (skip if trivial domain)"
-  - label: "Skip data-model.md"   description: "DB schema, entity relationships (skip if no DB)"
-  - label: "Skip environment.md"  description: "How to run locally, env vars, docker, seeds"
-  - label: "Skip features/"       description: "One doc per product feature"
+  - label: "Skip db.md"           description: "Data model, DB config, migrations, seeds, caching (skip if no DB)"
+  - label: "Skip cicd.md"         description: "CI/CD pipelines, deploy workflows, secrets"
+  - label: "Skip guides/"         description: "How-to docs, practical knowledge, recipes"
 
 Question 2:
 - question: "Any of these to skip too?"
 - header: "Skip more?"
 - multiSelect: true
 - options (if SINGLE REPO):
-  - label: "Skip rules/"          description: "Conventions, anti-patterns, principles, testing"
+  - label: "Skip features/"       description: "One doc per product feature"
+  - label: "Skip rules.md"        description: "Principles, conventions, anti-patterns"
   - label: "Skip ai/"             description: "AI knowledge: decisions log + solved problems"
-- options (if MONOREPO, add one more):
-  - label: "Skip rules/"          description: "Conventions, anti-patterns, principles, testing"
-  - label: "Skip ai/"             description: "AI knowledge: decisions log + solved problems"
-  - label: "Skip components/"     description: "Per-component docs with overview + rules"
+- options (if MONOREPO):
+  - label: "Skip features/"       description: "One doc per product feature"
+  - label: "Skip rules.md"        description: "Principles, conventions, anti-patterns"
+  - label: "Skip platform/"       description: "Integrations, observability, cloud services"
+  - label: "Skip parts/"          description: "Per-part docs with overview + rules + guides"
 
-NOTE: overview.md, architecture.md, and stack.md are ALWAYS generated (not skippable).
+NOTE: overview.md, architecture.md, and repo.md are ALWAYS generated (not skippable).
 The full list of docs to generate = all docs MINUS whatever the user checked to skip.
 If user checks nothing: all docs are generated (most common case).
 
@@ -154,36 +156,66 @@ overview agent:
 - Return: project name, description, purpose, related repos, key scripts
 
 architecture agent:
-- Use Glob to map full folder tree, use Grep to find entry points, route definitions, main exports
-- Return: components, how they connect, data flow, external integrations, deployment info
+- Use Grep to find entry points, route definitions, main exports, API calls between parts
+- Return: data flow between parts, deployment topology
+- SINGLE REPO: platform agent findings get merged into this doc as extra sections
 
 concepts agent:
 - Use Grep to search for type definitions, interfaces, enums, DB models
 - Return: domain entities with 1-line descriptions, their relationships, key business rules
 
-stack agent:
+repo agent:
 - Read package.json, pyproject.toml, go.mod, Gemfile, tsconfig, docker-compose, etc.
-- Return: languages, frameworks, key dependencies, build tools, why each matters
+- Use Glob to map folder structure, identify how directories are organized
+- Scan for tooling configs: eslint, prettier, husky, lint-staged, commitlint, editorconfig, etc.
+- Use Grep for env var references (process.env, os.environ, etc.), read .env.example
+- Read Makefile, package.json scripts, shell scripts in scripts/
+- Return: tech stack, folder structure, tooling inventory, env vars, services, ports, scripts/commands, setup steps
+- MONOREPO NOTE: distinguish between root-level tooling (shared) vs part-specific tooling.
+  e.g. "eslint: root + api + web" vs "prettier: root only" vs "commitlint: root only".
+  Do NOT assume all parts share the same tooling.
 
-data-model agent:
-- Use Grep to find DB schemas, migrations, ORM models, SQL files
-- Return: tables/collections, relationships, key constraints
+db agent:
+- Use Grep to find DB schemas, ORM models/entities, migration files, seed files
+- Read DB config files (connection pooling, replicas, timeouts, Cloud SQL, SSL)
+- Scan for caching layer (redis, in-memory cache configs)
+- Identify patterns: soft deletes, DB views, indexes, subscribers/triggers, audit logs
+- Return: data model (entities + relationships), DB config, migrations strategy, seeds, caching setup, DB patterns
 
-environment agent:
-- Use Grep for env var references (process.env, os.environ, etc.), read docker-compose, .env.example
-- Return: required env vars, services, ports, setup steps
+cicd agent:
+- Read .github/workflows/, .gitlab-ci.yml, Jenkinsfile, bitbucket-pipelines.yml, or equivalent
+- Use Grep to find deploy scripts, CI config references
+- Return: pipelines, deploy targets, environments, secrets needed, branch strategies, release process
 
 rules agent:
-- Use Grep to find linting configs, .editorconfig, existing conventions, test files
-- Return: coding patterns, naming conventions, test frameworks, consistent anti-patterns found in code
+- Use Grep to find existing conventions docs, consistent coding patterns in the codebase
+- Identify principles (non-negotiable constraints), conventions (how code is written), anti-patterns (what to never do)
+- Return: principles, conventions, anti-patterns for a single rules.md file
+- MONOREPO: also identify per-part rules that override/extend root rules
+
+guides agent:
+- Scan for repetitive patterns: how controllers are created, how entities are added, how tests are structured
+- Identify important decorators, system events, middleware patterns, common abstractions
+- Scan test files to understand testing patterns, frameworks, where tests live (for guides/testing.md)
+- Look for existing docs, READMEs in subdirectories, or inline comments explaining "how to"
+- Return: list of guide topics with 3-5 bullet points each (always include testing.md as a guide)
+- MONOREPO: distinguish root-level guides (project-wide) vs part-specific guides
 
 features agent:
 - Read route definitions, page components, CLI commands, API endpoints
 - Return: list of distinct features, each with name + 3-5 bullet points describing scope
 
-components agent (monorepo only):
-- For each top-level component dir: read its package.json, scan entry points
-- Return: per-component summary (what it does, stack, key patterns, conventions)
+platform agent:
+- Scan for 3rd party service integrations (payment, email, SMS, storage, search, CRM, etc.)
+- Scan for observability setup (logging, tracing, monitoring, error tracking)
+- Scan for cloud provider resources (Cloud Run, Cloud SQL, GCS, Pub/Sub, Lambda, S3, etc.)
+- Return: integrations list with purpose, observability stack, cloud services inventory
+- MONOREPO: findings go to platform/ folder (4 files)
+- SINGLE REPO: findings go as sections inside architecture.md
+
+parts agent (monorepo only):
+- For each top-level part dir: read its package.json, scan entry points
+- Return: per-part summary (what it does, stack, key patterns, conventions)
 
 ai agent:
 - Check for existing decision docs, ADRs, CHANGELOG
@@ -205,7 +237,7 @@ overview.md:
 
 architecture.md:
   - entry: {entry point} → {main flow}
-  - data flow: {component} → {component} → {component}
+  - data flow: {part} → {part} → {part}
   - external integrations: {service}, {service}, {service}
   - deployment: {how/where deployed}
 
@@ -214,36 +246,41 @@ concepts.md:
   - {concept}: {1-line description}
   - {concept}: {1-line description}
 
-stack.md:
-  - {language} across {scope}
-  - {framework}, {framework}, {ORM}, {DB}
-  - testing: {test framework} + {e2e framework}
-  - infra: {local setup}, {prod setup}
-
-data-model.md:
-  - {table}: {columns summary}, relates to {other tables}
-  - {table}: {columns summary}, relates to {other tables}
-
-environment.md:
+repo.md:
+  - stack: {language}, {framework}, {ORM}, {DB}
+  - folder structure: {key dirs and what they contain}
+  - tooling: {eslint (root + api), prettier (root only), husky, lint-staged, ...}
+  - scripts: {available commands from Makefile/package.json}
   - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
   - services: {service}:{port}, {service}:{port}
-  - setup: {key steps summary}
+  - setup: {key steps to run locally}
 
-rules/:
-  principles.md:
-    - {principle 1}
-    - {principle 2}
-  conventions.md:
-    - {convention 1}
-    - {convention 2}
-  anti-patterns.md:
-    - {anti-pattern 1}
-    - {anti-pattern 2}
-  testing.md:
-    - {framework}, tests in {location}
-    - {testing pattern}
+db.md:
+  - entities: {entity1}, {entity2}, {entity3} (+ {N} more)
+  - key relationships: {entity} → {entity}, {entity} → {entity}
+  - config: {pooling, replicas, timeouts}
+  - migrations: {count} migrations, {strategy}
+  - seeds: {how seeding works}
+  - caching: {redis/in-memory, strategy}
+  - patterns: {soft deletes, views, indexes, etc.}
 
-features/{feature-name}.md:
+cicd.md:
+  - pipelines: {pipeline 1}, {pipeline 2}
+  - deploy: {environments and targets}
+  - secrets: {required secrets}
+  - branch strategy: {strategy description}
+
+rules.md:
+  - principles: {principle 1}, {principle 2}
+  - conventions: {convention 1}, {convention 2}
+  - anti-patterns: {anti-pattern 1}, {anti-pattern 2}
+
+guides/{topic}.md:
+  - {bullet 1}
+  - {bullet 2}
+  - {bullet 3}
+
+guides/{topic}.md:
   - {bullet 1}
   - {bullet 2}
   - {bullet 3}
@@ -253,15 +290,32 @@ features/{feature-name}.md:
   - {bullet 2}
   - {bullet 3}
 
-components/{name}/:                    (monorepo only)
+features/{feature-name}.md:
+  - {bullet 1}
+  - {bullet 2}
+  - {bullet 3}
+
+platform/:                              (monorepo only)
+  integrations.md:
+    - {service}: {purpose} ({N} integrations total)
+    - {service}: {purpose}
+  observability.md:
+    - logging: {framework}
+    - tracing: {framework}
+    - monitoring: {tools}
+  cloud-services.md:
+    - {service}: {purpose}
+    - {service}: {purpose}
+
+parts/{name}/:                    (monorepo only)
   overview.md:
     - {what it does}, entry: {file}
-    - stack: {component-specific stack}
-  rules/conventions.md:
-    - {convention 1}
-    - {convention 2}
-  rules/anti-patterns.md:
-    - {anti-pattern 1}
+    - stack: {part-specific stack}
+  rules.md:
+    - {part-specific rules that override/extend root}
+  guides/{topic}.md:
+    - {bullet 1}
+    - {bullet 2}
 
 ai/:
   decisions.md:
@@ -276,7 +330,7 @@ Each file entry in the preview should ALSO include related docs and sources when
 features/booking.md:
   - availability check → hold → payment → confirm
   - cancellation policies: flexible, moderate, strict
-  > related docs: concepts.md, features/auth.md, components/api/overview.md
+  > related docs: concepts.md, features/auth.md, parts/api/overview.md
   > related sources: src/features/booking/, src/models/booking.model.ts, src/routes/booking.routes.ts
 ```
 
@@ -288,30 +342,32 @@ If deepening: MERGE new findings into existing preview (add new bullets, don't r
 
 Display the full preview to the user in a readable format.
 
-### Step 2.4 - Ask User
+### Step 2.4 - Interactive Menu
 
-Use `AskUserQuestion`:
-- question: "Review the preview above. What do you want to do?"
-- header: "Preview"
-- options:
-  - label: "Deepen"
-    description: "Launch agents again to find gaps and enrich the preview"
-  - label: "Adjust"
-    description: "I'll tell you what to add, remove, or change"
-  - label: "Generate docs"
-    description: "Preview looks good, generate the actual docs now"
+After showing the preview, display this menu:
 
-If user picks "Deepen":
+```
+What's next?
+1> deepen   - launch agents again to find gaps and enrich the preview
+2> adjust   - tell me what to add, remove, or change
+3> generate - preview looks good, create the docs
+```
+
+User can type just "1"-"3" OR add details: "1, dig deeper into the auth flow", etc.
+
+Option 1 - deepen:
 - Go back to Step 2.1 with current preview as context for agents
-- Agents focus on finding things they missed in the first pass
+- If user gave direction, focus agents on that specific area
+- If no direction, agents look for gaps in the current preview
+- After updating preview, return to MENU
 
-If user picks "Adjust":
+Option 2 - adjust:
 - User provides free text describing changes (add feature X, remove concept Y, rename Z, etc.)
 - Apply the changes directly to the preview in `.gen-docs-state.tmp`
 - Show updated preview
-- Go back to Step 2.4 (ask again)
+- Return to MENU
 
-If user picks "Generate docs":
+Option 3 - generate:
 - Update state: `phase: 3`
 - Proceed to Phase 3
 
@@ -345,7 +401,7 @@ Metadata section format (appended at the bottom of every doc file):
 related docs:
 - docs/concepts.md - booking entity definition, states
 - docs/features/auth.md - user must be authenticated to book
-- docs/components/api/overview.md - booking endpoints live here
+- docs/parts/api/overview.md - booking endpoints live here
 
 related sources:
 - src/features/booking/ - booking module root
@@ -371,15 +427,13 @@ For single repo:
 docs/
 ├── overview.md
 ├── architecture.md
+├── repo.md
 ├── concepts.md
-├── stack.md
-├── data-model.md
-├── environment.md
-├── rules/
-│   ├── principles.md
-│   ├── conventions.md
-│   ├── anti-patterns.md
-│   └── testing.md
+├── db.md
+├── cicd.md
+├── rules.md
+├── guides/
+│   └── {topic}.md (one per guide in preview)
 ├── features/
 │   └── {feature-name}.md (one per feature in preview)
 └── ai/
@@ -390,12 +444,16 @@ docs/
 For monorepo, add:
 ```
 docs/
-└── components/
-    └── {component-name}/
+├── platform/
+│   ├── integrations.md
+│   ├── observability.md
+│   └── cloud-services.md
+└── parts/
+    └── {part-name}/
         ├── overview.md
-        └── rules/
-            ├── conventions.md
-            └── anti-patterns.md
+        ├── rules.md
+        └── guides/
+            └── {topic}.md (when part is complex enough)
 ```
 
 ### 3.3 - Cleanup
@@ -411,10 +469,12 @@ docs/
 - ALWAYS update `.gen-docs-state.tmp` after completing each sub-step
 - If the user interrupts and runs `/gen-docs` again, Phase 0 will resume from the last saved state
 - Do NOT create files that were not selected in Phase 1
-- For rules/: always create all 4 files (principles, conventions, anti-patterns, testing) if rules/ was selected
+- For rules.md: single file with principles, conventions, anti-patterns sections
 - For ai/: create decisions.md with empty template and empty problems/ folder
+- For guides/: create one .md file per guide topic listed in the approved preview
+- For guides/ in parts/: create part-specific guides when the preview lists them
 - For features/: create one .md file per feature listed in the approved preview
-- For components/: create one folder per component listed in the approved preview (monorepo only)
+- For parts/: create one folder per part listed in the approved preview (monorepo only)
 - The preview in `.gen-docs-state.tmp` is the SOURCE OF TRUTH for Phase 3 - only generate what's in the preview
 - During "Adjust" in Phase 2.4, edit the preview directly - do NOT re-launch agents
 - During "Deepen" in Phase 2.4, pass current preview to agents so they focus on gaps
