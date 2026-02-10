@@ -3,16 +3,16 @@
 Generate structured project documentation for AI context.
 
 ```
-┌─────────────┐    ┌─────────────┐    ┌──────────────────────────────┐    ┌─────────────┐
-│  PHASE 0    │    │  PHASE 1    │    │  PHASE 2                     │    │  PHASE 3    │
-│  Resume     │    │  Setup      │    │  Preview Loop                │    │  Generate   │
-│             │    │             │    │                              │    │             │
-│ read .tmp   │───>│ project     │───>│ 2.1 launch agents → scan    │───>│ write docs/ │
-│ resume or   │    │ type?       │    │ 2.2 build preview in .tmp   │    │ from approved│
-│ start fresh │    │ skip docs?  │    │ 2.3 show preview to user    │    │ preview     │
-│             │    │             │    │ 2.4 ask: deepen/adjust/go   │    │             │
-│             │    │             │    │     ↻ loop until "go"       │    │             │
-└─────────────┘    └─────────────┘    └──────────────────────────────┘    └─────────────┘
+┌─────────────┐    ┌─────────────┐    ┌──────────────────────────────┐    ┌───────────────┐
+│  PHASE 0    │    │  PHASE 1    │    │  PHASE 2                     │    │  PHASE 3      │
+│  Resume     │    │  Setup      │    │  Preview Loop                │    │  Generate     │
+│             │    │             │    │                              │    │               │
+│ read .tmp   │───>│ project     │───>│ 2.1 launch agents → scan     │───>│ write docs/   │
+│ resume or   │    │ type?       │    │ 2.2 build preview in .tmp    │    │ from approved │
+│ start fresh │    │ skip docs?  │    │ 2.3 show preview to user     │    │ preview       │
+│             │    │             │    │ 2.4 ask: deepen/adjust/go    │    │               │
+│             │    │             │    │      <loop until "go">       │    │               │
+└─────────────┘    └─────────────┘    └──────────────────────────────┘    └───────────────┘
 ```
 
 ## State File
@@ -26,7 +26,19 @@ type: monorepo
 docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
 ```
 
-After `Step 2.2` (preview appended):
+After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
+
+After `Step 2.4` Option 3 (generate):
+```
+phase: 3
+type: monorepo
+docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
+
+--- PREVIEW ---
+...same preview content...
+```
+
+Full example of `Step 2.2`:
 ```
 phase: 2
 type: monorepo
@@ -147,7 +159,9 @@ Launch multiple agents in PARALLEL using the `Task` tool. Each agent scans the c
 
 IMPORTANT: On the FIRST run, agents scan the codebase from scratch. On subsequent runs (when user picks "Deepen"), agents receive the current preview as context and focus on finding GAPS and missing information.
 
-Launch one agent per selected doc type. Each agent gets:
+Launch one agent per selected doc type. For single repo, also launch the platform agent even though platform/ is not a doc type (its findings merge into architecture.md in `Step 2.2`).
+
+Each agent gets:
 - the project type (monorepo/single)
 - the list of selected docs (so it knows the full picture)
 - if deepening: the current preview content for its topic
@@ -161,7 +175,6 @@ overview agent:
 architecture agent:
 - Use Grep to find entry points, route definitions, main exports, API calls between parts
 - Return: data flow between parts, deployment topology
-- SINGLE REPO: platform agent findings get merged into this doc as extra sections
 
 concepts agent:
 - Use Grep to search for type definitions, interfaces, enums, DB models
@@ -269,25 +282,9 @@ Option 3 - generate:
 
 Create the `docs/` folder and write all files based on the APPROVED PREVIEW.
 
-### Step 3.1 - Launch Generation Agents
+### Step 3.1 - Create folder structure
 
-Launch agents in PARALLEL to write the actual doc files. Each agent receives:
-- the approved preview for its doc(s)
-- the project type
-- access to the codebase for referencing real file paths and code
-
-Each agent writes complete, production-quality documentation following these rules:
-- Be concise, use bullet points and tables
-- Reference actual codebase file paths
-- Use ASCII diagrams for architecture (box-drawing chars: ─ │ ┌ ┐ └ ┘ ├ ┤)
-- No bold text, no emojis
-- The preview bullets are the OUTLINE - expand each bullet into proper documentation
-- overview.md MUST include a doc index section listing all generated files with 1-line descriptions
-- EVERY generated .md file MUST end with a metadata section (see `### Metadata Format`)
-
-### Step 3.2 - Create folder structure
-
-Based on project type and selected docs, create directories and write all files.
+Create directories based on project type and selected docs (only include docs that were selected):
 
 For single repo:
 ```
@@ -321,26 +318,27 @@ docs/
             └── {topic}.md (when part is complex enough)
 ```
 
+### Step 3.2 - Launch Generation Agents
+
+Launch agents in PARALLEL to write the actual doc files. Each agent receives:
+- the approved preview for its doc(s)
+- the project type
+- access to the codebase for referencing real file paths and code
+
+Each agent writes complete, production-quality documentation following these rules:
+- Be concise, use bullet points and tables
+- Reference actual codebase file paths
+- Use ASCII diagrams for architecture (box-drawing chars: ─ │ ┌ ┐ └ ┘ ├ ┤)
+- No bold text, no emojis
+- The preview bullets are the OUTLINE - expand each bullet into proper documentation
+- overview.md MUST include a doc index section listing all generated files with 1-line descriptions
+- EVERY generated .md file MUST end with a metadata section (see `### Metadata Format`)
+
 ### Step 3.3 - Cleanup
 
 1. Delete `.gen-docs-state.tmp`
 2. Show the final folder structure with file count
 3. Tell user: "Done! Generated {N} files in docs/. Review them and adjust as needed."
-
----
-
-## Important Rules
-
-- ALWAYS update `.gen-docs-state.tmp` after completing each sub-step
-- If the user interrupts and runs `/gen-docs` again, Phase 0 will resume from the last saved state
-- Do NOT create files that were not selected in Phase 1
-- For rules.md: single file with principles, conventions, anti-patterns sections
-- For problems/: create empty folder if selected (grows over time as problems are solved)
-- For guides/: create one .md file per guide topic listed in the approved preview
-- For guides/ in parts/: create part-specific guides when the preview lists them
-- For features/: create one .md file per feature listed in the approved preview
-- For parts/: create one folder per part listed in the approved preview (monorepo only)
-- The preview in `.gen-docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
 
 ---
 
@@ -449,11 +447,8 @@ parts/{name}/:                          (monorepo only)
 
 problems/:
   - (empty on first gen - grows over time as problems are solved)
-```
 
-Metadata hints example:
-
-```
+(metadata hints example)
 features/booking.md:
   - availability check → hold → payment → confirm
   - cancellation policies: flexible, moderate, strict
@@ -487,3 +482,12 @@ Rules:
 - list folders when the whole directory is relevant, list specific files when only that file matters
 - keep it focused: only list things that are directly relevant, not tangentially related
 - overview.md does NOT need related docs (it IS the index) but should list key source files/folders
+
+---
+
+## Important Rules
+
+- ALWAYS update `.gen-docs-state.tmp` after completing each sub-step
+- If the user interrupts and runs `/gen-docs` again, `## Phase 0` will resume from the last saved state
+- Do NOT create files that were not selected in `Step 1.2`
+- The preview in `.gen-docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
