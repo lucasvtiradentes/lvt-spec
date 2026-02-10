@@ -101,16 +101,16 @@ Use `AskUserQuestion`:
 
 Skip this step for single repo.
 
-Ask the user to list the monorepo parts and their paths. Display:
+Do NOT scan or auto-detect parts. Simply output this message and wait for the user to type their answer:
 
 ```
-List your monorepo parts (name and path), e.g.:
+List your monorepo parts (one path per line), e.g.:
   apps/api
   apps/web
   packages/infra
 ```
 
-Store the confirmed parts list for use in `Step 1.4` and all agents. Part name is inferred from the last path segment (e.g. `apps/api` → `api`).
+The user will type the paths. Store the confirmed parts list for use in `Step 1.4` and all agents. Part name is inferred from the last path segment (e.g. `apps/api` → `api`).
 
 ### Step 1.3 - Ask which docs to SKIP
 
