@@ -19,14 +19,14 @@ Generate structured project documentation for AI context.
 
 All progress is tracked in `.gen-docs-state.tmp` at the project root.
 
-Phase 1 format:
+After `Step 1.3` (header only):
 ```
-phase: 1
+phase: 2
 type: monorepo
 docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
 ```
 
-Phase 2+ format (preview appended):
+After `Step 2.2` (preview appended):
 ```
 phase: 2
 type: monorepo
@@ -64,9 +64,9 @@ features/booking.md:
        - "Resume from phase {N}" (Recommended)
        - "Start fresh (delete state)"
    - If resume: jump to the saved phase
-   - If fresh: delete `.gen-docs-state.tmp`, proceed to Phase 1
+   - If fresh: delete `.gen-docs-state.tmp`, proceed to `## Phase 1`
 3. If it does NOT exist:
-   - Proceed to Phase 1
+   - Proceed to `## Phase 1`
 
 ---
 
@@ -108,14 +108,13 @@ Question 2:
 - options (if SINGLE REPO):
   - label: "Skip features/"       description: "One doc per product feature"
   - label: "Skip rules.md"        description: "Principles, conventions, anti-patterns"
-  - label: "Skip problems/"       description: "Solved problems log (grows over time)"
 - options (if MONOREPO):
   - label: "Skip features/"       description: "One doc per product feature"
   - label: "Skip rules.md"        description: "Principles, conventions, anti-patterns"
   - label: "Skip platform/"       description: "Integrations, observability, cloud services"
   - label: "Skip parts/"          description: "Per-part docs with overview + rules + guides"
 
-NOTE: overview.md, architecture.md, and repo.md are ALWAYS generated (not skippable).
+NOTE: overview.md, architecture.md, repo.md, and problems/ are ALWAYS generated (not skippable).
 The full list of docs to generate = all docs MINUS whatever the user checked to skip.
 If user checks nothing: all docs are generated (most common case).
 
@@ -130,7 +129,7 @@ docs: {comma-separated list of selected docs}
 
 Tell the user: "Setup complete. Selected {N} doc types for {type} project. Launching discovery agents..."
 
-Proceed to Phase 2.
+Proceed to `## Phase 2`.
 
 ---
 
@@ -210,7 +209,7 @@ platform agent:
 - Scan for observability setup (logging, tracing, monitoring, error tracking)
 - Scan for cloud provider resources (Cloud Run, Cloud SQL, GCS, Pub/Sub, Lambda, S3, etc.)
 - Return: integrations list with purpose, observability stack, cloud services inventory
-- MONOREPO: findings go to platform/ folder (4 files)
+- MONOREPO: findings go to platform/ folder (3 files)
 - SINGLE REPO: findings go as sections inside architecture.md
 
 parts agent (monorepo only):
@@ -223,7 +222,7 @@ problems agent:
 
 ### Step 2.2 - Build Preview
 
-Collect all agent results and assemble the preview following `## Preview Format`. Write it to `.gen-docs-state.tmp` after the header section.
+Collect all agent results and assemble the preview following `### Preview Format`. Write it to `.gen-docs-state.tmp` after the header section.
 
 If deepening: MERGE new findings into existing preview (add new bullets, don't remove existing ones unless they were wrong).
 
@@ -245,7 +244,7 @@ What's next?
 User can type just "1"-"3" OR add details: "1, dig deeper into the auth flow", etc.
 
 Option 1 - deepen:
-- Go back to Step 2.1 with current preview as context for agents
+- Go back to `Step 2.1` with current preview as context for agents
 - If user gave direction, focus agents on that specific area
 - If no direction, agents look for gaps in the current preview
 - After updating preview, return to MENU
@@ -258,7 +257,7 @@ Option 2 - adjust:
 
 Option 3 - generate:
 - Update state: `phase: 3`
-- Proceed to Phase 3
+- Proceed to `## Phase 3`
 
 ---
 
@@ -337,9 +336,7 @@ docs/
 - For guides/ in parts/: create part-specific guides when the preview lists them
 - For features/: create one .md file per feature listed in the approved preview
 - For parts/: create one folder per part listed in the approved preview (monorepo only)
-- The preview in `.gen-docs-state.tmp` is the SOURCE OF TRUTH for Phase 3 - only generate what's in the preview
-- During "Adjust" in Phase 2.4, edit the preview directly - do NOT re-launch agents
-- During "Deepen" in Phase 2.4, pass current preview to agents so they focus on gaps
+- The preview in `.gen-docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
 
 ---
 
