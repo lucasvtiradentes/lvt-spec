@@ -18,14 +18,7 @@ Interactive, state-aware command that generates structured project documentation
 
 ## Temp Files
 
-All progress is tracked in `.tmp-docs/state.tmp`. Agents write results to `.tmp-docs/` files to avoid polluting the main agent's context.
-
-```
-.tmp-docs/
-├── state.tmp          (session state + preview)
-├── preview-1.md       (discovery agent 1: overview, architecture, repo, concepts, db, cicd)
-└── preview-2.md       (discovery agent 2: rules, guides, features, platform, parts, problems)
-```
+All progress is tracked in `.docs-state.tmp` (single file, no folder needed).
 
 After `Step 1.4` (header only):
 ```
@@ -76,7 +69,7 @@ docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform
 
 ## Phase 0 - Resume Check
 
-1. Check if `.tmp-docs/state.tmp` exists in the project root
+1. Check if `.docs-state.tmp` exists in the project root
 2. If it EXISTS:
    - Read it and parse the phase number
    - Use `AskUserQuestion` to ask:
@@ -85,7 +78,7 @@ docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform
        - "Resume from phase {N}" (Recommended)
        - "Start fresh (delete state)"
    - If resume: jump to the saved phase
-   - If fresh: delete the entire `.tmp-docs/` folder, proceed to `## Phase 1`
+   - If fresh: delete `.docs-state.tmp`, proceed to `## Phase 1`
 3. If it does NOT exist:
    - Proceed to `## Phase 1`
 
@@ -143,7 +136,7 @@ If user presses enter (skips nothing): all docs are generated (most common case)
 
 ### Step 1.4 - Save state
 
-Create `.tmp-docs/` folder (`mkdir -p .tmp-docs`) and write `.tmp-docs/state.tmp`:
+Write `.docs-state.tmp`:
 ```
 phase: 2
 type: {monorepo|single}
@@ -163,40 +156,58 @@ This phase builds a compact preview outline. Only 2 discovery agents scan the co
 
 ### Step 2.1 - Launch 2 Discovery Agents
 
-Launch exactly 2 agents in PARALLEL using `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`.
+Launch exactly 2 Explore agents in PARALLEL using `Task` with `subagent_type: "Explore"` and `run_in_background: true`.
 
 Each agent gets in its prompt:
-- the project type and parts list (from state.tmp)
+- the project type and parts list
 - the list of selected docs (only scan for selected ones)
-- the `### Preview Format` template so it writes in the correct format
-- instruction to write results using the Write tool
-- instruction to reply with ONLY "done" when finished
-- if deepening: instruction to read its existing preview file first, then update with new findings
+- the `### Preview Format` template so it returns in the correct format
+- if deepening: the current preview content for its doc types, with instruction to find GAPS
 - if deepening with direction: the user's focus area
 
-Agent 1 → `.tmp-docs/preview-1.md`:
+Agent 1 (100-200 lines):
 - covers: overview, architecture, repo, concepts, db, cicd
-- scans: README, package.json, entry points, route definitions, type definitions, DB schemas, CI workflows, folder structure, env vars, config files
+- scan README, package.json (root + per-part), pyproject.toml, go.mod, tsconfig, docker-compose
+- scan entry points: main/index files, route definitions, main exports
+- grep for type definitions, interfaces, enums, DB models/schemas/entities
+- grep for env var references (process.env, os.environ), read .env.example
+- read CI workflows (.github/workflows/, .gitlab-ci.yml, Jenkinsfile)
+- glob folder structure, identify directory organization
+- scan tooling configs: eslint, prettier, husky, lint-staged, commitlint
+- read Makefile, package.json scripts, shell scripts in scripts/
+- scan for DB config (connection pooling, replicas, migrations, seeds, caching)
+- MONOREPO: distinguish root vs part-specific tooling
 
-Agent 2 → `.tmp-docs/preview-2.md`:
+Agent 2 (100-200 lines):
 - covers: rules, guides, features, platform, parts, problems
-- scans: coding conventions, test patterns, existing docs, API endpoints, 3rd party integrations, cloud resources, per-part package.json/entry points, ADRs/changelogs
+- grep for coding conventions docs, CLAUDE.md, .editorconfig, lint configs
+- scan for consistent coding patterns, principles, anti-patterns
+- scan test files to understand testing patterns, frameworks, test locations
+- scan for repetitive patterns: how controllers/entities/routes are created
+- look for existing docs, READMEs in subdirectories, inline "how to" comments
+- read route definitions, page components, CLI commands, API endpoints
+- scan for 3rd party integrations (payment, email, SMS, storage, search, auth)
+- scan for observability (logging, tracing, monitoring, error tracking)
+- scan for cloud resources (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.)
+- for each monorepo part: read package.json, scan entry points, identify patterns
+- check for ADRs, CHANGELOG, postmortems, solved problem docs
+- MONOREPO: identify per-part rules, per-part guides
 
-Each agent writes its output already in `### Preview Format` (bullet-point outlines per file, NOT full documentation).
+Each agent returns its output in `### Preview Format` (bullet-point outlines per file, NOT full documentation).
 
-IMPORTANT: agents produce OUTLINES (3-5 bullets per doc), not full docs. Full docs are written in Phase 3.
+IMPORTANT: agents produce OUTLINES (3-8 bullets per doc), not full docs. Full docs are written in Phase 3.
 
 Wait for both agents using TaskOutput(block=true), then proceed to `Step 2.2`.
 
 ### Step 2.2 - Assemble Preview
 
-Read `.tmp-docs/preview-1.md` and `.tmp-docs/preview-2.md`. Combine them into `.tmp-docs/state.tmp` after the header, prefixed with `--- PREVIEW ---`.
+Combine both agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`.
 
 SINGLE REPO: merge platform findings into the architecture.md preview entry.
 
 ### Step 2.3 - Show Preview
 
-Read `.tmp-docs/state.tmp` and display the preview section (everything after `--- PREVIEW ---`) to the user.
+Read `.docs-state.tmp` and display the preview section (everything after `--- PREVIEW ---`) to the user.
 
 ### Step 2.4 - Interactive Menu
 
@@ -219,7 +230,7 @@ Option 1 - deepen:
 
 Option 2 - adjust:
 - User provides free text describing changes (add feature X, remove concept Y, rename Z, etc.)
-- Apply the changes directly to the preview in `.tmp-docs/state.tmp`
+- Apply the changes directly to the preview in `.docs-state.tmp`
 - Show updated preview
 - Return to MENU
 
@@ -271,7 +282,7 @@ docs/
 
 ### Step 3.2 - Launch Generation Agents
 
-Read `.tmp-docs/state.tmp` to get the approved preview. Launch agents in PARALLEL using `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`. Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
+Read `.docs-state.tmp` to get the approved preview. Launch agents in PARALLEL using `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`. Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
 
 Launch one agent per selected doc type (up to 12 agents). Each agent receives in its prompt:
 - the approved preview for its doc(s) (copy relevant section from state.tmp)
@@ -346,7 +357,7 @@ Run `python3 /home/lucas/_custom/repos/github_lucasvtiradentes/lvt-spec/.claude/
 
 ### Step 3.4 - Cleanup
 
-1. Delete the entire `.tmp-docs/` folder
+1. Delete `.docs-state.tmp`
 2. Show the final folder structure with file count
 3. Tell user: "Done! Generated {N} files in docs/. Review them and adjust as needed."
 
@@ -498,10 +509,9 @@ Rules:
 
 ## Important Rules
 
-- ALWAYS update `.tmp-docs/state.tmp` after completing each sub-step
+- ALWAYS update `.docs-state.tmp` after completing each sub-step
 - If the user interrupts and runs `/gen-docs` again, `## Phase 0` will resume from the last saved state
 - Do NOT create files that were not selected in `Step 1.3`
-- The preview in `.tmp-docs/state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
-- All agent results are exchanged via `.tmp-docs/` files. Agents reply with ONLY "done". Use TaskOutput(block=true) ONLY to wait for completion.
-- Phase 2 uses only 2 discovery agents (compact outlines). Phase 3 uses up to 12 generation agents (full docs). NEVER launch 12 agents in Phase 2.
-- Step 2.2 is done by the MAIN agent (reads 2 small preview files, combines into state.tmp). No subagent needed for assembly.
+- The preview in `.docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
+- Phase 2 uses 2 Explore agents (compact outlines returned via TaskOutput). Phase 3 uses up to 12 general-purpose agents (full docs written to files). NEVER launch 12 agents in Phase 2.
+- Step 2.2 is done by the MAIN agent (combines 2 agent results into .docs-state.tmp).
