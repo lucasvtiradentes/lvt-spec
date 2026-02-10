@@ -285,7 +285,7 @@ docs/
 Read `.docs-state.tmp` to get the approved preview. Launch agents in PARALLEL using `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`. Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
 
 Launch one agent per selected doc type (up to 12 agents). Each agent receives in its prompt:
-- the approved preview for its doc(s) (copy relevant section from state.tmp)
+- the approved preview for its doc(s) (copy relevant section from .docs-state.tmp)
 - the project type and parts list
 - the doc writing rules below
 - the `### Metadata Format` template
