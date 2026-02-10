@@ -223,115 +223,7 @@ problems agent:
 
 ### Step 2.2 - Build Preview
 
-Collect all agent results and assemble the preview. Write it to `.gen-docs-state.tmp` after the header section.
-
-The preview format is PER-FILE with bullet points:
-
-```
---- PREVIEW ---
-
-overview.md:
-  - project: {name} - {description}
-  - related repos: {repo-a}, {repo-b}
-  - doc index: {N} files across docs/
-
-architecture.md:
-  - entry: {entry point} → {main flow}
-  - data flow: {part} → {part} → {part}
-  - external integrations: {service}, {service}, {service}
-  - deployment: {how/where deployed}
-
-concepts.md:
-  - {concept}: {1-line description}
-  - {concept}: {1-line description}
-  - {concept}: {1-line description}
-
-repo.md:
-  - stack: {language}, {framework}, {ORM}, {DB}
-  - folder structure: {key dirs and what they contain}
-  - tooling: {eslint (root + api), prettier (root only), husky, lint-staged, ...}
-  - scripts: {available commands from Makefile/package.json}
-  - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
-  - services: {service}:{port}, {service}:{port}
-  - setup: {key steps to run locally}
-
-db.md:
-  - entities: {entity1}, {entity2}, {entity3} (+ {N} more)
-  - key relationships: {entity} → {entity}, {entity} → {entity}
-  - config: {pooling, replicas, timeouts}
-  - migrations: {count} migrations, {strategy}
-  - seeds: {how seeding works}
-  - caching: {redis/in-memory, strategy}
-  - patterns: {soft deletes, views, indexes, etc.}
-
-cicd.md:
-  - pipelines: {pipeline 1}, {pipeline 2}
-  - deploy: {environments and targets}
-  - secrets: {required secrets}
-  - branch strategy: {strategy description}
-
-rules.md:
-  - principles: {principle 1}, {principle 2}
-  - conventions: {convention 1}, {convention 2}
-  - anti-patterns: {anti-pattern 1}, {anti-pattern 2}
-
-guides/{topic}.md:
-  - {bullet 1}
-  - {bullet 2}
-  - {bullet 3}
-
-guides/{topic}.md:
-  - {bullet 1}
-  - {bullet 2}
-  - {bullet 3}
-
-features/{feature-name}.md:
-  - {bullet 1}
-  - {bullet 2}
-  - {bullet 3}
-
-features/{feature-name}.md:
-  - {bullet 1}
-  - {bullet 2}
-  - {bullet 3}
-
-platform/:                              (monorepo only)
-  integrations.md:
-    - {service}: {purpose} ({N} integrations total)
-    - {service}: {purpose}
-  observability.md:
-    - logging: {framework}
-    - tracing: {framework}
-    - monitoring: {tools}
-  cloud-services.md:
-    - {service}: {purpose}
-    - {service}: {purpose}
-
-parts/{name}/:                    (monorepo only)
-  overview.md:
-    - {what it does}, entry: {file}
-    - stack: {part-specific stack}
-  rules.md:
-    - {part-specific rules that override/extend root}
-  guides/{topic}.md:
-    - {bullet 1}
-    - {bullet 2}
-
-problems/:
-  - (empty on first gen - grows over time as problems are solved)
-```
-
-Each file entry in the preview should ALSO include related docs and sources when known:
-
-```
-features/booking.md:
-  - availability check → hold → payment → confirm
-  - cancellation policies: flexible, moderate, strict
-  > related docs: concepts.md, features/auth.md, parts/api/overview.md
-  > related sources: src/features/booking/, src/models/booking.model.ts, src/routes/booking.routes.ts
-```
-
-Lines starting with `>` are metadata hints. Agents collect these during discovery so Phase 3 can write the full metadata section without re-scanning.
+Collect all agent results and assemble the preview following `## Preview Format`. Write it to `.gen-docs-state.tmp` after the header section.
 
 If deepening: MERGE new findings into existing preview (add new bullets, don't remove existing ones unless they were wrong).
 
@@ -388,32 +280,7 @@ Each agent writes complete, production-quality documentation following these rul
 - No bold text, no emojis
 - The preview bullets are the OUTLINE - expand each bullet into proper documentation
 - overview.md MUST include a doc index section listing all generated files with 1-line descriptions
-- EVERY generated .md file MUST end with a metadata section (see format below)
-
-Metadata section format (appended at the bottom of every doc file):
-
-```md
----
-
-related docs:
-- docs/concepts.md - booking entity definition, states
-- docs/features/auth.md - user must be authenticated to book
-- docs/parts/api/overview.md - booking endpoints live here
-
-related sources:
-- src/features/booking/ - booking module root
-- src/features/booking/service.ts - core booking logic
-- src/models/booking.model.ts - DB model
-- src/routes/booking.routes.ts - API endpoints
-- tests/booking/ - booking tests
-```
-
-Rules for the metadata section:
-- related docs: other docs in docs/ that THIS doc depends on (unidirectional, no back-links)
-- related sources: actual codebase files AND folders relevant to this doc's topic
-- list folders when the whole directory is relevant, list specific files when only that file matters
-- keep it focused: only list things that are directly relevant, not tangentially related
-- overview.md does NOT need related docs (it IS the index) but should list key source files/folders
+- EVERY generated .md file MUST end with a metadata section (see `### Metadata Format`)
 
 ### 3.2 - Create folder structure
 
@@ -473,3 +340,132 @@ docs/
 - The preview in `.gen-docs-state.tmp` is the SOURCE OF TRUTH for Phase 3 - only generate what's in the preview
 - During "Adjust" in Phase 2.4, edit the preview directly - do NOT re-launch agents
 - During "Deepen" in Phase 2.4, pass current preview to agents so they focus on gaps
+
+---
+
+## Reference
+
+### Preview Format
+
+The preview is PER-FILE with bullet points. Each file entry should ALSO include related docs and sources when known (lines starting with `>` are metadata hints so Phase 3 can write metadata without re-scanning).
+
+```
+--- PREVIEW ---
+
+overview.md:
+  - project: {name} - {description}
+  - related repos: {repo-a}, {repo-b}
+  - doc index: {N} files across docs/
+
+architecture.md:
+  - entry: {entry point} → {main flow}
+  - data flow: {part} → {part} → {part}
+  - external integrations: {service}, {service}, {service}
+  - deployment: {how/where deployed}
+
+concepts.md:
+  - {concept}: {1-line description}
+  - {concept}: {1-line description}
+  - {concept}: {1-line description}
+
+repo.md:
+  - stack: {language}, {framework}, {ORM}, {DB}
+  - folder structure: {key dirs and what they contain}
+  - tooling: {eslint (root + api), prettier (root only), husky, lint-staged, ...}
+  - scripts: {available commands from Makefile/package.json}
+  - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
+  - services: {service}:{port}, {service}:{port}
+  - setup: {key steps to run locally}
+
+db.md:
+  - entities: {entity1}, {entity2}, {entity3} (+ {N} more)
+  - key relationships: {entity} → {entity}, {entity} → {entity}
+  - config: {pooling, replicas, timeouts}
+  - migrations: {count} migrations, {strategy}
+  - seeds: {how seeding works}
+  - caching: {redis/in-memory, strategy}
+  - patterns: {soft deletes, views, indexes, etc.}
+
+cicd.md:
+  - pipelines: {pipeline 1}, {pipeline 2}
+  - deploy: {environments and targets}
+  - secrets: {required secrets}
+  - branch strategy: {strategy description}
+
+rules.md:
+  - principles: {principle 1}, {principle 2}
+  - conventions: {convention 1}, {convention 2}
+  - anti-patterns: {anti-pattern 1}, {anti-pattern 2}
+
+guides/{topic}.md:
+  - {bullet 1}
+  - {bullet 2}
+  - {bullet 3}
+
+features/{feature-name}.md:
+  - {bullet 1}
+  - {bullet 2}
+  - {bullet 3}
+
+platform/:                              (monorepo only)
+  integrations.md:
+    - {service}: {purpose} ({N} integrations total)
+    - {service}: {purpose}
+  observability.md:
+    - logging: {framework}
+    - tracing: {framework}
+    - monitoring: {tools}
+  cloud-services.md:
+    - {service}: {purpose}
+    - {service}: {purpose}
+
+parts/{name}/:                          (monorepo only)
+  overview.md:
+    - {what it does}, entry: {file}
+    - stack: {part-specific stack}
+  rules.md:
+    - {part-specific rules that override/extend root}
+  guides/{topic}.md:
+    - {bullet 1}
+    - {bullet 2}
+
+problems/:
+  - (empty on first gen - grows over time as problems are solved)
+```
+
+Metadata hints example:
+
+```
+features/booking.md:
+  - availability check → hold → payment → confirm
+  - cancellation policies: flexible, moderate, strict
+  > related docs: concepts.md, features/auth.md, parts/api/overview.md
+  > related sources: src/features/booking/, src/models/booking.model.ts, src/routes/booking.routes.ts
+```
+
+### Metadata Format
+
+Appended at the bottom of every generated .md file:
+
+```md
+---
+
+related docs:
+- docs/concepts.md - booking entity definition, states
+- docs/features/auth.md - user must be authenticated to book
+- docs/parts/api/overview.md - booking endpoints live here
+
+related sources:
+- src/features/booking/ - booking module root
+- src/features/booking/service.ts - core booking logic
+- src/models/booking.model.ts - DB model
+- src/routes/booking.routes.ts - API endpoints
+- tests/booking/ - booking tests
+```
+
+Rules:
+- related docs: other docs in docs/ that THIS doc depends on (unidirectional, no back-links)
+- related sources: actual codebase files AND folders relevant to this doc's topic
+- list folders when the whole directory is relevant, list specific files when only that file matters
+- keep it focused: only list things that are directly relevant, not tangentially related
+- overview.md does NOT need related docs (it IS the index) but should list key source files/folders
