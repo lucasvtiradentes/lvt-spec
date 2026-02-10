@@ -359,10 +359,11 @@ problems agent → `docs/problems/*.md`:
 
 ### Step 3.3 - Align Docs
 
-Run `python3 /home/lucas/_custom/repos/github_lucasvtiradentes/lvt-spec/.claude/commands/align-docs.py docs/` to auto-fix alignment issues in tables and ASCII diagrams. If unfixable issues remain, fix them manually and re-run until clean.
+AFTER all generation agents finish, run `python3 /home/lucas/_custom/repos/github_lucasvtiradentes/lvt-spec/.claude/commands/align-docs.py docs/` to auto-fix alignment issues in tables and ASCII diagrams. If unfixable issues remain, fix them manually and re-run until clean. Do NOT skip this step.
 
 ### Step 3.4 - Cleanup
 
+AFTER align-docs passes clean:
 1. Delete `.docs-state.tmp`
 2. Reply with: "Done! Generated {N} files in docs/. Review them and adjust as needed." + list of generated files.
 
