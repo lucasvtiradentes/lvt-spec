@@ -24,7 +24,7 @@ After `Step 1.4` (header only):
 ```
 phase: 2
 type: monorepo
-parts: api,web,infra
+parts: apps/api,apps/web,packages/infra
 docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
 ```
 
@@ -32,7 +32,7 @@ After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
 ```
 phase: 2
 type: monorepo
-parts: api,web,infra
+parts: apps/api,apps/web,packages/infra
 docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
 
 --- PREVIEW ---
@@ -58,7 +58,7 @@ After `Step 2.4` Option 3 (phase bumped to 3, same preview):
 ```
 phase: 3
 type: monorepo
-parts: api,web,infra
+parts: apps/api,apps/web,packages/infra
 docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
 
 --- PREVIEW ---
@@ -101,14 +101,16 @@ Use `AskUserQuestion`:
 
 Skip this step for single repo.
 
-1. Use Glob to scan top-level directories (ignore common non-part dirs: node_modules, .git, .github, .vscode, dist, build, coverage, docs, scripts, .changeset, .claude)
-2. Present the detected dirs to the user using `AskUserQuestion`:
-   - question: "Which of these are the monorepo parts? (select all that apply)"
-   - header: "Parts"
-   - multiSelect: true
-   - options: up to 4 detected dirs as options (if more than 4, use multiple questions)
-3. User confirms/adjusts the selection
-4. Store the confirmed parts list for use in `Step 1.4` and all agents
+Ask the user to list the monorepo parts and their paths. Display:
+
+```
+List your monorepo parts (name and path), e.g.:
+  apps/api
+  apps/web
+  packages/infra
+```
+
+Store the confirmed parts list for use in `Step 1.4` and all agents. Part name is inferred from the last path segment (e.g. `apps/api` → `api`).
 
 ### Step 1.3 - Ask which docs to SKIP
 
@@ -138,7 +140,7 @@ Write `.gen-docs-state.tmp`:
 ```
 phase: 2
 type: {monorepo|single}
-parts: {comma-separated list of part dirs, empty for single repo}
+parts: {comma-separated paths, e.g. apps/api,apps/web - empty for single repo}
 docs: {comma-separated list of selected docs}
 ```
 
