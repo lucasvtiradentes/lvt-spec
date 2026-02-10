@@ -369,7 +369,7 @@ Each agent writes complete, production-quality documentation following these rul
 
 ### Step 3.3 - Align Docs
 
-Run `python3 .claude/commands/docs/align-docs.py docs/` to auto-fix alignment issues in tables and ASCII diagrams. If unfixable issues remain, fix them manually and re-run until clean.
+Run `python3 /home/lucas/_custom/repos/github_lucasvtiradentes/lvt-spec/.claude/commands/align-docs.py docs/` to auto-fix alignment issues in tables and ASCII diagrams. If unfixable issues remain, fix them manually and re-run until clean.
 
 ### Step 3.4 - Cleanup
 
