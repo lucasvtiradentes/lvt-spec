@@ -165,7 +165,7 @@ This phase builds a preview of ALL docs that will be generated. The user reviews
 
 ### Step 2.1 - Launch Discovery Agents
 
-Launch multiple agents in PARALLEL using the `Task` tool with `run_in_background: true`. Each agent scans the codebase and writes its findings to `.tmp-docs/{type}.md`. Do NOT read TaskOutput - the results live in the files.
+Launch multiple agents in PARALLEL using the `Task` tool with `subagent_type: "general-purpose"` and `run_in_background: true`. MUST use `general-purpose` (not Explore) because agents need the Write tool. Each agent scans the codebase and writes its findings to `.tmp-docs/{type}.md`.
 
 IMPORTANT: On the FIRST run, agents scan from scratch. On subsequent runs (when user picks "Deepen"), tell agents to read their existing `.tmp-docs/{type}.md` file first and focus on finding GAPS.
 
@@ -257,7 +257,7 @@ problems agent → `.tmp-docs/problems.md`:
 
 ### Step 2.2 - Build Preview
 
-Launch a SINGLE subagent (NOT in background) using the `Task` tool to assemble the preview. This keeps the raw agent output files out of the main agent's context.
+Launch a SINGLE subagent (NOT in background) using the `Task` tool with `subagent_type: "general-purpose"` to assemble the preview. This keeps the raw agent output files out of the main agent's context.
 
 Include the `### Preview Format` template in the assembler's prompt so it knows the expected output format.
 
@@ -349,7 +349,7 @@ docs/
 
 ### Step 3.2 - Launch Generation Agents
 
-Read `.tmp-docs/state.tmp` to get the approved preview. Launch agents in PARALLEL using the `Task` tool with `run_in_background: true`. Each agent writes doc files directly to `docs/` using the Write tool. Each agent MUST reply with ONLY "done" when finished.
+Read `.tmp-docs/state.tmp` to get the approved preview. Launch agents in PARALLEL using the `Task` tool with `subagent_type: "general-purpose"` and `run_in_background: true`. Each agent writes doc files directly to `docs/` using the Write tool. Each agent MUST reply with ONLY "done" when finished.
 
 Each agent receives in its prompt:
 - the approved preview for its doc(s) (copy the relevant section from state.tmp into the prompt)
