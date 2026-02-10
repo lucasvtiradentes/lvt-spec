@@ -16,9 +16,18 @@ Interactive, state-aware command that generates structured project documentation
 └─────────────┘    └─────────────┘    └──────────────────────────────┘    └───────────────┘
 ```
 
-## State File
+## Temp Files
 
-All progress is tracked in `.gen-docs-state.tmp` at the project root.
+All progress is tracked in `.tmp-docs/state.tmp` at the project root. Discovery and generation agents write their results to `.tmp-docs/*.md` files instead of returning them via TaskOutput. This prevents the main agent's context from filling up.
+
+```
+.tmp-docs/
+├── state.tmp              (session state + preview)
+├── overview.md            (discovery agent output)
+├── architecture.md        (discovery agent output)
+├── concepts.md            (discovery agent output)
+├── ...etc
+```
 
 After `Step 1.4` (header only):
 ```
@@ -69,7 +78,7 @@ docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform
 
 ## Phase 0 - Resume Check
 
-1. Check if `.gen-docs-state.tmp` exists in the project root
+1. Check if `.tmp-docs/state.tmp` exists in the project root
 2. If it EXISTS:
    - Read it and parse the phase number
    - Use `AskUserQuestion` to ask:
@@ -78,7 +87,7 @@ docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform
        - "Resume from phase {N}" (Recommended)
        - "Start fresh (delete state)"
    - If resume: jump to the saved phase
-   - If fresh: delete `.gen-docs-state.tmp`, proceed to `## Phase 1`
+   - If fresh: delete the entire `.tmp-docs/` folder, proceed to `## Phase 1`
 3. If it does NOT exist:
    - Proceed to `## Phase 1`
 
@@ -136,7 +145,7 @@ If user presses enter (skips nothing): all docs are generated (most common case)
 
 ### Step 1.4 - Save state
 
-Write `.gen-docs-state.tmp`:
+Create `.tmp-docs/` folder (`mkdir -p .tmp-docs`) and write `.tmp-docs/state.tmp`:
 ```
 phase: 2
 type: {monorepo|single}
@@ -156,102 +165,116 @@ This phase builds a preview of ALL docs that will be generated. The user reviews
 
 ### Step 2.1 - Launch Discovery Agents
 
-Launch multiple agents in PARALLEL using the `Task` tool. Each agent scans the codebase for a specific doc topic and returns a concise outline of what that doc will contain.
+Launch multiple agents in PARALLEL using the `Task` tool with `run_in_background: true`. Each agent scans the codebase and writes its findings to `.tmp-docs/{type}.md`. Do NOT read TaskOutput - the results live in the files.
 
-IMPORTANT: On the FIRST run, agents scan the codebase from scratch. On subsequent runs (when user picks "Deepen"), agents receive the current preview as context and focus on finding GAPS and missing information.
+IMPORTANT: On the FIRST run, agents scan from scratch. On subsequent runs (when user picks "Deepen"), tell agents to read their existing `.tmp-docs/{type}.md` file first and focus on finding GAPS.
 
-Launch one agent per selected doc type. For single repo, also launch the platform agent even though platform/ is not a doc type (its findings merge into architecture.md in `Step 2.2`).
+Launch one agent per selected doc type. For single repo, also launch the platform agent (its findings merge into architecture.md in `Step 2.2`).
 
-Each agent gets:
+Each agent gets in its prompt:
 - the project type (monorepo/single)
-- the list of selected docs (so it knows the full picture)
+- the list of selected docs
 - if monorepo: the confirmed parts list from `Step 1.2`
-- if deepening: the current preview content for its topic
+- instruction to WRITE results to `.tmp-docs/{type}.md` using the Write tool
+- if deepening: instruction to read `.tmp-docs/{type}.md` first, then update it with new findings
 
-Agent tasks by doc type:
+Each agent MUST end its work by writing to `.tmp-docs/{type}.md` and replying with ONLY "done" (1 word). This keeps TaskOutput tiny.
 
-overview agent:
+Wait for all agents to finish using TaskOutput(block=true), then proceed to `Step 2.2`.
+
+Agent tasks by doc type (each writes findings to its `.tmp-docs/{type}.md` file using the Write tool):
+
+overview agent → `.tmp-docs/overview.md`:
 - Read README.md, package.json (or equivalent), top-level config files
-- Return: project name, description, purpose, related repos, key scripts
+- Write: project name, description, purpose, related repos, key scripts
 
-architecture agent:
+architecture agent → `.tmp-docs/architecture.md`:
 - Use Grep to find entry points, route definitions, main exports, API calls between parts
 - Identify as many diagrammable flows as possible: request lifecycle, data pipelines, auth flow, deploy pipeline, event/message flows, folder-level dependency graph, etc.
-- Return: one ASCII diagram per identified flow + deployment topology diagram. Aim for 3-6 diagrams minimum. More is better.
+- Write: one ASCII diagram per identified flow + deployment topology diagram. Aim for 3-6 diagrams minimum. More is better.
 
-concepts agent:
+concepts agent → `.tmp-docs/concepts.md`:
 - Use Grep to search for type definitions, interfaces, enums, DB models
-- Return: domain entities with 1-line descriptions, their relationships, key business rules
+- Write: domain entities with 1-line descriptions, their relationships, key business rules
 
-repo agent:
+repo agent → `.tmp-docs/repo.md`:
 - Read package.json, pyproject.toml, go.mod, Gemfile, tsconfig, docker-compose, etc.
 - Use Glob to map folder structure, identify how directories are organized
 - Scan for tooling configs: eslint, prettier, husky, lint-staged, commitlint, editorconfig, etc.
 - Use Grep for env var references (process.env, os.environ, etc.), read .env.example
 - Read Makefile, package.json scripts, shell scripts in scripts/
-- Return: tech stack, folder structure, tooling inventory, env vars, services, ports, scripts/commands, setup steps
+- Write: tech stack, folder structure, tooling inventory, env vars, services, ports, scripts/commands, setup steps
 - MONOREPO NOTE: distinguish between root-level tooling (shared) vs part-specific tooling.
   e.g. "eslint: root + api + web" vs "prettier: root only" vs "commitlint: root only".
   Do NOT assume all parts share the same tooling.
 
-db agent:
+db agent → `.tmp-docs/db.md`:
 - Use Grep to find DB schemas, ORM models/entities, migration files, seed files
 - Read DB config files (connection pooling, replicas, timeouts, Cloud SQL, SSL)
 - Scan for caching layer (redis, in-memory cache configs)
 - Identify patterns: soft deletes, DB views, indexes, subscribers/triggers, audit logs
-- Return: data model (entities + relationships), DB config, migrations strategy, seeds, caching setup, DB patterns
+- Write: data model (entities + relationships), DB config, migrations strategy, seeds, caching setup, DB patterns
 
-cicd agent:
+cicd agent → `.tmp-docs/cicd.md`:
 - Read .github/workflows/, .gitlab-ci.yml, Jenkinsfile, bitbucket-pipelines.yml, or equivalent
 - Use Grep to find deploy scripts, CI config references
-- Return: pipelines, deploy targets, environments, secrets needed, branch strategies, release process
+- Write: pipelines, deploy targets, environments, secrets needed, branch strategies, release process
 
-rules agent:
+rules agent → `.tmp-docs/rules.md`:
 - Use Grep to find existing conventions docs, consistent coding patterns in the codebase
 - Identify principles (non-negotiable constraints), conventions (how code is written), anti-patterns (what to never do)
-- Return: principles, conventions, anti-patterns for a single rules.md file
+- Write: principles, conventions, anti-patterns for a single rules.md file
 - MONOREPO: also identify per-part rules that override/extend root rules
 
-guides agent:
+guides agent → `.tmp-docs/guides.md`:
 - Scan for repetitive patterns: how controllers are created, how entities are added, how tests are structured
 - Identify important decorators, system events, middleware patterns, common abstractions
 - Scan test files to understand testing patterns, frameworks, where tests live (for guides/testing.md)
 - Look for existing docs, READMEs in subdirectories, or inline comments explaining "how to"
-- Return: list of guide topics with 3-5 bullet points each (always include testing.md as a guide)
+- Write: list of guide topics with 3-5 bullet points each (always include testing.md as a guide)
 - MONOREPO: distinguish root-level guides (project-wide) vs part-specific guides
 
-features agent:
+features agent → `.tmp-docs/features.md`:
 - Read route definitions, page components, CLI commands, API endpoints
-- Return: list of distinct features, each with name + 3-5 bullet points describing scope
+- Write: list of distinct features, each with name + 3-5 bullet points describing scope
 
-platform agent:
+platform agent → `.tmp-docs/platform.md`:
 - Scan for 3rd party service integrations (payment, email, SMS, storage, search, CRM, etc.)
 - Scan for observability setup (logging, tracing, monitoring, error tracking)
 - Scan for cloud provider resources (Cloud Run, Cloud SQL, GCS, Pub/Sub, Lambda, S3, etc.)
-- Return: integrations list with purpose, observability stack, cloud services inventory
+- Write: integrations list with purpose, observability stack, cloud services inventory
 - MONOREPO: findings go to platform/ folder (3 files)
 - SINGLE REPO: findings go as sections inside architecture.md
 
-parts agent (monorepo only):
+parts agent (monorepo only) → `.tmp-docs/parts.md`:
 - Use the parts list from `Step 1.2` (stored in state file)
 - For each confirmed part dir: read its package.json, scan entry points
-- Return: per-part summary (what it does, stack, key patterns, conventions)
+- Write: per-part summary (what it does, stack, key patterns, conventions)
 
-problems agent:
+problems agent → `.tmp-docs/problems.md`:
 - Check for existing solved problem docs, ADRs, CHANGELOG, postmortems
-- Return: any existing solved problems found (usually empty on first gen)
+- Write: any existing solved problems found (usually empty on first gen)
 
 ### Step 2.2 - Build Preview
 
-Collect all agent results and assemble the preview following `### Preview Format`. Write it to `.gen-docs-state.tmp` after the header section.
+Launch a SINGLE subagent (NOT in background) using the `Task` tool to assemble the preview. This keeps the raw agent output files out of the main agent's context.
 
-SINGLE REPO: merge platform agent findings into the architecture.md preview entry as extra bullet points (integrations, observability, cloud services).
+Include the `### Preview Format` template in the assembler's prompt so it knows the expected output format.
 
-If deepening: MERGE new findings into existing preview (add new bullets, don't remove existing ones unless they were wrong).
+The assembler agent:
+1. Reads all `.tmp-docs/*.md` agent output files (NOT state.tmp)
+2. Reads current `.tmp-docs/state.tmp` header (phase, type, parts, docs)
+3. Assembles the preview following the Preview Format template
+4. Writes the complete state file (header + preview) to `.tmp-docs/state.tmp`
+5. SINGLE REPO: merges `.tmp-docs/platform.md` findings into architecture.md preview entry
+6. If deepening: MERGES new findings into existing preview (add bullets, don't remove unless wrong)
+7. Replies with ONLY "done"
+
+After the assembler finishes, proceed to `Step 2.3`.
 
 ### Step 2.3 - Show Preview
 
-Display the full preview to the user in a readable format.
+Read `.tmp-docs/state.tmp` and display the preview section (everything after `--- PREVIEW ---`) to the user.
 
 ### Step 2.4 - Interactive Menu
 
@@ -274,7 +297,7 @@ Option 1 - deepen:
 
 Option 2 - adjust:
 - User provides free text describing changes (add feature X, remove concept Y, rename Z, etc.)
-- Apply the changes directly to the preview in `.gen-docs-state.tmp`
+- Apply the changes directly to the preview in `.tmp-docs/state.tmp`
 - Show updated preview
 - Return to MENU
 
@@ -326,10 +349,14 @@ docs/
 
 ### Step 3.2 - Launch Generation Agents
 
-Launch agents in PARALLEL to write the actual doc files. Each agent receives:
-- the approved preview for its doc(s)
+Read `.tmp-docs/state.tmp` to get the approved preview. Launch agents in PARALLEL using the `Task` tool with `run_in_background: true`. Each agent writes doc files directly to `docs/` using the Write tool. Each agent MUST reply with ONLY "done" when finished.
+
+Each agent receives in its prompt:
+- the approved preview for its doc(s) (copy the relevant section from state.tmp into the prompt)
 - the project type
-- access to the codebase for referencing real file paths and code
+- instruction to read codebase files as needed for referencing real file paths and code
+
+Wait for all agents to finish using TaskOutput(block=true), then proceed to `Step 3.3`.
 
 Each agent writes complete, production-quality documentation following these rules:
 - Be concise, use bullet points and tables
@@ -346,7 +373,7 @@ Run `python3 .claude/commands/docs/align-docs.py docs/` to auto-fix alignment is
 
 ### Step 3.4 - Cleanup
 
-1. Delete `.gen-docs-state.tmp`
+1. Delete the entire `.tmp-docs/` folder
 2. Show the final folder structure with file count
 3. Tell user: "Done! Generated {N} files in docs/. Review them and adjust as needed."
 
@@ -498,7 +525,8 @@ Rules:
 
 ## Important Rules
 
-- ALWAYS update `.gen-docs-state.tmp` after completing each sub-step
+- ALWAYS update `.tmp-docs/state.tmp` after completing each sub-step
 - If the user interrupts and runs `/gen-docs` again, `## Phase 0` will resume from the last saved state
 - Do NOT create files that were not selected in `Step 1.3`
-- The preview in `.gen-docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
+- The preview in `.tmp-docs/state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
+- All agent results are exchanged via `.tmp-docs/` files. Use TaskOutput(block=true) ONLY to wait for agents to finish - their reply is just "done" (1 word) so it won't pollute context. This is critical to avoid context exhaustion.
