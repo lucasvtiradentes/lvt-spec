@@ -242,7 +242,22 @@ Option 3 - generate:
 
 ## Phase 3 - Generate
 
-Create the `docs/` folder and write all files based on the APPROVED PREVIEW.
+The ENTIRE Phase 3 is executed by a SINGLE orchestrator subagent to keep the main agent's context clean. The main agent only makes 1 Task call.
+
+### Step 3.0 - Launch Orchestrator
+
+Read `.docs-state.tmp` and launch a SINGLE `Task` with `subagent_type: "general-purpose"` (NOT in background). Pass in the prompt:
+- the full content of `.docs-state.tmp` (header + preview)
+- the project type, parts list, selected docs
+- ALL the instructions below (Steps 3.1 through 3.4)
+
+The orchestrator handles everything and replies with a short summary: "Done! Generated {N} files in docs/."
+
+The main agent displays this summary to the user.
+
+---
+
+Instructions for the orchestrator agent (include everything below in its prompt):
 
 ### Step 3.1 - Create folder structure
 
@@ -282,16 +297,16 @@ docs/
 
 ### Step 3.2 - Launch Generation Agents
 
-Read `.docs-state.tmp` to get the approved preview. Launch agents in PARALLEL using `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`. Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
+Launch one agent per selected doc type (up to 12 agents) in PARALLEL using `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`. Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
 
-Launch one agent per selected doc type (up to 12 agents). Each agent receives in its prompt:
-- the approved preview for its doc(s) (copy relevant section from .docs-state.tmp)
+Each agent receives in its prompt:
+- the approved preview for its doc(s)
 - the project type and parts list
 - the doc writing rules below
-- the `### Metadata Format` template
+- the `### Metadata Format` template (see Reference section)
 - its specific scanning instructions (see below)
 
-Wait for all agents using TaskOutput(block=true), then proceed to `Step 3.3`.
+Wait for all agents using TaskOutput(block=true).
 
 Doc writing rules (include in every agent prompt):
 - Be concise, use bullet points and tables
@@ -353,13 +368,12 @@ problems agent → `docs/problems/*.md`:
 
 ### Step 3.3 - Align Docs
 
-Run `python3 /home/lucas/_custom/repos/github_lucasvtiradentes/lvt-spec/.claude/commands/align-docs.py docs/` to auto-fix alignment issues in tables and ASCII diagrams. If unfixable issues remain, fix them manually and re-run until clean.
+Run `python3 /home/lucas/_custom/repos/github_lucasvtiradentes/lvt-spec/.claude/commands/docs/align-docs.py docs/` to auto-fix alignment issues in tables and ASCII diagrams. If unfixable issues remain, fix them manually and re-run until clean.
 
 ### Step 3.4 - Cleanup
 
 1. Delete `.docs-state.tmp`
-2. Show the final folder structure with file count
-3. Tell user: "Done! Generated {N} files in docs/. Review them and adjust as needed."
+2. Reply with: "Done! Generated {N} files in docs/. Review them and adjust as needed." + list of generated files.
 
 ---
 
@@ -513,5 +527,5 @@ Rules:
 - If the user interrupts and runs `/gen-docs` again, `## Phase 0` will resume from the last saved state
 - Do NOT create files that were not selected in `Step 1.3`
 - The preview in `.docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
-- Phase 2 uses 2 Explore agents (compact outlines returned via TaskOutput). Phase 3 uses up to 12 general-purpose agents (full docs written to files). NEVER launch 12 agents in Phase 2.
+- Phase 2 uses 2 Explore agents (compact outlines returned via TaskOutput). Phase 3 is delegated to a SINGLE orchestrator subagent that internally launches up to 12 generation agents. The main agent NEVER launches 12 agents directly.
 - Step 2.2 is done by the MAIN agent (combines 2 agent results into .docs-state.tmp).
