@@ -54,16 +54,7 @@ features/booking.md:
 ...etc
 ```
 
-After `Step 2.4` Option 3 (phase bumped to 3, same preview):
-```
-phase: 3
-type: monorepo
-parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
-
---- PREVIEW ---
-...same preview content...
-```
+The phase stays at 2 until docs are fully generated. There is no `phase: 3` - when the user picks "generate", we go straight to Phase 3 without updating the phase. If interrupted during generation, resume will show the preview menu again so the user can re-trigger.
 
 ---
 
@@ -77,7 +68,7 @@ docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform
      - options:
        - "Resume from phase {N}" (Recommended)
        - "Start fresh (delete state)"
-   - If resume: jump to the saved phase
+   - If resume: if phase is 2, jump to `Step 2.3` (show preview + menu)
    - If fresh: delete `.docs-state.tmp`, proceed to `## Phase 1`
 3. If it does NOT exist:
    - Proceed to `## Phase 1`
@@ -235,7 +226,7 @@ Option 2 - adjust:
 - Return to MENU
 
 Option 3 - generate:
-- Update state: `phase: 3`
+- Do NOT update the phase (stays at 2 so resume shows menu if interrupted)
 - Proceed to `## Phase 3`
 
 ---
@@ -368,7 +359,7 @@ problems agent → `docs/problems/*.md`:
 
 ### Step 3.3 - Align Docs
 
-Run `python3 /home/lucas/_custom/repos/github_lucasvtiradentes/lvt-spec/.claude/commands/docs/align-docs.py docs/` to auto-fix alignment issues in tables and ASCII diagrams. If unfixable issues remain, fix them manually and re-run until clean.
+Run `python3 /home/lucas/_custom/repos/github_lucasvtiradentes/lvt-spec/.claude/commands/align-docs.py docs/` to auto-fix alignment issues in tables and ASCII diagrams. If unfixable issues remain, fix them manually and re-run until clean.
 
 ### Step 3.4 - Cleanup
 
