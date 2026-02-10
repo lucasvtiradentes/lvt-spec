@@ -176,7 +176,8 @@ overview agent:
 
 architecture agent:
 - Use Grep to find entry points, route definitions, main exports, API calls between parts
-- Return: data flow between parts, deployment topology
+- Identify as many diagrammable flows as possible: request lifecycle, data pipelines, auth flow, deploy pipeline, event/message flows, folder-level dependency graph, etc.
+- Return: one ASCII diagram per identified flow + deployment topology diagram. Aim for 3-6 diagrams minimum. More is better.
 
 concepts agent:
 - Use Grep to search for type definitions, interfaces, enums, DB models
@@ -333,13 +334,17 @@ Launch agents in PARALLEL to write the actual doc files. Each agent receives:
 Each agent writes complete, production-quality documentation following these rules:
 - Be concise, use bullet points and tables
 - Reference actual codebase file paths
-- Use ASCII diagrams for architecture (box-drawing chars: ─ │ ┌ ┐ └ ┘ ├ ┤)
+- Use ASCII diagrams generously everywhere applicable (box-drawing chars: ─ │ ┌ ┐ └ ┘ ├ ┤). architecture.md should have multiple diagrams (request lifecycle, data flow, deploy topology, auth flow, etc.). Other docs should also include diagrams when they help explain flows or relationships.
 - No bold text, no emojis
 - The preview bullets are the OUTLINE - expand each bullet into proper documentation
 - overview.md MUST include a doc index section listing all generated files with 1-line descriptions
 - EVERY generated .md file MUST end with a metadata section (see `### Metadata Format`)
 
-### Step 3.3 - Cleanup
+### Step 3.3 - Align Docs
+
+Run `python3 .claude/commands/docs/align-docs.py docs/` to auto-fix alignment issues in tables and ASCII diagrams. If unfixable issues remain, fix them manually and re-run until clean.
+
+### Step 3.4 - Cleanup
 
 1. Delete `.gen-docs-state.tmp`
 2. Show the final folder structure with file count
@@ -380,6 +385,7 @@ overview.md:
 
 architecture.md:
   - entry: {entry point} → {main flow}
+  - diagrams: request lifecycle, data flow, deploy topology, {other identified flows}
   - data flow: {part} → {part} → {part}
   - external integrations: {service}, {service}, {service}
   - deployment: {how/where deployed}
