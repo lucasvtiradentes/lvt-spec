@@ -1,6 +1,8 @@
 # Gen Docs
 
-Generate structured project documentation for AI context.
+Interactive, state-aware command that generates structured project documentation for AI context. 
+  - Supports single repo and monorepo. 
+  - Tracks progress in a state file so interrupted sessions can resume from where they left off.
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌──────────────────────────────┐    ┌───────────────┐
@@ -27,18 +29,6 @@ docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform
 ```
 
 After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
-
-After `Step 2.4` Option 3 (generate):
-```
-phase: 3
-type: monorepo
-docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
-
---- PREVIEW ---
-...same preview content...
-```
-
-Full example of `Step 2.2`:
 ```
 phase: 2
 type: monorepo
@@ -61,6 +51,16 @@ features/booking.md:
   - cancellation policies: flexible, moderate, strict
 
 ...etc
+```
+
+After `Step 2.4` Option 3 (phase bumped to 3, same preview):
+```
+phase: 3
+type: monorepo
+docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,platform,parts,problems
+
+--- PREVIEW ---
+...same preview content...
 ```
 
 ---
@@ -241,6 +241,8 @@ problems agent:
 
 Collect all agent results and assemble the preview following `### Preview Format`. Write it to `.gen-docs-state.tmp` after the header section.
 
+SINGLE REPO: merge platform agent findings into the architecture.md preview entry as extra bullet points (integrations, observability, cloud services).
+
 If deepening: MERGE new findings into existing preview (add new bullets, don't remove existing ones unless they were wrong).
 
 ### Step 2.3 - Show Preview
@@ -289,33 +291,33 @@ Create directories based on project type and selected docs (only include docs th
 For single repo:
 ```
 docs/
-├── overview.md
-├── architecture.md
-├── repo.md
-├── concepts.md
-├── db.md
-├── cicd.md
-├── rules.md
-├── guides/
-│   └── {topic}.md (one per guide in preview)
-├── features/
-│   └── {feature-name}.md (one per feature in preview)
-└── problems/
+├── overview.md                          (always)
+├── architecture.md                      (always)
+├── repo.md                              (always)
+├── concepts.md                          (if selected)
+├── db.md                                (if selected)
+├── cicd.md                              (if selected)
+├── rules.md                             (if selected)
+├── guides/                              (if selected)
+│   └── {topic}.md
+├── features/                            (if selected)
+│   └── {feature-name}.md
+└── problems/                            (if selected)
 ```
 
 For monorepo, add:
 ```
 docs/
-├── platform/
+├── platform/                            (if selected)
 │   ├── integrations.md
 │   ├── observability.md
 │   └── cloud-services.md
-└── parts/
+└── parts/                               (if selected)
     └── {part-name}/
         ├── overview.md
         ├── rules.md
         └── guides/
-            └── {topic}.md (when part is complex enough)
+            └── {topic}.md
 ```
 
 ### Step 3.2 - Launch Generation Agents
