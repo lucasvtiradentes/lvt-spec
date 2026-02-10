@@ -11,9 +11,8 @@ Interactive, state-aware command that generates structured project documentation
 │             │    │             │    │                              │    │               │
 │ read .tmp   │───>│ project     │───>│ 2.1 launch agents → scan     │───>│ write docs/   │
 │ resume or   │    │ type?       │    │ 2.2 build preview in .tmp    │    │ from approved │
-│ start fresh │    │ skip docs?  │    │ 2.3 show preview to user     │    │ preview       │
-│             │    │             │    │ 2.4 ask: deepen/adjust/go    │    │               │
-│             │    │             │    │      <loop until "go">       │    │               │
+│ start fresh │    │ parts?      │    │ 2.3 show preview to user     │    │ preview       │
+│             │    │ skip docs?  │    │      <loop until "go">       │    │               │
 └─────────────┘    └─────────────┘    └──────────────────────────────┘    └───────────────┘
 ```
 
@@ -181,6 +180,7 @@ Launch one agent per selected doc type. For single repo, also launch the platfor
 Each agent gets:
 - the project type (monorepo/single)
 - the list of selected docs (so it knows the full picture)
+- if monorepo: the confirmed parts list from `Step 1.2`
 - if deepening: the current preview content for its topic
 
 Agent tasks by doc type:
