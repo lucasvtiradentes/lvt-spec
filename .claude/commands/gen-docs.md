@@ -211,6 +211,8 @@ What's next?
 3> generate - preview looks good, create the docs
 ```
 
+CRITICAL: After displaying this menu you MUST STOP and produce NO further output. Do NOT pick an option. Do NOT proceed to Phase 3. Do NOT call any tools. The NEXT message MUST come from the USER, not from you. Your response ends immediately after the menu text above.
+
 User can type just "1"-"3" OR add details: "1, dig deeper into the auth flow", etc.
 
 Option 1 - deepen:
