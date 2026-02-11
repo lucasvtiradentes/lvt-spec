@@ -25,6 +25,12 @@ BOX_CLOSERS = {'┐', '┘', '┤'}
 BOX_OPENERS = {'┌', '└', '├'}
 
 
+def _is_tree_block(code_lines):
+    has_branches = any('├──' in raw or '└──' in raw for _, raw in code_lines)
+    has_box_borders = any('┌' in raw or '┐' in raw for _, raw in code_lines)
+    return has_branches and not has_box_borders
+
+
 def check_tables(fname, lines):
     errors = []
     sep_widths = None
@@ -70,7 +76,7 @@ def check_line_widths_in_boxes(fname, lines):
 
 def _check_widths(code_lines):
     errors = []
-    is_tree = any('├──' in raw and '/' in raw for _, raw in code_lines)
+    is_tree = _is_tree_block(code_lines)
     if is_tree:
         return errors
 
@@ -280,7 +286,7 @@ def _check_rails_by_column(group, already_flagged):
 
 def _check_rails(code_lines):
     errors = []
-    is_tree = any('├──' in raw and '/' in raw for _, raw in code_lines)
+    is_tree = _is_tree_block(code_lines)
     if is_tree:
         return errors
 
@@ -382,7 +388,7 @@ def fix_box_widths(lines):
 def _fix_widths_in_block(code_indices, all_lines):
     code_lines = [(i, all_lines[i].rstrip('\n')) for i in code_indices]
 
-    is_tree = any('├──' in raw and '/' in raw for _, raw in code_lines)
+    is_tree = _is_tree_block(code_lines)
     if is_tree:
         return
 
@@ -497,7 +503,7 @@ def fix_rail_alignment(lines):
 def _fix_rails_in_block(code_indices, all_lines):
     code_lines = [(i, all_lines[i].rstrip('\n')) for i in code_indices]
 
-    is_tree = any('├──' in raw and '/' in raw for _, raw in code_lines)
+    is_tree = _is_tree_block(code_lines)
     if is_tree:
         return
 
@@ -798,7 +804,7 @@ def check_pipe_continuity(fname, lines):
 
 def _check_pipe_continuity(code_lines):
     errors = []
-    is_tree = any('├──' in raw and '/' in raw for _, raw in code_lines)
+    is_tree = _is_tree_block(code_lines)
     if is_tree:
         return errors
 
@@ -856,7 +862,7 @@ def fix_pipe_continuity(lines):
 
 def _fix_pipes_in_block(code_indices, all_lines):
     code_lines = [(i, all_lines[i].rstrip('\n')) for i in code_indices]
-    is_tree = any('├──' in raw and '/' in raw for _, raw in code_lines)
+    is_tree = _is_tree_block(code_lines)
     if is_tree:
         return
 
@@ -924,7 +930,7 @@ def _shift_pipe(raw, current_col, expected_col):
     return raw
 
 
-BOX_WALL_DRIFT = 3
+BOX_WALL_DRIFT = 8
 
 
 def _find_box_closer(raw, open_char, close_char, start_col):
@@ -972,7 +978,7 @@ def check_box_walls(fname, lines):
 
 def _check_box_walls(code_lines):
     errors = []
-    is_tree = any('├──' in raw and '/' in raw for _, raw in code_lines)
+    is_tree = _is_tree_block(code_lines)
     if is_tree:
         return errors
 
@@ -1025,15 +1031,16 @@ def _check_box_walls(code_lines):
 
             for mi in range(idx + 1, closing_idx):
                 m_line_idx, m_raw = code_lines[mi]
-                if expected_right < len(m_raw):
-                    if m_raw[expected_right] not in BOX_CHARS:
-                        found = _find_nearby_wall(m_raw, expected_right, BOX_WALL_DRIFT)
-                        if found is not None:
-                            errors.append(
-                                f"L{m_line_idx+1} box wall │ at col {found}, "
-                                f"expected col {expected_right} "
-                                f"(box ┌ at L{line_idx+1} col {col_left})"
-                            )
+                right_ok = (expected_right < len(m_raw) and
+                            m_raw[expected_right] in BOX_CHARS)
+                if not right_ok:
+                    found = _find_nearby_wall(m_raw, expected_right, BOX_WALL_DRIFT)
+                    if found is not None:
+                        errors.append(
+                            f"L{m_line_idx+1} box wall │ at col {found}, "
+                            f"expected col {expected_right} "
+                            f"(box ┌ at L{line_idx+1} col {col_left})"
+                        )
                 if col_left < len(m_raw):
                     if m_raw[col_left] not in BOX_CHARS:
                         found = _find_nearby_wall(m_raw, col_left, BOX_WALL_DRIFT)
@@ -1121,6 +1128,8 @@ def _shift_wall(raw, current_col, expected_col):
                 break
         if spaces_after >= delta:
             return raw[:current_col] + ' ' * delta + '│' + raw[current_col + 1 + delta:]
+        elif current_col >= len(raw) - 1:
+            return raw[:current_col] + ' ' * delta + '│'
     else:
         remove = abs(delta)
         spaces_before = 0
@@ -1136,7 +1145,7 @@ def _shift_wall(raw, current_col, expected_col):
 
 def _fix_box_walls_in_block(code_indices, all_lines):
     code_lines = [(i, all_lines[i].rstrip('\n')) for i in code_indices]
-    is_tree = any('├──' in raw and '/' in raw for _, raw in code_lines)
+    is_tree = _is_tree_block(code_lines)
     if is_tree:
         return
 
@@ -1195,15 +1204,16 @@ def _fix_box_walls_in_block(code_indices, all_lines):
             for mi in range(idx + 1, closing_idx):
                 m_line_idx = code_lines[mi][0]
                 m_raw = all_lines[m_line_idx].rstrip('\n')
-                if expected_right < len(m_raw):
-                    if m_raw[expected_right] not in BOX_CHARS:
-                        found = _find_nearby_wall(m_raw, expected_right, BOX_WALL_DRIFT)
-                        if found is not None:
-                            fixed = _shift_wall(m_raw, found, expected_right)
-                            if fixed != m_raw:
-                                all_lines[m_line_idx] = fixed + '\n'
-                                m_raw = fixed
-                                changed = True
+                right_ok = (expected_right < len(m_raw) and
+                            m_raw[expected_right] in BOX_CHARS)
+                if not right_ok:
+                    found = _find_nearby_wall(m_raw, expected_right, BOX_WALL_DRIFT)
+                    if found is not None:
+                        fixed = _shift_wall(m_raw, found, expected_right)
+                        if fixed != m_raw:
+                            all_lines[m_line_idx] = fixed + '\n'
+                            m_raw = fixed
+                            changed = True
                 if col_left < len(m_raw):
                     if m_raw[col_left] not in BOX_CHARS:
                         found = _find_nearby_wall(m_raw, col_left, BOX_WALL_DRIFT)
@@ -1292,9 +1302,9 @@ def main():
             else:
                 fixed_lines = fix_tables(lines)
                 fixed_lines = fix_box_widths(fixed_lines)
-                fixed_lines = fix_box_walls(fixed_lines)
                 for _ in range(3):
                     prev = list(fixed_lines)
+                    fixed_lines = fix_box_walls(fixed_lines)
                     fixed_lines = fix_rail_alignment(fixed_lines)
                     fixed_lines = fix_pipe_continuity(fixed_lines)
                     if fixed_lines == prev:
