@@ -8,25 +8,21 @@ Auto-fix alignment issues in documentation files (tables and ASCII diagrams).
 
 ## Instructions
 
-1. Run the alignment script on the target files:
+1. Run the alignment check on the target files:
 
 ```bash
-python3 .claude/commands/docs/align-docs.py $ARGUMENTS
+mdalign $ARGUMENTS
 ```
 
-The script auto-fixes tables and ASCII box diagrams by default. It reports what was fixed and any remaining unfixable issues.
-
-2. If unfixable issues remain, read each reported file and fix manually.
-
-3. Re-run to verify. Repeat until clean.
-
-## Flags
-
-- `--check` - detect-only mode, no files modified
+2. If errors are found, auto-fix them:
 
 ```bash
-python3 .claude/commands/docs/align-docs.py --check docs/overview.md
+mdalign --fix $ARGUMENTS
 ```
+
+3. If unfixable issues remain, read each reported file and fix manually.
+
+4. Re-run to verify. Repeat until clean.
 
 ## What It Fixes
 
@@ -68,12 +64,15 @@ NEVER use emojis or wide Unicode chars inside ASCII diagrams. They break alignme
 ## Examples
 
 ```bash
+# check all docs
+mdalign docs/
+
 # auto-fix all docs
-python3 .claude/commands/docs/align-docs.py
+mdalign --fix docs/
+
+# check specific files
+mdalign docs/overview.md docs/architecture.md
 
 # auto-fix specific files
-python3 .claude/commands/docs/align-docs.py docs/overview.md docs/architecture.md
-
-# check-only (no writes)
-python3 .claude/commands/docs/align-docs.py --check docs/overview.md
+mdalign --fix docs/overview.md docs/architecture.md
 ```

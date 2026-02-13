@@ -361,7 +361,7 @@ problems agent → `docs/problems/*.md`:
 
 ### Step 3.3 - Align Docs
 
-AFTER all generation agents finish, run `python3 /home/lucas/_custom/repos/github_lucasvtiradentes/lvt-spec/.claude/commands/align-docs.py docs/` to auto-fix alignment issues in tables and ASCII diagrams. If unfixable issues remain, fix them manually and re-run until clean. Do NOT skip this step.
+AFTER all generation agents finish, run `mdalign docs/` to check for alignment issues in tables and ASCII diagrams. If errors are found, run `mdalign --fix docs/` to auto-fix them. If unfixable issues remain, fix them manually and re-run until clean. Do NOT skip this step.
 
 ### Step 3.4 - Cleanup
 
