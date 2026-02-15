@@ -46,23 +46,23 @@ docs/                                docs/
 
 All docs are generated unless the user explicitly skips them in Step 1.3.
 
-| Output                | Description                             |
-|-----------------------|-----------------------------------------|
-| overview.md           | project description, doc index          |
-| architecture.md       | system design, flows, observability     |
-| concepts.md           | domain glossary                         |
-| repo/structure.md     | folder layout, key directories          |
-| repo/tooling.md       | eslint, prettier, husky, tsconfig       |
-| repo/local-setup.md   | how to run locally, docker, services    |
-| repo/cicd.md          | pipelines, deploy, secrets, branches    |
-| repo/infrastructure.md| cloud services, terraform, IaC          |
-| features/             | one doc per business capability         |
-| db.md                 | data model, migrations, caching         |
-| rules.md              | principles, conventions, anti-patterns  |
-| integrations.md       | 3rd party service integrations          |
-| testing.md            | test frameworks, patterns, coverage     |
-| guides/               | how-to docs, recipes                    |
-| parts/overview        | part entry point, stack, purpose        |
+| Id             | Output                 | Description                            |
+|----------------|------------------------|----------------------------------------|
+| overview       | overview.md            | project description, doc index         |
+| architecture   | architecture.md        | system design, flows, observability    |
+| concepts       | concepts.md            | domain glossary                        |
+| repo           | repo/structure.md      | folder layout, key directories         |
+|                | repo/tooling.md        | eslint, prettier, husky, tsconfig      |
+|                | repo/local-setup.md    | how to run locally, docker, services   |
+|                | repo/cicd.md           | pipelines, deploy, secrets, branches   |
+|                | repo/infrastructure.md | cloud services, terraform, IaC         |
+| features       | features/              | one doc per business capability        |
+| db             | db.md                  | data model, migrations, caching        |
+| rules          | rules.md               | principles, conventions, anti-patterns |
+| integrations   | integrations.md        | 3rd party service integrations         |
+| testing        | testing.md             | test frameworks, patterns, coverage    |
+| guides         | guides/                | how-to docs, recipes                   |
+| parts-overview | parts/{part}/overview  | part entry point, stack, purpose       |
 
 ## Temp Files
 
@@ -73,7 +73,7 @@ After `Step 1.4` (header only):
 phase: 2
 type: monorepo
 parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features
+docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,parts-overview
 ```
 
 After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
@@ -81,7 +81,7 @@ After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
 phase: 2
 type: monorepo
 parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features
+docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,parts-overview
 
 --- PREVIEW ---
 

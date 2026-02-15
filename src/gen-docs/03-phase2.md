@@ -3,7 +3,7 @@
 
 ## Phase 2 - Preview Loop
 
-This phase builds a compact preview outline. 3 discovery agents scan the codebase in parallel. The heavy 12-agent generation only happens in Phase 3 when the user says "generate".
+This phase builds a compact preview outline. 3 discovery agents scan the codebase in parallel. The heavy 11-agent generation only happens in Phase 3 when the user says "generate".
 
 ### Step 2.1 - Launch 3 Discovery Agents
 
@@ -11,14 +11,14 @@ Launch exactly 3 Explore agents in PARALLEL using `Task` with `subagent_type: "E
 
 Each agent gets in its prompt:
 - the project type and parts list
-- the scan + preview instructions from `### Doc Specs` for its covered docs
+- the scan + preview instructions from `### Doc Specs` ONLY for docs in the `docs:` list from `.docs-state.tmp` (skip doc types the user removed in Step 1.3)
 - if deepening: the current preview content for its doc types, with instruction to find GAPS
 - if deepening with direction: the user's focus area
 
 Agent grouping (see `### Doc Specs` for per-doc details):
 - Agent 1: overview, architecture, concepts
 - Agent 2: repo, features
-- Agent 3: db, rules, integrations, testing, guides, parts-overview
+- Agent 3: db, rules, integrations, testing, guides, parts-overview (skip parts-overview for single repo)
 
 IMPORTANT: agents produce OUTLINES (3-8 bullets per doc), not full docs. Full docs are written in Phase 3.
 
@@ -30,11 +30,11 @@ AGENT PROMPT SCOPING: The prompt sent to each Explore agent must ONLY contain:
 
 Do NOT include in the agent prompt: the interactive menu (Step 2.4), Phase 3 instructions, or any reference to "generate", "deepen", or "adjust" options.
 
-Wait for all 3 agents using TaskOutput(block=true), then proceed to `Step 2.2`.
+Wait for all 3 agents using TaskOutput(block=true). If an agent fails or times out, log which agent failed and proceed with the results from the remaining agents. Then proceed to `Step 2.2`.
 
 ### Step 2.2 - Assemble Preview
 
-Combine all 3 agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`.
+Combine all 3 agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`. On first run, write the preview as-is. On deepen runs, MERGE new findings into the existing preview (add new bullets, enrich existing ones) - do NOT replace the entire preview.
 
 Observability findings go into the architecture.md preview entry. Cloud/infra findings go into the repo/infrastructure.md preview entry.
 
@@ -48,9 +48,9 @@ After showing the preview, display this menu:
 
 ```
 What's next?
-1> deepen   - launch agents again to find gaps and enrich the preview
-2> adjust   - tell me what to add, remove, or change
-3> generate - preview looks good, create the docs
+1. deepen   - launch agents again to find gaps and enrich the preview
+2. adjust   - tell me what to add, remove, or change
+3. generate - preview looks good, create the docs
 ```
 
 CRITICAL: After displaying this menu you MUST STOP and produce NO further output. Do NOT pick an option. Do NOT proceed to Phase 3. Do NOT call any tools. The NEXT message MUST come from the USER, not from you. Your response ends immediately after the menu text above. If background agent completion notifications arrive after the menu is displayed, IGNORE them completely - produce NO text, NO acknowledgments, NO status updates. The menu is the final output.

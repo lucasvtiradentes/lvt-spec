@@ -46,23 +46,23 @@ docs/                                docs/
 
 All docs are generated unless the user explicitly skips them in Step 1.3.
 
-| Output                | Description                             |
-|-----------------------|-----------------------------------------|
-| overview.md           | project description, doc index          |
-| architecture.md       | system design, flows, observability     |
-| concepts.md           | domain glossary                         |
-| repo/structure.md     | folder layout, key directories          |
-| repo/tooling.md       | eslint, prettier, husky, tsconfig       |
-| repo/local-setup.md   | how to run locally, docker, services    |
-| repo/cicd.md          | pipelines, deploy, secrets, branches    |
-| repo/infrastructure.md| cloud services, terraform, IaC          |
-| features/             | one doc per business capability         |
-| db.md                 | data model, migrations, caching         |
-| rules.md              | principles, conventions, anti-patterns  |
-| integrations.md       | 3rd party service integrations          |
-| testing.md            | test frameworks, patterns, coverage     |
-| guides/               | how-to docs, recipes                    |
-| parts/overview        | part entry point, stack, purpose        |
+| Id             | Output                 | Description                            |
+|----------------|------------------------|----------------------------------------|
+| overview       | overview.md            | project description, doc index         |
+| architecture   | architecture.md        | system design, flows, observability    |
+| concepts       | concepts.md            | domain glossary                        |
+| repo           | repo/structure.md      | folder layout, key directories         |
+|                | repo/tooling.md        | eslint, prettier, husky, tsconfig      |
+|                | repo/local-setup.md    | how to run locally, docker, services   |
+|                | repo/cicd.md           | pipelines, deploy, secrets, branches   |
+|                | repo/infrastructure.md | cloud services, terraform, IaC         |
+| features       | features/              | one doc per business capability        |
+| db             | db.md                  | data model, migrations, caching        |
+| rules          | rules.md               | principles, conventions, anti-patterns |
+| integrations   | integrations.md        | 3rd party service integrations         |
+| testing        | testing.md             | test frameworks, patterns, coverage    |
+| guides         | guides/                | how-to docs, recipes                   |
+| parts-overview | parts/{part}/overview  | part entry point, stack, purpose       |
 
 ## Temp Files
 
@@ -73,7 +73,7 @@ After `Step 1.4` (header only):
 phase: 2
 type: monorepo
 parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features
+docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,parts-overview
 ```
 
 After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
@@ -81,7 +81,7 @@ After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
 phase: 2
 type: monorepo
 parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features
+docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,parts-overview
 
 --- PREVIEW ---
 
@@ -106,15 +106,14 @@ The phase stays at 2 until docs are fully generated. There is no `phase: 3` - wh
 
 1. Check if `.docs-state.tmp` exists in the project root
 2. If it EXISTS:
-   - Read it and parse the phase number
    - Use `AskUserQuestion` to ask:
-     - question: "Found existing gen-docs session at phase {N}. What do you want to do?"
+     - question: "Found existing gen-docs session. Resume or start fresh?"
      - options:
-       - "Resume from phase {N}" (Recommended)
+       - "Resume" (Recommended)
        - "Start fresh (delete state)"
-   - If resume: if phase is 2, jump to `Step 2.3` (show preview + menu)
+   - If resume: jump to `Step 2.3` (show preview + menu)
    - If fresh: delete `.docs-state.tmp`, proceed to `## Phase 1`
-3. If it does NOT exist:
+3. If it does NOT exist (includes interruptions during Phase 1, before state is saved):
    - Proceed to `## Phase 1`
 
 ---
@@ -173,7 +172,7 @@ Proceed to `## Phase 2`.
 
 ## Phase 2 - Preview Loop
 
-This phase builds a compact preview outline. 3 discovery agents scan the codebase in parallel. The heavy 12-agent generation only happens in Phase 3 when the user says "generate".
+This phase builds a compact preview outline. 3 discovery agents scan the codebase in parallel. The heavy 11-agent generation only happens in Phase 3 when the user says "generate".
 
 ### Step 2.1 - Launch 3 Discovery Agents
 
@@ -181,14 +180,14 @@ Launch exactly 3 Explore agents in PARALLEL using `Task` with `subagent_type: "E
 
 Each agent gets in its prompt:
 - the project type and parts list
-- the scan + preview instructions from `### Doc Specs` for its covered docs
+- the scan + preview instructions from `### Doc Specs` ONLY for docs in the `docs:` list from `.docs-state.tmp` (skip doc types the user removed in Step 1.3)
 - if deepening: the current preview content for its doc types, with instruction to find GAPS
 - if deepening with direction: the user's focus area
 
 Agent grouping (see `### Doc Specs` for per-doc details):
 - Agent 1: overview, architecture, concepts
 - Agent 2: repo, features
-- Agent 3: db, rules, integrations, testing, guides, parts-overview
+- Agent 3: db, rules, integrations, testing, guides, parts-overview (skip parts-overview for single repo)
 
 IMPORTANT: agents produce OUTLINES (3-8 bullets per doc), not full docs. Full docs are written in Phase 3.
 
@@ -200,11 +199,11 @@ AGENT PROMPT SCOPING: The prompt sent to each Explore agent must ONLY contain:
 
 Do NOT include in the agent prompt: the interactive menu (Step 2.4), Phase 3 instructions, or any reference to "generate", "deepen", or "adjust" options.
 
-Wait for all 3 agents using TaskOutput(block=true), then proceed to `Step 2.2`.
+Wait for all 3 agents using TaskOutput(block=true). If an agent fails or times out, log which agent failed and proceed with the results from the remaining agents. Then proceed to `Step 2.2`.
 
 ### Step 2.2 - Assemble Preview
 
-Combine all 3 agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`.
+Combine all 3 agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`. On first run, write the preview as-is. On deepen runs, MERGE new findings into the existing preview (add new bullets, enrich existing ones) - do NOT replace the entire preview.
 
 Observability findings go into the architecture.md preview entry. Cloud/infra findings go into the repo/infrastructure.md preview entry.
 
@@ -218,9 +217,9 @@ After showing the preview, display this menu:
 
 ```
 What's next?
-1> deepen   - launch agents again to find gaps and enrich the preview
-2> adjust   - tell me what to add, remove, or change
-3> generate - preview looks good, create the docs
+1. deepen   - launch agents again to find gaps and enrich the preview
+2. adjust   - tell me what to add, remove, or change
+3. generate - preview looks good, create the docs
 ```
 
 CRITICAL: After displaying this menu you MUST STOP and produce NO further output. Do NOT pick an option. Do NOT proceed to Phase 3. Do NOT call any tools. The NEXT message MUST come from the USER, not from you. Your response ends immediately after the menu text above. If background agent completion notifications arrive after the menu is displayed, IGNORE them completely - produce NO text, NO acknowledgments, NO status updates. The menu is the final output.
@@ -254,6 +253,9 @@ The ENTIRE Phase 3 is executed by a SINGLE orchestrator subagent to keep the mai
 Read `.docs-state.tmp` and launch a SINGLE `Task` with `subagent_type: "general-purpose"` (NOT in background). Pass in the prompt:
 - the full content of `.docs-state.tmp` (header + preview)
 - the project type, parts list, selected docs
+- the Output Structure tree (from `## Output Structure`)
+- the full `### Doc Specs` section
+- the full `### Metadata Format` section
 - ALL the instructions below (Steps 3.1 through 3.4)
 
 The orchestrator handles everything and replies with a short summary: "Done! Generated {N} files in docs/."
@@ -266,11 +268,11 @@ Instructions for the orchestrator agent (include everything below in its prompt)
 
 ### Step 3.1 - Create folder structure
 
-Create directories based on the Output Structure defined above. Generate all docs unless the user skipped them.
+Create directories based on the Output Structure tree. Generate all docs unless the user skipped them.
 
 ### Step 3.2 - Launch Generation Agents
 
-Launch one agent per selected doc type (up to 12 agents) in PARALLEL using `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`. Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
+Launch one agent per selected doc type (up to 11 agents) in PARALLEL using `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`. Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
 
 Each agent receives in its prompt:
 - the approved preview for its doc(s)
@@ -279,7 +281,7 @@ Each agent receives in its prompt:
 - the `### Metadata Format` template
 - the scan instructions from `### Doc Specs` for its doc type
 
-Wait for all agents using TaskOutput(block=true).
+Wait for all agents using TaskOutput(block=true). If an agent fails or times out, log the failure and continue with the remaining agents. After all agents finish, retry failed doc types once. If still failing, skip them and note in the final summary.
 
 Doc writing rules (include in every agent prompt):
 - Be concise, use bullet points and tables
@@ -292,7 +294,7 @@ Doc writing rules (include in every agent prompt):
 
 ### Step 3.3 - Align Docs
 
-AFTER all generation agents finish, run `mdalign docs/` to check for alignment issues in tables and ASCII diagrams. If errors are found, run `mdalign --fix docs/` to auto-fix them. If unfixable issues remain, fix them manually and re-run until clean. Do NOT skip this step.
+AFTER all generation agents finish, check if `mdalign` is available. If not, install it with `pipx install mdalign`. Then run `mdalign docs/` to check for alignment issues in tables and ASCII diagrams. If errors are found, run `mdalign --fix docs/` to auto-fix them. If unfixable issues remain, fix them manually and re-run until clean. Do NOT skip this step.
 
 ### Step 3.4 - Cleanup
 
@@ -353,9 +355,9 @@ repo → docs/repo/*.md:
         - {key dirs and what they contain}
       tooling.md:
         - {eslint (root + api), prettier (root only), husky, lint-staged, ...}
-        - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
       local-setup.md:
         - services: {service}:{port}, {service}:{port}
+        - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
         - {key steps to run locally}
       cicd.md:
         - pipelines: {pipeline 1}, {pipeline 2}
@@ -400,6 +402,7 @@ testing → docs/testing.md | monorepo: docs/parts/{part}/testing.md (per-part):
 
 guides → docs/guides/*.md | monorepo: docs/parts/{part}/guides/*.md (per-part):
   scan: Scan for repetitive patterns, existing docs/READMEs
+  grouping: one file per how-to topic. Name files as kebab-case actions (add-migration.md, deploy-staging.md). Only create guides for non-obvious multi-step procedures found in the codebase.
   preview:
     guides/{topic}.md:
       - {bullet 1}
@@ -408,6 +411,7 @@ guides → docs/guides/*.md | monorepo: docs/parts/{part}/guides/*.md (per-part)
 
 features → docs/features/*.md:
   scan: Read route definitions, page components, CLI commands, API endpoints
+  grouping: one file per user-facing capability (e.g. auth, billing, search). Name files as kebab-case nouns (auth.md, not authenticate.md). Group related endpoints/pages into a single feature; don't create one file per route.
   preview:
     features/{feature-name}.md:
       - {bullet 1}
@@ -465,5 +469,5 @@ Rules:
 - If the user interrupts and runs `/gen-docs` again, `## Phase 0` will resume from the last saved state
 - Generate all docs unless the user skipped them in Step 1.3
 - The preview in `.docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
-- Phase 2 uses 3 Explore agents (compact outlines returned via TaskOutput). Phase 3 is delegated to a SINGLE orchestrator subagent that internally launches up to 12 generation agents. The main agent NEVER launches 12 agents directly.
+- Phase 2 uses 3 Explore agents (compact outlines returned via TaskOutput). Phase 3 is delegated to a SINGLE orchestrator subagent that internally launches up to 11 generation agents. The main agent NEVER launches 11 agents directly.
 - Step 2.2 is done by the MAIN agent (combines 3 agent results into .docs-state.tmp).

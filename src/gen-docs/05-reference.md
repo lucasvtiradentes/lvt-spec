@@ -52,9 +52,9 @@ repo → docs/repo/*.md:
         - {key dirs and what they contain}
       tooling.md:
         - {eslint (root + api), prettier (root only), husky, lint-staged, ...}
-        - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
       local-setup.md:
         - services: {service}:{port}, {service}:{port}
+        - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
         - {key steps to run locally}
       cicd.md:
         - pipelines: {pipeline 1}, {pipeline 2}
@@ -99,6 +99,7 @@ testing → docs/testing.md | monorepo: docs/parts/{part}/testing.md (per-part):
 
 guides → docs/guides/*.md | monorepo: docs/parts/{part}/guides/*.md (per-part):
   scan: Scan for repetitive patterns, existing docs/READMEs
+  grouping: one file per how-to topic. Name files as kebab-case actions (add-migration.md, deploy-staging.md). Only create guides for non-obvious multi-step procedures found in the codebase.
   preview:
     guides/{topic}.md:
       - {bullet 1}
@@ -107,6 +108,7 @@ guides → docs/guides/*.md | monorepo: docs/parts/{part}/guides/*.md (per-part)
 
 features → docs/features/*.md:
   scan: Read route definitions, page components, CLI commands, API endpoints
+  grouping: one file per user-facing capability (e.g. auth, billing, search). Name files as kebab-case nouns (auth.md, not authenticate.md). Group related endpoints/pages into a single feature; don't create one file per route.
   preview:
     features/{feature-name}.md:
       - {bullet 1}
@@ -164,5 +166,5 @@ Rules:
 - If the user interrupts and runs `/gen-docs` again, `## Phase 0` will resume from the last saved state
 - Generate all docs unless the user skipped them in Step 1.3
 - The preview in `.docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
-- Phase 2 uses 3 Explore agents (compact outlines returned via TaskOutput). Phase 3 is delegated to a SINGLE orchestrator subagent that internally launches up to 12 generation agents. The main agent NEVER launches 12 agents directly.
+- Phase 2 uses 3 Explore agents (compact outlines returned via TaskOutput). Phase 3 is delegated to a SINGLE orchestrator subagent that internally launches up to 11 generation agents. The main agent NEVER launches 11 agents directly.
 - Step 2.2 is done by the MAIN agent (combines 3 agent results into .docs-state.tmp).
