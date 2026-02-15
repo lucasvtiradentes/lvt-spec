@@ -39,8 +39,9 @@ docs/                                docs/
 └── guides/                                  ├── rules.md
                                              ├── integrations.md
                                              ├── testing.md
-                                             └── guides/                        
-                                      
+                                             └── guides/
+(above the line: shared between both types)
+(below the line: single repo has files at root, monorepo nests them under parts/{part}/)
 ```
 
 | Output                | Description                             | Required |

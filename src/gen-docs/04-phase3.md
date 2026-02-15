@@ -22,54 +22,7 @@ Instructions for the orchestrator agent (include everything below in its prompt)
 
 ### Step 3.1 - Create folder structure
 
-Create directories based on project type and selected docs (only include docs that were selected):
-
-For single repo:
-```
-docs/
-├── overview.md                          (always)
-├── architecture.md                      (always)
-├── concepts.md                          (if selected)
-├── repo/                                (if selected)
-│   ├── structure.md
-│   ├── tooling.md
-│   ├── local-setup.md
-│   ├── cicd.md
-│   └── infrastructure.md
-├── db.md                                (if selected)
-├── rules.md                             (if selected)
-├── integrations.md                      (if selected)
-├── testing.md                           (if selected)
-├── guides/                              (if selected)
-│   └── {topic}.md
-└── features/                            (if selected)
-    └── {feature-name}.md
-```
-
-For monorepo:
-```
-docs/
-├── overview.md                          (always)
-├── architecture.md                      (always)
-├── concepts.md                          (if selected)
-├── repo/                                (if selected)
-│   ├── structure.md
-│   ├── tooling.md
-│   ├── local-setup.md
-│   ├── cicd.md
-│   └── infrastructure.md
-├── features/                            (if selected)
-│   └── {feature-name}.md
-└── parts/
-    └── {part-name}/
-        ├── overview.md                  (always)
-        ├── db.md                        (if selected)
-        ├── rules.md                     (if selected)
-        ├── integrations.md              (if selected)
-        ├── testing.md                   (if selected)
-        └── guides/                      (if selected)
-            └── {topic}.md
-```
+Create directories based on the Output Structure defined above. Only include docs that were selected.
 
 ### Step 3.2 - Launch Generation Agents
 
