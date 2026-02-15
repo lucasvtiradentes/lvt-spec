@@ -293,15 +293,21 @@ Doc writing rules (include in every agent prompt):
 - overview.md MUST include a doc index listing all generated files with 1-line descriptions
 - EVERY .md file MUST end with a metadata section (see Metadata Format)
 
-### Step 3.3 - Align Docs
+### Step 3.3 - Align Docs (MANDATORY - do NOT skip)
 
-AFTER all generation agents finish, check if `mdalign` is available. If not, install it with `pipx install mdalign`. Then run `mdalign docs/` to check for alignment issues in tables and ASCII diagrams. If errors are found, run `mdalign --fix docs/` to auto-fix them. If unfixable issues remain, fix them manually and re-run until clean. Do NOT skip this step.
+AFTER all generation agents finish, you MUST run this step before cleanup:
+1. Check if `mdalign` is available (`which mdalign`). If not, install: `pipx install mdalign`
+2. Run `mdalign docs/` to check alignment issues in tables and ASCII diagrams
+3. If errors found, run `mdalign --fix docs/`
+4. Re-run `mdalign docs/` to verify clean. If unfixable issues remain, fix manually and re-run until clean.
+
+You MUST NOT proceed to Step 3.4 until mdalign passes clean.
 
 ### Step 3.4 - Cleanup
 
-AFTER align-docs passes clean:
 1. Delete `.docs-state.tmp`
-2. Reply with: "Done! Generated {N} files in docs/. Review them and adjust as needed." + list of generated files.
+2. Reply with: "Done! Generated {N} files in docs/. mdalign: clean. Review them and adjust as needed." + list of generated files.
+3. If mdalign was NOT run (e.g. install failed), say so explicitly in the reply.
 
 ---
 
