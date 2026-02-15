@@ -286,7 +286,8 @@ Wait for all agents using TaskOutput(block=true). If an agent fails or times out
 Doc writing rules (include in every agent prompt):
 - Be concise, use bullet points and tables
 - Reference actual codebase file paths
-- Use ASCII diagrams generously (box-drawing chars: ─ │ ┌ ┐ └ ┘ ├ ┤). architecture.md should have multiple diagrams (request lifecycle, data flow, deploy topology, auth flow, etc.). Other docs should also include diagrams when they help explain flows or relationships.
+- Use ASCII diagrams generously. architecture.md should have multiple diagrams (request lifecycle, data flow, deploy topology, auth flow, etc.). Other docs should also include diagrams when they help explain flows or relationships.
+- ALLOWED box-drawing chars (single-width only): ─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼ and arrows → ← ↑ ↓. FORBIDDEN: any double-width or special unicode chars (▶ ▷ ◆ ◇ ● ○ ■ □ ★ ☆ etc.) - these break monospace alignment.
 - No bold text, no emojis
 - The preview bullets are the OUTLINE - expand each into proper documentation
 - overview.md MUST include a doc index listing all generated files with 1-line descriptions
