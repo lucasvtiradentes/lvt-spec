@@ -188,6 +188,16 @@ Each agent returns its output in `### Preview Format` (bullet-point outlines per
 
 IMPORTANT: agents produce OUTLINES (3-8 bullets per doc), not full docs. Full docs are written in Phase 3.
 
+AGENT PROMPT SCOPING: The prompt sent to each Explore agent must ONLY contain:
+1. Project type and parts list
+2. The list of selected docs it covers
+3. Its specific scanning instructions (from Agent 1 / Agent 2 above)
+4. The `### Preview Format` template
+5. If deepening: the current preview content + direction
+6. This explicit instruction at the end of each agent prompt: "Your ONLY task is to scan the codebase and return bullet-point outlines in the Preview Format. Do NOT proceed to any other step, do NOT show menus, do NOT generate documentation files, do NOT write any files. Return ONLY the outline text."
+
+Do NOT include in the agent prompt: the interactive menu (Step 2.4), Phase 3 instructions, or any reference to "generate", "deepen", or "adjust" options. The agents must have ZERO awareness of the overall workflow beyond their scanning task.
+
 Wait for both agents using TaskOutput(block=true), then proceed to `Step 2.2`.
 
 ### Step 2.2 - Assemble Preview
@@ -211,7 +221,7 @@ What's next?
 3> generate - preview looks good, create the docs
 ```
 
-CRITICAL: After displaying this menu you MUST STOP and produce NO further output. Do NOT pick an option. Do NOT proceed to Phase 3. Do NOT call any tools. The NEXT message MUST come from the USER, not from you. Your response ends immediately after the menu text above.
+CRITICAL: After displaying this menu you MUST STOP and produce NO further output. Do NOT pick an option. Do NOT proceed to Phase 3. Do NOT call any tools. The NEXT message MUST come from the USER, not from you. Your response ends immediately after the menu text above. If background agent completion notifications arrive after the menu is displayed, IGNORE them completely - produce NO text, NO acknowledgments, NO status updates. The menu is the final output.
 
 User can type just "1"-"3" OR add details: "1, dig deeper into the auth flow", etc.
 
