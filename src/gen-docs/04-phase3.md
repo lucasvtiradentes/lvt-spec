@@ -9,7 +9,7 @@ The ENTIRE Phase 3 is executed by a SINGLE orchestrator subagent to keep the mai
 
 Read `.docs-state.tmp` and launch a SINGLE `Task` with `subagent_type: "general-purpose"` (NOT in background). Pass in the prompt:
 - the full content of `.docs-state.tmp` (header + preview)
-- the project type, parts list, selected docs
+- the project type, packages list, selected docs
 - the Output Structure tree (from `## Output Structure`)
 - the full `### Doc Specs` section
 - the full `### Metadata Format` section
@@ -33,7 +33,7 @@ Launch one agent per selected doc type (up to 11 agents) in PARALLEL using `Task
 
 Each agent receives in its prompt:
 - the approved preview for its doc(s)
-- the project type and parts list
+- the project type and packages list
 - the doc writing rules below
 - the `### Metadata Format` template
 - the scan instructions from `### Doc Specs` for its doc type

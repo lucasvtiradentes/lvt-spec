@@ -11,7 +11,7 @@ Interactive, state-aware command that generates structured project documentation
 │             │    │             │    │                              │    │               │
 │ read .tmp   │───>│ project     │───>│ 2.1 launch agents → scan     │───>│ write docs/   │
 │ resume or   │    │ type?       │    │ 2.2 build preview in .tmp    │    │ from approved │
-│ start fresh │    │ parts?      │    │ 2.3 show preview to user     │    │ preview       │
+│ start fresh │    │ packages?   │    │ 2.3 show preview to user     │    │ preview       │
 │             │    │ skip docs?  │    │      <loop until "go">       │    │               │
 └─────────────┘    └─────────────┘    └──────────────────────────────┘    └───────────────┘
 ```
@@ -32,8 +32,8 @@ docs/                                docs/
 │   └── infrastructure.md            │   └── infrastructure.md
 ├── features/                        ├── features/
 ---------------------------------------------------
-├── db.md                            └── parts/
-├── rules.md                             └── {part}/
+├── db.md                            └── packages/
+├── rules.md                             └── {pkg}/
 ├── integrations.md                          ├── overview.md
 ├── testing.md                               ├── db.md
 └── guides/                                  ├── rules.md
@@ -41,7 +41,7 @@ docs/                                docs/
                                              ├── testing.md
                                              └── guides/
 (above the line: shared between both types)
-(below the line: single repo has files at root, monorepo nests them under parts/{part}/)
+(below the line: single repo has files at root, monorepo nests them under packages/{pkg}/)
 ```
 
 All docs are generated unless the user explicitly skips them in Step 1.3.
@@ -62,7 +62,7 @@ All docs are generated unless the user explicitly skips them in Step 1.3.
 | integrations   | integrations.md        | 3rd party service integrations         |
 | testing        | testing.md             | test frameworks, patterns, coverage    |
 | guides         | guides/                | how-to docs, recipes                   |
-| parts-overview | parts/{part}/overview  | part entry point, stack, purpose       |
+| pkg-overview   | packages/{pkg}/overview | package entry point, stack, purpose    |
 
 ## Temp Files
 
@@ -72,16 +72,16 @@ After `Step 1.4` (header only):
 ```
 phase: 2
 type: monorepo
-parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,parts-overview
+packages: apps/api,apps/web,packages/infra
+docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,pkg-overview
 ```
 
 After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
 ```
 phase: 2
 type: monorepo
-parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,parts-overview
+packages: apps/api,apps/web,packages/infra
+docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,pkg-overview
 
 --- PREVIEW ---
 

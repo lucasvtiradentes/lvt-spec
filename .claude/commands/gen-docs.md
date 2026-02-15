@@ -11,7 +11,7 @@ Interactive, state-aware command that generates structured project documentation
 │             │    │             │    │                              │    │               │
 │ read .tmp   │───>│ project     │───>│ 2.1 launch agents → scan     │───>│ write docs/   │
 │ resume or   │    │ type?       │    │ 2.2 build preview in .tmp    │    │ from approved │
-│ start fresh │    │ parts?      │    │ 2.3 show preview to user     │    │ preview       │
+│ start fresh │    │ packages?   │    │ 2.3 show preview to user     │    │ preview       │
 │             │    │ skip docs?  │    │      <loop until "go">       │    │               │
 └─────────────┘    └─────────────┘    └──────────────────────────────┘    └───────────────┘
 ```
@@ -32,8 +32,8 @@ docs/                                docs/
 │   └── infrastructure.md            │   └── infrastructure.md
 ├── features/                        ├── features/
 ---------------------------------------------------
-├── db.md                            └── parts/
-├── rules.md                             └── {part}/
+├── db.md                            └── packages/
+├── rules.md                             └── {pkg}/
 ├── integrations.md                          ├── overview.md
 ├── testing.md                               ├── db.md
 └── guides/                                  ├── rules.md
@@ -41,7 +41,7 @@ docs/                                docs/
                                              ├── testing.md
                                              └── guides/
 (above the line: shared between both types)
-(below the line: single repo has files at root, monorepo nests them under parts/{part}/)
+(below the line: single repo has files at root, monorepo nests them under packages/{pkg}/)
 ```
 
 All docs are generated unless the user explicitly skips them in Step 1.3.
@@ -62,7 +62,7 @@ All docs are generated unless the user explicitly skips them in Step 1.3.
 | integrations   | integrations.md        | 3rd party service integrations         |
 | testing        | testing.md             | test frameworks, patterns, coverage    |
 | guides         | guides/                | how-to docs, recipes                   |
-| parts-overview | parts/{part}/overview  | part entry point, stack, purpose       |
+| pkg-overview   | packages/{pkg}/overview | package entry point, stack, purpose    |
 
 ## Temp Files
 
@@ -72,16 +72,16 @@ After `Step 1.4` (header only):
 ```
 phase: 2
 type: monorepo
-parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,parts-overview
+packages: apps/api,apps/web,packages/infra
+docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,pkg-overview
 ```
 
 After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
 ```
 phase: 2
 type: monorepo
-parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,parts-overview
+packages: apps/api,apps/web,packages/infra
+docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,pkg-overview
 
 --- PREVIEW ---
 
@@ -129,22 +129,22 @@ Use `AskUserQuestion`:
   - label: "Single Repo"
     description: "One language/concern, personal projects, libraries, single-service apps"
   - label: "Monorepo"
-    description: "Multiple parts (api, frontend, infra), multi-team, multiple package.json"
+    description: "Multiple packages (api, frontend, infra), multi-team, multiple package.json"
 
-### Step 1.2 - Identify parts (MONOREPO only)
+### Step 1.2 - Identify packages (MONOREPO only)
 
 Skip this step for single repo.
 
-Do NOT scan or auto-detect parts. Simply output this message and wait for the user to type their answer:
+Do NOT scan or auto-detect packages. Simply output this message and wait for the user to type their answer:
 
 ```
-List your monorepo parts (one path per line), e.g.:
+List your monorepo packages (one path per line), e.g.:
   apps/api
   apps/web
   packages/infra
 ```
 
-The user will type the paths. Store the confirmed parts list for use in `Step 1.4` and all agents. Part name is inferred from the last path segment (e.g. `apps/api` → `api`).
+The user will type the paths. Store the confirmed packages list for use in `Step 1.4` and all agents. Package name is inferred from the last path segment (e.g. `apps/api` → `api`).
 
 ### Step 1.3 - Confirm doc structure
 
@@ -160,7 +160,7 @@ Write `.docs-state.tmp`:
 ```
 phase: 2
 type: {monorepo|single}
-parts: {comma-separated paths, e.g. apps/api,apps/web - empty for single repo}
+packages: {comma-separated paths, e.g. apps/api,apps/web - empty for single repo}
 docs: {comma-separated list of selected docs}
 ```
 
@@ -179,7 +179,7 @@ This phase builds a compact preview outline. 3 discovery agents scan the codebas
 Launch exactly 3 Explore agents in PARALLEL using `Task` with `subagent_type: "Explore"` and `run_in_background: true`.
 
 Each agent gets in its prompt:
-- the project type and parts list
+- the project type and packages list
 - the scan + preview instructions from `### Doc Specs` ONLY for docs in the `docs:` list from `.docs-state.tmp` (skip doc types the user removed in Step 1.3)
 - if deepening: the current preview content for its doc types, with instruction to find GAPS
 - if deepening with direction: the user's focus area
@@ -187,12 +187,12 @@ Each agent gets in its prompt:
 Agent grouping (see `### Doc Specs` for per-doc details):
 - Agent 1: overview, architecture, concepts
 - Agent 2: repo, features
-- Agent 3: db, rules, integrations, testing, guides, parts-overview (skip parts-overview for single repo)
+- Agent 3: db, rules, integrations, testing, guides, pkg-overview (skip pkg-overview for single repo)
 
 IMPORTANT: agents produce OUTLINES (3-8 bullets per doc), not full docs. Full docs are written in Phase 3.
 
 AGENT PROMPT SCOPING: The prompt sent to each Explore agent must ONLY contain:
-1. Project type and parts list
+1. Project type and packages list
 2. The scan + preview instructions from Doc Specs for its covered docs
 3. If deepening: the current preview content + direction
 4. This explicit instruction at the end: "Your ONLY task is to scan the codebase and return bullet-point outlines. Do NOT proceed to any other step, do NOT show menus, do NOT generate documentation files, do NOT write any files. Return ONLY the outline text."
@@ -252,7 +252,7 @@ The ENTIRE Phase 3 is executed by a SINGLE orchestrator subagent to keep the mai
 
 Read `.docs-state.tmp` and launch a SINGLE `Task` with `subagent_type: "general-purpose"` (NOT in background). Pass in the prompt:
 - the full content of `.docs-state.tmp` (header + preview)
-- the project type, parts list, selected docs
+- the project type, packages list, selected docs
 - the Output Structure tree (from `## Output Structure`)
 - the full `### Doc Specs` section
 - the full `### Metadata Format` section
@@ -276,7 +276,7 @@ Launch one agent per selected doc type (up to 11 agents) in PARALLEL using `Task
 
 Each agent receives in its prompt:
 - the approved preview for its doc(s)
-- the project type and parts list
+- the project type and packages list
 - the doc writing rules below
 - the `### Metadata Format` template
 - the scan instructions from `### Doc Specs` for its doc type
@@ -324,14 +324,14 @@ overview → docs/overview.md:
 
 architecture → docs/architecture.md:
   scan:
-    - Grep for entry points, route definitions, main exports, API calls between parts
+    - Grep for entry points, route definitions, main exports, API calls between packages
     - Identify diagrammable flows: request lifecycle, data pipelines, auth flow, event/message flows
     - Scan for observability (logging, tracing, monitoring, error tracking)
     - Generation: aim for 3-6 ASCII diagrams
   preview:
     - entry: {entry point} → {main flow}
     - diagrams: request lifecycle, data flow, auth flow, {other flows}
-    - data flow: {part} → {part} → {part}
+    - data flow: {pkg} → {pkg} → {pkg}
     - observability: {logging framework}, {tracing}, {monitoring}
 
 concepts → docs/concepts.md:
@@ -348,7 +348,7 @@ repo → docs/repo/*.md:
     - local-setup.md: read docker-compose, .env.example, package.json scripts, Makefile
     - cicd.md: read .github/workflows/, CI config, Grep for deploy scripts
     - infrastructure.md: scan for cloud services (Cloud Run, GCS, Pub/Sub, Lambda, S3), terraform/IaC configs
-    - MONOREPO: distinguish root vs part-specific tooling
+    - MONOREPO: distinguish root vs package-specific tooling
   preview:
     repo/:
       structure.md:
@@ -369,7 +369,7 @@ repo → docs/repo/*.md:
         - IaC: {terraform/pulumi/cdk}, {key resources}
         - deployment targets: {environments and platforms}
 
-db → docs/db.md | monorepo: docs/parts/{part}/db.md (per-part, skip parts without DB):
+db → docs/db.md | monorepo: docs/packages/{pkg}/db.md (per-package, skip packages without DB):
   scan: Grep for DB schemas, ORM models, migrations, seeds. Read DB config, scan for caching layer.
   preview:
     - entities: {entity1}, {entity2}, {entity3} (+ {N} more)
@@ -380,27 +380,27 @@ db → docs/db.md | monorepo: docs/parts/{part}/db.md (per-part, skip parts with
     - caching: {redis/in-memory, strategy}
     - patterns: {soft deletes, views, indexes, etc.}
 
-rules → docs/rules.md | monorepo: docs/parts/{part}/rules.md (per-part):
+rules → docs/rules.md | monorepo: docs/packages/{pkg}/rules.md (per-package):
   scan: Grep for conventions docs, coding patterns. Sections: principles, conventions, anti-patterns.
   preview:
     - principles: {principle 1}, {principle 2}
     - conventions: {convention 1}, {convention 2}
     - anti-patterns: {anti-pattern 1}, {anti-pattern 2}
 
-integrations → docs/integrations.md | monorepo: docs/parts/{part}/integrations.md (per-part):
+integrations → docs/integrations.md | monorepo: docs/packages/{pkg}/integrations.md (per-package):
   scan: Scan for 3rd party service integrations (payment, email, SMS, storage, search, auth, PMS)
   preview:
     - {service}: {purpose} ({N} integrations total)
     - {service}: {purpose}
 
-testing → docs/testing.md | monorepo: docs/parts/{part}/testing.md (per-part):
+testing → docs/testing.md | monorepo: docs/packages/{pkg}/testing.md (per-package):
   scan: Scan test files, frameworks, patterns, test locations, coverage config
   preview:
     - framework: {jest/playwright/vitest}
     - patterns: {unit, functional, e2e}
     - locations: {test dirs}
 
-guides → docs/guides/*.md | monorepo: docs/parts/{part}/guides/*.md (per-part):
+guides → docs/guides/*.md | monorepo: docs/packages/{pkg}/guides/*.md (per-package):
   scan: Scan for repetitive patterns, existing docs/READMEs
   grouping: one file per how-to topic. Name files as kebab-case actions (add-migration.md, deploy-staging.md). Only create guides for non-obvious multi-step procedures found in the codebase.
   preview:
@@ -418,19 +418,19 @@ features → docs/features/*.md:
       - {bullet 2}
       - {bullet 3}
 
-parts-overview (monorepo only) → docs/parts/{part}/overview.md:
-  scan: Read package.json per part, scan entry points, identify stack and patterns
+pkg-overview (monorepo only) → docs/packages/{pkg}/overview.md:
+  scan: Read package.json per package, scan entry points, identify stack and patterns
   preview:
-    parts/{name}/:
+    packages/{name}/:
       overview.md:
         - {what it does}, entry: {file}
-        - stack: {part-specific stack}
+        - stack: {package-specific stack}
 
 (metadata hints example)
 features/booking.md:
   - availability check → hold → payment → confirm
   - cancellation policies: flexible, moderate, strict
-  > related docs: concepts.md, features/auth.md, parts/api/overview.md
+  > related docs: concepts.md, features/auth.md, packages/api/overview.md
   > related sources: src/features/booking/, src/models/booking.model.ts, src/routes/booking.routes.ts
 ```
 
@@ -444,7 +444,7 @@ Appended at the bottom of every generated .md file:
 related docs:
 - docs/concepts.md - booking entity definition, states
 - docs/features/auth.md - user must be authenticated to book
-- docs/parts/api/overview.md - booking endpoints live here
+- docs/packages/api/overview.md - booking endpoints live here
 
 related sources:
 - src/features/booking/ - booking module root

@@ -21,14 +21,14 @@ overview → docs/overview.md:
 
 architecture → docs/architecture.md:
   scan:
-    - Grep for entry points, route definitions, main exports, API calls between parts
+    - Grep for entry points, route definitions, main exports, API calls between packages
     - Identify diagrammable flows: request lifecycle, data pipelines, auth flow, event/message flows
     - Scan for observability (logging, tracing, monitoring, error tracking)
     - Generation: aim for 3-6 ASCII diagrams
   preview:
     - entry: {entry point} → {main flow}
     - diagrams: request lifecycle, data flow, auth flow, {other flows}
-    - data flow: {part} → {part} → {part}
+    - data flow: {pkg} → {pkg} → {pkg}
     - observability: {logging framework}, {tracing}, {monitoring}
 
 concepts → docs/concepts.md:
@@ -45,7 +45,7 @@ repo → docs/repo/*.md:
     - local-setup.md: read docker-compose, .env.example, package.json scripts, Makefile
     - cicd.md: read .github/workflows/, CI config, Grep for deploy scripts
     - infrastructure.md: scan for cloud services (Cloud Run, GCS, Pub/Sub, Lambda, S3), terraform/IaC configs
-    - MONOREPO: distinguish root vs part-specific tooling
+    - MONOREPO: distinguish root vs package-specific tooling
   preview:
     repo/:
       structure.md:
@@ -66,7 +66,7 @@ repo → docs/repo/*.md:
         - IaC: {terraform/pulumi/cdk}, {key resources}
         - deployment targets: {environments and platforms}
 
-db → docs/db.md | monorepo: docs/parts/{part}/db.md (per-part, skip parts without DB):
+db → docs/db.md | monorepo: docs/packages/{pkg}/db.md (per-package, skip packages without DB):
   scan: Grep for DB schemas, ORM models, migrations, seeds. Read DB config, scan for caching layer.
   preview:
     - entities: {entity1}, {entity2}, {entity3} (+ {N} more)
@@ -77,27 +77,27 @@ db → docs/db.md | monorepo: docs/parts/{part}/db.md (per-part, skip parts with
     - caching: {redis/in-memory, strategy}
     - patterns: {soft deletes, views, indexes, etc.}
 
-rules → docs/rules.md | monorepo: docs/parts/{part}/rules.md (per-part):
+rules → docs/rules.md | monorepo: docs/packages/{pkg}/rules.md (per-package):
   scan: Grep for conventions docs, coding patterns. Sections: principles, conventions, anti-patterns.
   preview:
     - principles: {principle 1}, {principle 2}
     - conventions: {convention 1}, {convention 2}
     - anti-patterns: {anti-pattern 1}, {anti-pattern 2}
 
-integrations → docs/integrations.md | monorepo: docs/parts/{part}/integrations.md (per-part):
+integrations → docs/integrations.md | monorepo: docs/packages/{pkg}/integrations.md (per-package):
   scan: Scan for 3rd party service integrations (payment, email, SMS, storage, search, auth, PMS)
   preview:
     - {service}: {purpose} ({N} integrations total)
     - {service}: {purpose}
 
-testing → docs/testing.md | monorepo: docs/parts/{part}/testing.md (per-part):
+testing → docs/testing.md | monorepo: docs/packages/{pkg}/testing.md (per-package):
   scan: Scan test files, frameworks, patterns, test locations, coverage config
   preview:
     - framework: {jest/playwright/vitest}
     - patterns: {unit, functional, e2e}
     - locations: {test dirs}
 
-guides → docs/guides/*.md | monorepo: docs/parts/{part}/guides/*.md (per-part):
+guides → docs/guides/*.md | monorepo: docs/packages/{pkg}/guides/*.md (per-package):
   scan: Scan for repetitive patterns, existing docs/READMEs
   grouping: one file per how-to topic. Name files as kebab-case actions (add-migration.md, deploy-staging.md). Only create guides for non-obvious multi-step procedures found in the codebase.
   preview:
@@ -115,19 +115,19 @@ features → docs/features/*.md:
       - {bullet 2}
       - {bullet 3}
 
-parts-overview (monorepo only) → docs/parts/{part}/overview.md:
-  scan: Read package.json per part, scan entry points, identify stack and patterns
+pkg-overview (monorepo only) → docs/packages/{pkg}/overview.md:
+  scan: Read package.json per package, scan entry points, identify stack and patterns
   preview:
-    parts/{name}/:
+    packages/{name}/:
       overview.md:
         - {what it does}, entry: {file}
-        - stack: {part-specific stack}
+        - stack: {package-specific stack}
 
 (metadata hints example)
 features/booking.md:
   - availability check → hold → payment → confirm
   - cancellation policies: flexible, moderate, strict
-  > related docs: concepts.md, features/auth.md, parts/api/overview.md
+  > related docs: concepts.md, features/auth.md, packages/api/overview.md
   > related sources: src/features/booking/, src/models/booking.model.ts, src/routes/booking.routes.ts
 ```
 
@@ -141,7 +141,7 @@ Appended at the bottom of every generated .md file:
 related docs:
 - docs/concepts.md - booking entity definition, states
 - docs/features/auth.md - user must be authenticated to book
-- docs/parts/api/overview.md - booking endpoints live here
+- docs/packages/api/overview.md - booking endpoints live here
 
 related sources:
 - src/features/booking/ - booking module root

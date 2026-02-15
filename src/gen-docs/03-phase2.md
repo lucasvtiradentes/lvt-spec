@@ -10,7 +10,7 @@ This phase builds a compact preview outline. 3 discovery agents scan the codebas
 Launch exactly 3 Explore agents in PARALLEL using `Task` with `subagent_type: "Explore"` and `run_in_background: true`.
 
 Each agent gets in its prompt:
-- the project type and parts list
+- the project type and packages list
 - the scan + preview instructions from `### Doc Specs` ONLY for docs in the `docs:` list from `.docs-state.tmp` (skip doc types the user removed in Step 1.3)
 - if deepening: the current preview content for its doc types, with instruction to find GAPS
 - if deepening with direction: the user's focus area
@@ -18,12 +18,12 @@ Each agent gets in its prompt:
 Agent grouping (see `### Doc Specs` for per-doc details):
 - Agent 1: overview, architecture, concepts
 - Agent 2: repo, features
-- Agent 3: db, rules, integrations, testing, guides, parts-overview (skip parts-overview for single repo)
+- Agent 3: db, rules, integrations, testing, guides, pkg-overview (skip pkg-overview for single repo)
 
 IMPORTANT: agents produce OUTLINES (3-8 bullets per doc), not full docs. Full docs are written in Phase 3.
 
 AGENT PROMPT SCOPING: The prompt sent to each Explore agent must ONLY contain:
-1. Project type and parts list
+1. Project type and packages list
 2. The scan + preview instructions from Doc Specs for its covered docs
 3. If deepening: the current preview content + direction
 4. This explicit instruction at the end: "Your ONLY task is to scan the codebase and return bullet-point outlines. Do NOT proceed to any other step, do NOT show menus, do NOT generate documentation files, do NOT write any files. Return ONLY the outline text."
