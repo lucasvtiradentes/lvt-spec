@@ -1,7 +1,7 @@
 # Gen Docs
 
-Interactive, state-aware command that generates structured project documentation for AI context. 
-  - Supports single repo and monorepo. 
+Interactive, state-aware command that generates structured project documentation for AI context.
+  - Supports single repo and monorepo.
   - Tracks progress in a state file so interrupted sessions can resume from where they left off.
 
 ```
