@@ -32,8 +32,8 @@ Each agent receives in its prompt:
 - the approved preview for its doc(s)
 - the project type and parts list
 - the doc writing rules below
-- the `### Metadata Format` template (see Reference section)
-- its specific scanning instructions (see below)
+- the `### Metadata Format` template
+- the scan instructions from `### Doc Specs` for its doc type
 
 Wait for all agents using TaskOutput(block=true).
 
@@ -45,57 +45,6 @@ Doc writing rules (include in every agent prompt):
 - The preview bullets are the OUTLINE - expand each into proper documentation
 - overview.md MUST include a doc index listing all generated files with 1-line descriptions
 - EVERY .md file MUST end with a metadata section (see Metadata Format)
-
-Per-agent scanning instructions:
-
-overview agent → `docs/overview.md`:
-- Read README.md, package.json, top-level config files
-
-architecture agent → `docs/architecture.md`:
-- Use Grep for entry points, route definitions, main exports, API calls between parts
-- Identify all diagrammable flows: request lifecycle, data pipelines, auth flow, event/message flows, dependency graph
-- Scan for observability setup (logging, tracing, monitoring, error tracking) and include as a section
-- Aim for 3-6 ASCII diagrams minimum
-
-concepts agent → `docs/concepts.md`:
-- Use Grep for type definitions, interfaces, enums, DB models
-- Document domain entities, relationships, key business rules
-
-repo agent → `docs/repo/*.md` (structure.md, tooling.md, local-setup.md, cicd.md, infrastructure.md):
-- structure.md: Use Glob to map folder structure, identify directory organization
-- tooling.md: scan for tooling configs (eslint, prettier, husky, etc.), read tsconfig, docker-compose
-- local-setup.md: read docker-compose, .env.example, package.json scripts, Makefile
-- cicd.md: read .github/workflows/, CI config files, use Grep for deploy scripts
-- infrastructure.md: scan for cloud services (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.), terraform/IaC configs, deployment targets
-- MONOREPO: distinguish root vs part-specific tooling
-
-db agent → `docs/db.md` (single) or `docs/parts/{part}/db.md` (monorepo, per-part):
-- Use Grep for DB schemas, ORM models, migrations, seeds
-- Read DB config files, scan for caching layer
-- MONOREPO: generate one db.md per part that has DB, skip parts without DB
-
-rules agent → `docs/rules.md` (single) or `docs/parts/{part}/rules.md` (monorepo, per-part):
-- Use Grep for conventions docs, coding patterns
-- Sections: principles, conventions, anti-patterns
-- MONOREPO: generate one rules.md per part with part-specific conventions
-
-integrations agent → `docs/integrations.md` (single) or `docs/parts/{part}/integrations.md` (monorepo, per-part):
-- Scan for 3rd party service integrations (payment, email, SMS, storage, search, auth, PMS)
-- MONOREPO: generate one integrations.md per part with part-specific integrations
-
-testing agent → `docs/testing.md` (single) or `docs/parts/{part}/testing.md` (monorepo, per-part):
-- Scan test files, frameworks, patterns, test locations, coverage config
-- MONOREPO: generate one testing.md per part with part-specific test setup
-
-guides agent → `docs/guides/*.md` (single) or `docs/parts/{part}/guides/*.md` (monorepo, per-part):
-- Scan for repetitive patterns, existing docs/READMEs
-- MONOREPO: generate guides per part
-
-features agent → `docs/features/*.md`:
-- Read route definitions, page components, CLI commands, API endpoints
-
-parts-overview agent (monorepo only) → `docs/parts/{part}/overview.md`:
-- For each part: read package.json, scan entry points, identify stack and patterns
 
 ### Step 3.3 - Align Docs
 

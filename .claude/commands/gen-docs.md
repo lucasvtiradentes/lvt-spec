@@ -173,64 +173,38 @@ Proceed to `## Phase 2`.
 
 ## Phase 2 - Preview Loop
 
-This phase builds a compact preview outline. Only 2 discovery agents scan the codebase. The heavy 12-agent generation only happens in Phase 3 when the user says "generate".
+This phase builds a compact preview outline. 3 discovery agents scan the codebase in parallel. The heavy 12-agent generation only happens in Phase 3 when the user says "generate".
 
-### Step 2.1 - Launch 2 Discovery Agents
+### Step 2.1 - Launch 3 Discovery Agents
 
-Launch exactly 2 Explore agents in PARALLEL using `Task` with `subagent_type: "Explore"` and `run_in_background: true`.
+Launch exactly 3 Explore agents in PARALLEL using `Task` with `subagent_type: "Explore"` and `run_in_background: true`.
 
 Each agent gets in its prompt:
 - the project type and parts list
-- the list of selected docs (only scan for selected ones)
-- the `### Preview Format` template so it returns in the correct format
+- the scan + preview instructions from `### Doc Specs` for its covered docs
 - if deepening: the current preview content for its doc types, with instruction to find GAPS
 - if deepening with direction: the user's focus area
 
-Agent 1 (100-200 lines):
-- covers: overview, architecture, repo, concepts
-- scan README, package.json (root + per-part), pyproject.toml, go.mod, tsconfig, docker-compose
-- scan entry points: main/index files, route definitions, main exports
-- grep for type definitions, interfaces, enums, DB models/schemas/entities
-- grep for env var references (process.env, os.environ), read .env.example
-- read CI workflows (.github/workflows/, .gitlab-ci.yml, Jenkinsfile)
-- glob folder structure, identify directory organization
-- scan tooling configs: eslint, prettier, husky, lint-staged, commitlint
-- read Makefile, package.json scripts, shell scripts in scripts/
-- scan for observability (logging, tracing, monitoring, error tracking)
-- scan for cloud resources, terraform, IaC configs (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.)
-- MONOREPO: distinguish root vs part-specific tooling
-
-Agent 2 (100-200 lines):
-- covers: db, rules, integrations, testing, guides, features
-- grep for DB schemas, ORM models, migrations, seeds, caching config
-- grep for coding conventions docs, CLAUDE.md, .editorconfig, lint configs
-- scan for consistent coding patterns, principles, anti-patterns
-- scan test files to understand testing patterns, frameworks, test locations
-- scan for repetitive patterns: how controllers/entities/routes are created
-- look for existing docs, READMEs in subdirectories, inline "how to" comments
-- read route definitions, page components, CLI commands, API endpoints
-- scan for 3rd party integrations (payment, email, SMS, storage, search, auth)
-- MONOREPO: scan each part separately for db, rules, integrations, testing, guides - produce per-part preview entries
-
-Each agent returns its output in `### Preview Format` (bullet-point outlines per file, NOT full documentation).
+Agent grouping (see `### Doc Specs` for per-doc details):
+- Agent 1: overview, architecture, concepts
+- Agent 2: repo, features
+- Agent 3: db, rules, integrations, testing, guides, parts-overview
 
 IMPORTANT: agents produce OUTLINES (3-8 bullets per doc), not full docs. Full docs are written in Phase 3.
 
 AGENT PROMPT SCOPING: The prompt sent to each Explore agent must ONLY contain:
 1. Project type and parts list
-2. The list of selected docs it covers
-3. Its specific scanning instructions (from Agent 1 / Agent 2 above)
-4. The `### Preview Format` template
-5. If deepening: the current preview content + direction
-6. This explicit instruction at the end of each agent prompt: "Your ONLY task is to scan the codebase and return bullet-point outlines in the Preview Format. Do NOT proceed to any other step, do NOT show menus, do NOT generate documentation files, do NOT write any files. Return ONLY the outline text."
+2. The scan + preview instructions from Doc Specs for its covered docs
+3. If deepening: the current preview content + direction
+4. This explicit instruction at the end: "Your ONLY task is to scan the codebase and return bullet-point outlines. Do NOT proceed to any other step, do NOT show menus, do NOT generate documentation files, do NOT write any files. Return ONLY the outline text."
 
-Do NOT include in the agent prompt: the interactive menu (Step 2.4), Phase 3 instructions, or any reference to "generate", "deepen", or "adjust" options. The agents must have ZERO awareness of the overall workflow beyond their scanning task.
+Do NOT include in the agent prompt: the interactive menu (Step 2.4), Phase 3 instructions, or any reference to "generate", "deepen", or "adjust" options.
 
-Wait for both agents using TaskOutput(block=true), then proceed to `Step 2.2`.
+Wait for all 3 agents using TaskOutput(block=true), then proceed to `Step 2.2`.
 
 ### Step 2.2 - Assemble Preview
 
-Combine both agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`.
+Combine all 3 agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`.
 
 Observability findings go into the architecture.md preview entry. Cloud/infra findings go into the repo/infrastructure.md preview entry.
 
@@ -302,8 +276,8 @@ Each agent receives in its prompt:
 - the approved preview for its doc(s)
 - the project type and parts list
 - the doc writing rules below
-- the `### Metadata Format` template (see Reference section)
-- its specific scanning instructions (see below)
+- the `### Metadata Format` template
+- the scan instructions from `### Doc Specs` for its doc type
 
 Wait for all agents using TaskOutput(block=true).
 
@@ -315,57 +289,6 @@ Doc writing rules (include in every agent prompt):
 - The preview bullets are the OUTLINE - expand each into proper documentation
 - overview.md MUST include a doc index listing all generated files with 1-line descriptions
 - EVERY .md file MUST end with a metadata section (see Metadata Format)
-
-Per-agent scanning instructions:
-
-overview agent → `docs/overview.md`:
-- Read README.md, package.json, top-level config files
-
-architecture agent → `docs/architecture.md`:
-- Use Grep for entry points, route definitions, main exports, API calls between parts
-- Identify all diagrammable flows: request lifecycle, data pipelines, auth flow, event/message flows, dependency graph
-- Scan for observability setup (logging, tracing, monitoring, error tracking) and include as a section
-- Aim for 3-6 ASCII diagrams minimum
-
-concepts agent → `docs/concepts.md`:
-- Use Grep for type definitions, interfaces, enums, DB models
-- Document domain entities, relationships, key business rules
-
-repo agent → `docs/repo/*.md` (structure.md, tooling.md, local-setup.md, cicd.md, infrastructure.md):
-- structure.md: Use Glob to map folder structure, identify directory organization
-- tooling.md: scan for tooling configs (eslint, prettier, husky, etc.), read tsconfig, docker-compose
-- local-setup.md: read docker-compose, .env.example, package.json scripts, Makefile
-- cicd.md: read .github/workflows/, CI config files, use Grep for deploy scripts
-- infrastructure.md: scan for cloud services (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.), terraform/IaC configs, deployment targets
-- MONOREPO: distinguish root vs part-specific tooling
-
-db agent → `docs/db.md` (single) or `docs/parts/{part}/db.md` (monorepo, per-part):
-- Use Grep for DB schemas, ORM models, migrations, seeds
-- Read DB config files, scan for caching layer
-- MONOREPO: generate one db.md per part that has DB, skip parts without DB
-
-rules agent → `docs/rules.md` (single) or `docs/parts/{part}/rules.md` (monorepo, per-part):
-- Use Grep for conventions docs, coding patterns
-- Sections: principles, conventions, anti-patterns
-- MONOREPO: generate one rules.md per part with part-specific conventions
-
-integrations agent → `docs/integrations.md` (single) or `docs/parts/{part}/integrations.md` (monorepo, per-part):
-- Scan for 3rd party service integrations (payment, email, SMS, storage, search, auth, PMS)
-- MONOREPO: generate one integrations.md per part with part-specific integrations
-
-testing agent → `docs/testing.md` (single) or `docs/parts/{part}/testing.md` (monorepo, per-part):
-- Scan test files, frameworks, patterns, test locations, coverage config
-- MONOREPO: generate one testing.md per part with part-specific test setup
-
-guides agent → `docs/guides/*.md` (single) or `docs/parts/{part}/guides/*.md` (monorepo, per-part):
-- Scan for repetitive patterns, existing docs/READMEs
-- MONOREPO: generate guides per part
-
-features agent → `docs/features/*.md`:
-- Read route definitions, page components, CLI commands, API endpoints
-
-parts-overview agent (monorepo only) → `docs/parts/{part}/overview.md`:
-- For each part: read package.json, scan entry points, identify stack and patterns
 
 ### Step 3.3 - Align Docs
 
@@ -381,85 +304,123 @@ AFTER align-docs passes clean:
 
 ## Reference
 
-### Preview Format
+### Doc Specs
 
-The preview is PER-FILE with bullet points. Each file entry should ALSO include related docs and sources when known (lines starting with `>` are metadata hints so Phase 3 can write metadata without re-scanning).
+Per-doc scanning and preview instructions. Used by Phase 2 (discovery outlines) and Phase 3 (full generation).
+
+Preview notes:
+- Preview is PER-FILE with bullet points (3-8 bullets per doc in Phase 2)
+- Lines starting with `>` are metadata hints (related docs/sources) so Phase 3 can write metadata without re-scanning
 
 ```
---- PREVIEW ---
+overview → docs/overview.md:
+  scan: Read README.md, package.json, top-level config files
+  preview:
+    - project: {name} - {description}
+    - related repos: {repo-a}, {repo-b}
+    - doc index: {N} files across docs/
 
-overview.md:
-  - project: {name} - {description}
-  - related repos: {repo-a}, {repo-b}
-  - doc index: {N} files across docs/
+architecture → docs/architecture.md:
+  scan:
+    - Grep for entry points, route definitions, main exports, API calls between parts
+    - Identify diagrammable flows: request lifecycle, data pipelines, auth flow, event/message flows
+    - Scan for observability (logging, tracing, monitoring, error tracking)
+    - Generation: aim for 3-6 ASCII diagrams
+  preview:
+    - entry: {entry point} → {main flow}
+    - diagrams: request lifecycle, data flow, auth flow, {other flows}
+    - data flow: {part} → {part} → {part}
+    - observability: {logging framework}, {tracing}, {monitoring}
 
-architecture.md:
-  - entry: {entry point} → {main flow}
-  - diagrams: request lifecycle, data flow, auth flow, {other identified flows}
-  - data flow: {part} → {part} → {part}
-  - observability: {logging framework}, {tracing}, {monitoring}
+concepts → docs/concepts.md:
+  scan: Grep for type definitions, interfaces, enums, DB models. Document domain entities, relationships, business rules.
+  preview:
+    - {concept}: {1-line description}
+    - {concept}: {1-line description}
+    - {concept}: {1-line description}
 
-concepts.md:
-  - {concept}: {1-line description}
-  - {concept}: {1-line description}
-  - {concept}: {1-line description}
+repo → docs/repo/*.md:
+  scan:
+    - structure.md: Glob folder structure, identify directory organization
+    - tooling.md: scan tooling configs (eslint, prettier, husky), read tsconfig, docker-compose
+    - local-setup.md: read docker-compose, .env.example, package.json scripts, Makefile
+    - cicd.md: read .github/workflows/, CI config, Grep for deploy scripts
+    - infrastructure.md: scan for cloud services (Cloud Run, GCS, Pub/Sub, Lambda, S3), terraform/IaC configs
+    - MONOREPO: distinguish root vs part-specific tooling
+  preview:
+    repo/:
+      structure.md:
+        - {key dirs and what they contain}
+      tooling.md:
+        - {eslint (root + api), prettier (root only), husky, lint-staged, ...}
+        - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
+      local-setup.md:
+        - services: {service}:{port}, {service}:{port}
+        - {key steps to run locally}
+      cicd.md:
+        - pipelines: {pipeline 1}, {pipeline 2}
+        - deploy: {environments and targets}
+        - secrets: {required secrets}
+        - branch strategy: {strategy description}
+      infrastructure.md:
+        - cloud services: {service}: {purpose}, {service}: {purpose}
+        - IaC: {terraform/pulumi/cdk}, {key resources}
+        - deployment targets: {environments and platforms}
 
-repo/:
-  structure.md:
-    - {key dirs and what they contain}
-  tooling.md:
-    - {eslint (root + api), prettier (root only), husky, lint-staged, ...}
-    - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
-  local-setup.md:
-    - services: {service}:{port}, {service}:{port}
-    - {key steps to run locally}
-  cicd.md:
-    - pipelines: {pipeline 1}, {pipeline 2}
-    - deploy: {environments and targets}
-    - secrets: {required secrets}
-    - branch strategy: {strategy description}
-  infrastructure.md:
-    - cloud services: {service}: {purpose}, {service}: {purpose}
-    - IaC: {terraform/pulumi/cdk}, {key resources}
-    - deployment targets: {environments and platforms}
+db → docs/db.md | monorepo: docs/parts/{part}/db.md (per-part, skip parts without DB):
+  scan: Grep for DB schemas, ORM models, migrations, seeds. Read DB config, scan for caching layer.
+  preview:
+    - entities: {entity1}, {entity2}, {entity3} (+ {N} more)
+    - key relationships: {entity} → {entity}, {entity} → {entity}
+    - config: {pooling, replicas, timeouts}
+    - migrations: {count} migrations, {strategy}
+    - seeds: {how seeding works}
+    - caching: {redis/in-memory, strategy}
+    - patterns: {soft deletes, views, indexes, etc.}
 
-db.md:                                  (single repo at root, monorepo per-part)
-  - entities: {entity1}, {entity2}, {entity3} (+ {N} more)
-  - key relationships: {entity} → {entity}, {entity} → {entity}
-  - config: {pooling, replicas, timeouts}
-  - migrations: {count} migrations, {strategy}
-  - seeds: {how seeding works}
-  - caching: {redis/in-memory, strategy}
-  - patterns: {soft deletes, views, indexes, etc.}
+rules → docs/rules.md | monorepo: docs/parts/{part}/rules.md (per-part):
+  scan: Grep for conventions docs, coding patterns. Sections: principles, conventions, anti-patterns.
+  preview:
+    - principles: {principle 1}, {principle 2}
+    - conventions: {convention 1}, {convention 2}
+    - anti-patterns: {anti-pattern 1}, {anti-pattern 2}
 
-rules.md:                               (single repo at root, monorepo per-part)
-  - principles: {principle 1}, {principle 2}
-  - conventions: {convention 1}, {convention 2}
-  - anti-patterns: {anti-pattern 1}, {anti-pattern 2}
+integrations → docs/integrations.md | monorepo: docs/parts/{part}/integrations.md (per-part):
+  scan: Scan for 3rd party service integrations (payment, email, SMS, storage, search, auth, PMS)
+  preview:
+    - {service}: {purpose} ({N} integrations total)
+    - {service}: {purpose}
 
-integrations.md:                         (single repo at root, monorepo per-part)
-  - {service}: {purpose} ({N} integrations total)
-  - {service}: {purpose}
+testing → docs/testing.md | monorepo: docs/parts/{part}/testing.md (per-part):
+  scan: Scan test files, frameworks, patterns, test locations, coverage config
+  preview:
+    - framework: {jest/playwright/vitest}
+    - patterns: {unit, functional, e2e}
+    - locations: {test dirs}
 
-testing.md:                              (single repo at root, monorepo per-part)
-  - framework: {jest/playwright/vitest}
-  - patterns: {unit, functional, e2e}
-  - locations: {test dirs}
+guides → docs/guides/*.md | monorepo: docs/parts/{part}/guides/*.md (per-part):
+  scan: Scan for repetitive patterns, existing docs/READMEs
+  preview:
+    guides/{topic}.md:
+      - {bullet 1}
+      - {bullet 2}
+      - {bullet 3}
 
-guides/{topic}.md:                       (single repo at root, monorepo per-part)
-  - {bullet 1}
-  - {bullet 2}
-  - {bullet 3}
+features → docs/features/*.md:
+  scan: Read route definitions, page components, CLI commands, API endpoints
+  preview:
+    features/{feature-name}.md:
+      - {bullet 1}
+      - {bullet 2}
+      - {bullet 3}
 
-features/{feature-name}.md:
-  - {bullet 1}
-  - {bullet 2}
-  - {bullet 3}
-
-parts/{name}/:                          (monorepo only)
-  overview.md:
-    - {what it does}, entry: {file}
-    - stack: {part-specific stack}
+parts-overview (monorepo only) → docs/parts/{part}/overview.md:
+  scan: Read package.json per part, scan entry points, identify stack and patterns
+  preview:
+    parts/{name}/:
+      overview.md:
+        - {what it does}, entry: {file}
+        - stack: {part-specific stack}
 
 (metadata hints example)
 features/booking.md:
@@ -504,5 +465,5 @@ Rules:
 - If the user interrupts and runs `/gen-docs` again, `## Phase 0` will resume from the last saved state
 - Generate all docs unless the user skipped them in Step 1.3
 - The preview in `.docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
-- Phase 2 uses 2 Explore agents (compact outlines returned via TaskOutput). Phase 3 is delegated to a SINGLE orchestrator subagent that internally launches up to 12 generation agents. The main agent NEVER launches 12 agents directly.
-- Step 2.2 is done by the MAIN agent (combines 2 agent results into .docs-state.tmp).
+- Phase 2 uses 3 Explore agents (compact outlines returned via TaskOutput). Phase 3 is delegated to a SINGLE orchestrator subagent that internally launches up to 12 generation agents. The main agent NEVER launches 12 agents directly.
+- Step 2.2 is done by the MAIN agent (combines 3 agent results into .docs-state.tmp).

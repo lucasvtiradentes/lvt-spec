@@ -3,64 +3,38 @@
 
 ## Phase 2 - Preview Loop
 
-This phase builds a compact preview outline. Only 2 discovery agents scan the codebase. The heavy 12-agent generation only happens in Phase 3 when the user says "generate".
+This phase builds a compact preview outline. 3 discovery agents scan the codebase in parallel. The heavy 12-agent generation only happens in Phase 3 when the user says "generate".
 
-### Step 2.1 - Launch 2 Discovery Agents
+### Step 2.1 - Launch 3 Discovery Agents
 
-Launch exactly 2 Explore agents in PARALLEL using `Task` with `subagent_type: "Explore"` and `run_in_background: true`.
+Launch exactly 3 Explore agents in PARALLEL using `Task` with `subagent_type: "Explore"` and `run_in_background: true`.
 
 Each agent gets in its prompt:
 - the project type and parts list
-- the list of selected docs (only scan for selected ones)
-- the `### Preview Format` template so it returns in the correct format
+- the scan + preview instructions from `### Doc Specs` for its covered docs
 - if deepening: the current preview content for its doc types, with instruction to find GAPS
 - if deepening with direction: the user's focus area
 
-Agent 1 (100-200 lines):
-- covers: overview, architecture, repo, concepts
-- scan README, package.json (root + per-part), pyproject.toml, go.mod, tsconfig, docker-compose
-- scan entry points: main/index files, route definitions, main exports
-- grep for type definitions, interfaces, enums, DB models/schemas/entities
-- grep for env var references (process.env, os.environ), read .env.example
-- read CI workflows (.github/workflows/, .gitlab-ci.yml, Jenkinsfile)
-- glob folder structure, identify directory organization
-- scan tooling configs: eslint, prettier, husky, lint-staged, commitlint
-- read Makefile, package.json scripts, shell scripts in scripts/
-- scan for observability (logging, tracing, monitoring, error tracking)
-- scan for cloud resources, terraform, IaC configs (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.)
-- MONOREPO: distinguish root vs part-specific tooling
-
-Agent 2 (100-200 lines):
-- covers: db, rules, integrations, testing, guides, features
-- grep for DB schemas, ORM models, migrations, seeds, caching config
-- grep for coding conventions docs, CLAUDE.md, .editorconfig, lint configs
-- scan for consistent coding patterns, principles, anti-patterns
-- scan test files to understand testing patterns, frameworks, test locations
-- scan for repetitive patterns: how controllers/entities/routes are created
-- look for existing docs, READMEs in subdirectories, inline "how to" comments
-- read route definitions, page components, CLI commands, API endpoints
-- scan for 3rd party integrations (payment, email, SMS, storage, search, auth)
-- MONOREPO: scan each part separately for db, rules, integrations, testing, guides - produce per-part preview entries
-
-Each agent returns its output in `### Preview Format` (bullet-point outlines per file, NOT full documentation).
+Agent grouping (see `### Doc Specs` for per-doc details):
+- Agent 1: overview, architecture, concepts
+- Agent 2: repo, features
+- Agent 3: db, rules, integrations, testing, guides, parts-overview
 
 IMPORTANT: agents produce OUTLINES (3-8 bullets per doc), not full docs. Full docs are written in Phase 3.
 
 AGENT PROMPT SCOPING: The prompt sent to each Explore agent must ONLY contain:
 1. Project type and parts list
-2. The list of selected docs it covers
-3. Its specific scanning instructions (from Agent 1 / Agent 2 above)
-4. The `### Preview Format` template
-5. If deepening: the current preview content + direction
-6. This explicit instruction at the end of each agent prompt: "Your ONLY task is to scan the codebase and return bullet-point outlines in the Preview Format. Do NOT proceed to any other step, do NOT show menus, do NOT generate documentation files, do NOT write any files. Return ONLY the outline text."
+2. The scan + preview instructions from Doc Specs for its covered docs
+3. If deepening: the current preview content + direction
+4. This explicit instruction at the end: "Your ONLY task is to scan the codebase and return bullet-point outlines. Do NOT proceed to any other step, do NOT show menus, do NOT generate documentation files, do NOT write any files. Return ONLY the outline text."
 
-Do NOT include in the agent prompt: the interactive menu (Step 2.4), Phase 3 instructions, or any reference to "generate", "deepen", or "adjust" options. The agents must have ZERO awareness of the overall workflow beyond their scanning task.
+Do NOT include in the agent prompt: the interactive menu (Step 2.4), Phase 3 instructions, or any reference to "generate", "deepen", or "adjust" options.
 
-Wait for both agents using TaskOutput(block=true), then proceed to `Step 2.2`.
+Wait for all 3 agents using TaskOutput(block=true), then proceed to `Step 2.2`.
 
 ### Step 2.2 - Assemble Preview
 
-Combine both agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`.
+Combine all 3 agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`.
 
 Observability findings go into the architecture.md preview entry. Cloud/infra findings go into the repo/infrastructure.md preview entry.
 
