@@ -28,7 +28,8 @@ docs/                                docs/
 │   ├── structure.md                 │   ├── structure.md
 │   ├── tooling.md                   │   ├── tooling.md
 │   ├── local-setup.md               │   ├── local-setup.md
-│   └── cicd.md                      │   └── cicd.md
+│   ├── cicd.md                      │   ├── cicd.md
+│   └── infrastructure.md            │   └── infrastructure.md
 ├── features/                        ├── features/
 ---------------------------------------------------
 ├── db.md                            └── parts/
@@ -42,19 +43,23 @@ docs/                                docs/
                                       
 ```
 
-| Output           | Single Repo    | Monorepo       |
-|------------------|----------------|----------------|
-| overview.md      | yes            | yes            |
-| architecture.md  | yes            | yes            |
-| concepts.md      | skippable      | skippable      |
-| repo/            | skippable      | skippable      |
-| features/        | skippable      | skippable      |
-| db.md            | skippable      | per-part       |
-| rules.md         | skippable      | per-part       |
-| integrations.md  | skippable      | per-part       |
-| testing.md       | skippable      | per-part       |
-| guides/          | skippable      | per-part       |
-| parts/overview   | N/A            | always per-part|
+| Output                | Description                             | Required |
+|-----------------------|-----------------------------------------|----------|
+| overview.md           | project description, doc index          | always   |
+| architecture.md       | system design, flows, observability     | always   |
+| concepts.md           | domain glossary                         | no       |
+| repo/structure.md     | folder layout, key directories          | no       |
+| repo/tooling.md       | eslint, prettier, husky, tsconfig       | no       |
+| repo/local-setup.md   | how to run locally, docker, services    | no       |
+| repo/cicd.md          | pipelines, deploy, secrets, branches    | no       |
+| repo/infrastructure.md| cloud services, terraform, IaC          | no       |
+| features/             | one doc per business capability         | no       |
+| db.md                 | data model, migrations, caching         | no       |
+| rules.md              | principles, conventions, anti-patterns  | no       |
+| integrations.md       | 3rd party service integrations          | no       |
+| testing.md            | test frameworks, patterns, coverage     | no       |
+| guides/               | how-to docs, recipes                    | no       |
+| parts/overview        | part entry point, stack, purpose        | always   |
 
 ## Temp Files
 

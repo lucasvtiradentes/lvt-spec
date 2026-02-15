@@ -17,11 +17,9 @@ overview.md:
 
 architecture.md:
   - entry: {entry point} → {main flow}
-  - diagrams: request lifecycle, data flow, deploy topology, {other identified flows}
+  - diagrams: request lifecycle, data flow, auth flow, {other identified flows}
   - data flow: {part} → {part} → {part}
-  - deployment: {how/where deployed}
   - observability: {logging framework}, {tracing}, {monitoring}
-  - cloud/infra: {service}: {purpose}, {service}: {purpose}
 
 concepts.md:
   - {concept}: {1-line description}
@@ -42,6 +40,10 @@ repo/:
     - deploy: {environments and targets}
     - secrets: {required secrets}
     - branch strategy: {strategy description}
+  infrastructure.md:
+    - cloud services: {service}: {purpose}, {service}: {purpose}
+    - IaC: {terraform/pulumi/cdk}, {key resources}
+    - deployment targets: {environments and platforms}
 
 db.md:                                  (single repo at root, monorepo per-part)
   - entities: {entity1}, {entity2}, {entity3} (+ {N} more)

@@ -28,8 +28,9 @@ docs/                                docs/
 │   ├── structure.md                 │   ├── structure.md
 │   ├── tooling.md                   │   ├── tooling.md
 │   ├── local-setup.md               │   ├── local-setup.md
-│   └── cicd.md                      │   └── cicd.md
-└── features/                        ├── features/
+│   ├── cicd.md                      │   ├── cicd.md
+│   └── infrastructure.md            │   └── infrastructure.md
+├── features/                        ├── features/
 ---------------------------------------------------
 ├── db.md                            └── parts/
 ├── rules.md                             └── {part}/
@@ -42,19 +43,23 @@ docs/                                docs/
                                       
 ```
 
-| Output           | Single Repo    | Monorepo       |
-|------------------|----------------|----------------|
-| overview.md      | yes            | yes            |
-| architecture.md  | yes            | yes            |
-| concepts.md      | skippable      | skippable      |
-| repo/            | skippable      | skippable      |
-| features/        | skippable      | skippable      |
-| db.md            | skippable      | per-part       |
-| rules.md         | skippable      | per-part       |
-| integrations.md  | skippable      | per-part       |
-| testing.md       | skippable      | per-part       |
-| guides/          | skippable      | per-part       |
-| parts/overview   | N/A            | always per-part|
+| Output                | Description                             | Required |
+|-----------------------|-----------------------------------------|----------|
+| overview.md           | project description, doc index          | always   |
+| architecture.md       | system design, flows, observability     | always   |
+| concepts.md           | domain glossary                         | no       |
+| repo/structure.md     | folder layout, key directories          | no       |
+| repo/tooling.md       | eslint, prettier, husky, tsconfig       | no       |
+| repo/local-setup.md   | how to run locally, docker, services    | no       |
+| repo/cicd.md          | pipelines, deploy, secrets, branches    | no       |
+| repo/infrastructure.md| cloud services, terraform, IaC          | no       |
+| features/             | one doc per business capability         | no       |
+| db.md                 | data model, migrations, caching         | no       |
+| rules.md              | principles, conventions, anti-patterns  | no       |
+| integrations.md       | 3rd party service integrations          | no       |
+| testing.md            | test frameworks, patterns, coverage     | no       |
+| guides/               | how-to docs, recipes                    | no       |
+| parts/overview        | part entry point, stack, purpose        | always   |
 
 ## Temp Files
 
@@ -203,7 +208,7 @@ Agent 1 (100-200 lines):
 - scan tooling configs: eslint, prettier, husky, lint-staged, commitlint
 - read Makefile, package.json scripts, shell scripts in scripts/
 - scan for observability (logging, tracing, monitoring, error tracking)
-- scan for cloud resources (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.)
+- scan for cloud resources, terraform, IaC configs (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.)
 - MONOREPO: distinguish root vs part-specific tooling
 
 Agent 2 (100-200 lines):
@@ -238,7 +243,7 @@ Wait for both agents using TaskOutput(block=true), then proceed to `Step 2.2`.
 
 Combine both agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`.
 
-Observability and cloud/infra findings always go into the architecture.md preview entry.
+Observability findings go into the architecture.md preview entry. Cloud/infra findings go into the repo/infrastructure.md preview entry.
 
 ### Step 2.3 - Show Preview
 
@@ -310,7 +315,8 @@ docs/
 │   ├── structure.md
 │   ├── tooling.md
 │   ├── local-setup.md
-│   └── cicd.md
+│   ├── cicd.md
+│   └── infrastructure.md
 ├── db.md                                (if selected)
 ├── rules.md                             (if selected)
 ├── integrations.md                      (if selected)
@@ -331,7 +337,8 @@ docs/
 │   ├── structure.md
 │   ├── tooling.md
 │   ├── local-setup.md
-│   └── cicd.md
+│   ├── cicd.md
+│   └── infrastructure.md
 ├── features/                            (if selected)
 │   └── {feature-name}.md
 └── parts/
@@ -374,20 +381,20 @@ overview agent → `docs/overview.md`:
 
 architecture agent → `docs/architecture.md`:
 - Use Grep for entry points, route definitions, main exports, API calls between parts
-- Identify all diagrammable flows: request lifecycle, data pipelines, auth flow, deploy pipeline, event/message flows, dependency graph
+- Identify all diagrammable flows: request lifecycle, data pipelines, auth flow, event/message flows, dependency graph
 - Scan for observability setup (logging, tracing, monitoring, error tracking) and include as a section
-- Scan for cloud/infra services (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.) and include as a section
 - Aim for 3-6 ASCII diagrams minimum
 
 concepts agent → `docs/concepts.md`:
 - Use Grep for type definitions, interfaces, enums, DB models
 - Document domain entities, relationships, key business rules
 
-repo agent → `docs/repo/*.md` (structure.md, tooling.md, local-setup.md, cicd.md):
+repo agent → `docs/repo/*.md` (structure.md, tooling.md, local-setup.md, cicd.md, infrastructure.md):
 - structure.md: Use Glob to map folder structure, identify directory organization
 - tooling.md: scan for tooling configs (eslint, prettier, husky, etc.), read tsconfig, docker-compose
 - local-setup.md: read docker-compose, .env.example, package.json scripts, Makefile
 - cicd.md: read .github/workflows/, CI config files, use Grep for deploy scripts
+- infrastructure.md: scan for cloud services (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.), terraform/IaC configs, deployment targets
 - MONOREPO: distinguish root vs part-specific tooling
 
 db agent → `docs/db.md` (single) or `docs/parts/{part}/db.md` (monorepo, per-part):
@@ -446,11 +453,9 @@ overview.md:
 
 architecture.md:
   - entry: {entry point} → {main flow}
-  - diagrams: request lifecycle, data flow, deploy topology, {other identified flows}
+  - diagrams: request lifecycle, data flow, auth flow, {other identified flows}
   - data flow: {part} → {part} → {part}
-  - deployment: {how/where deployed}
   - observability: {logging framework}, {tracing}, {monitoring}
-  - cloud/infra: {service}: {purpose}, {service}: {purpose}
 
 concepts.md:
   - {concept}: {1-line description}
@@ -471,6 +476,10 @@ repo/:
     - deploy: {environments and targets}
     - secrets: {required secrets}
     - branch strategy: {strategy description}
+  infrastructure.md:
+    - cloud services: {service}: {purpose}, {service}: {purpose}
+    - IaC: {terraform/pulumi/cdk}, {key resources}
+    - deployment targets: {environments and platforms}
 
 db.md:                                  (single repo at root, monorepo per-part)
   - entities: {entity1}, {entity2}, {entity3} (+ {N} more)

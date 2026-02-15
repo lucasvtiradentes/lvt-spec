@@ -27,7 +27,7 @@ Agent 1 (100-200 lines):
 - scan tooling configs: eslint, prettier, husky, lint-staged, commitlint
 - read Makefile, package.json scripts, shell scripts in scripts/
 - scan for observability (logging, tracing, monitoring, error tracking)
-- scan for cloud resources (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.)
+- scan for cloud resources, terraform, IaC configs (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.)
 - MONOREPO: distinguish root vs part-specific tooling
 
 Agent 2 (100-200 lines):
@@ -62,7 +62,7 @@ Wait for both agents using TaskOutput(block=true), then proceed to `Step 2.2`.
 
 Combine both agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`.
 
-Observability and cloud/infra findings always go into the architecture.md preview entry.
+Observability findings go into the architecture.md preview entry. Cloud/infra findings go into the repo/infrastructure.md preview entry.
 
 ### Step 2.3 - Show Preview
 

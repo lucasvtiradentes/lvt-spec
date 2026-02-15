@@ -34,7 +34,8 @@ docs/
 │   ├── structure.md
 │   ├── tooling.md
 │   ├── local-setup.md
-│   └── cicd.md
+│   ├── cicd.md
+│   └── infrastructure.md
 ├── db.md                                (if selected)
 ├── rules.md                             (if selected)
 ├── integrations.md                      (if selected)
@@ -55,7 +56,8 @@ docs/
 │   ├── structure.md
 │   ├── tooling.md
 │   ├── local-setup.md
-│   └── cicd.md
+│   ├── cicd.md
+│   └── infrastructure.md
 ├── features/                            (if selected)
 │   └── {feature-name}.md
 └── parts/
@@ -98,20 +100,20 @@ overview agent → `docs/overview.md`:
 
 architecture agent → `docs/architecture.md`:
 - Use Grep for entry points, route definitions, main exports, API calls between parts
-- Identify all diagrammable flows: request lifecycle, data pipelines, auth flow, deploy pipeline, event/message flows, dependency graph
+- Identify all diagrammable flows: request lifecycle, data pipelines, auth flow, event/message flows, dependency graph
 - Scan for observability setup (logging, tracing, monitoring, error tracking) and include as a section
-- Scan for cloud/infra services (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.) and include as a section
 - Aim for 3-6 ASCII diagrams minimum
 
 concepts agent → `docs/concepts.md`:
 - Use Grep for type definitions, interfaces, enums, DB models
 - Document domain entities, relationships, key business rules
 
-repo agent → `docs/repo/*.md` (structure.md, tooling.md, local-setup.md, cicd.md):
+repo agent → `docs/repo/*.md` (structure.md, tooling.md, local-setup.md, cicd.md, infrastructure.md):
 - structure.md: Use Glob to map folder structure, identify directory organization
 - tooling.md: scan for tooling configs (eslint, prettier, husky, etc.), read tsconfig, docker-compose
 - local-setup.md: read docker-compose, .env.example, package.json scripts, Makefile
 - cicd.md: read .github/workflows/, CI config files, use Grep for deploy scripts
+- infrastructure.md: scan for cloud services (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.), terraform/IaC configs, deployment targets
 - MONOREPO: distinguish root vs part-specific tooling
 
 db agent → `docs/db.md` (single) or `docs/parts/{part}/db.md` (monorepo, per-part):
