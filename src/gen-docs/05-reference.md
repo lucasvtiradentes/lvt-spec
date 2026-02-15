@@ -124,7 +124,7 @@ Rules:
 
 - ALWAYS update `.docs-state.tmp` after completing each sub-step
 - If the user interrupts and runs `/gen-docs` again, `## Phase 0` will resume from the last saved state
-- Do NOT create files that were not selected in `Step 1.3`
+- Generate all docs unless the user skipped them in Step 1.3
 - The preview in `.docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
 - Phase 2 uses 2 Explore agents (compact outlines returned via TaskOutput). Phase 3 is delegated to a SINGLE orchestrator subagent that internally launches up to 12 generation agents. The main agent NEVER launches 12 agents directly.
 - Step 2.2 is done by the MAIN agent (combines 2 agent results into .docs-state.tmp).

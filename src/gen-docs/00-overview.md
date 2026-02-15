@@ -44,23 +44,25 @@ docs/                                docs/
 (below the line: single repo has files at root, monorepo nests them under parts/{part}/)
 ```
 
-| Output                | Description                             | Required |
-|-----------------------|-----------------------------------------|----------|
-| overview.md           | project description, doc index          | always   |
-| architecture.md       | system design, flows, observability     | always   |
-| concepts.md           | domain glossary                         | no       |
-| repo/structure.md     | folder layout, key directories          | no       |
-| repo/tooling.md       | eslint, prettier, husky, tsconfig       | no       |
-| repo/local-setup.md   | how to run locally, docker, services    | no       |
-| repo/cicd.md          | pipelines, deploy, secrets, branches    | no       |
-| repo/infrastructure.md| cloud services, terraform, IaC          | no       |
-| features/             | one doc per business capability         | no       |
-| db.md                 | data model, migrations, caching         | no       |
-| rules.md              | principles, conventions, anti-patterns  | no       |
-| integrations.md       | 3rd party service integrations          | no       |
-| testing.md            | test frameworks, patterns, coverage     | no       |
-| guides/               | how-to docs, recipes                    | no       |
-| parts/overview        | part entry point, stack, purpose        | always   |
+All docs are generated unless the user explicitly skips them in Step 1.3.
+
+| Output                | Description                             |
+|-----------------------|-----------------------------------------|
+| overview.md           | project description, doc index          |
+| architecture.md       | system design, flows, observability     |
+| concepts.md           | domain glossary                         |
+| repo/structure.md     | folder layout, key directories          |
+| repo/tooling.md       | eslint, prettier, husky, tsconfig       |
+| repo/local-setup.md   | how to run locally, docker, services    |
+| repo/cicd.md          | pipelines, deploy, secrets, branches    |
+| repo/infrastructure.md| cloud services, terraform, IaC          |
+| features/             | one doc per business capability         |
+| db.md                 | data model, migrations, caching         |
+| rules.md              | principles, conventions, anti-patterns  |
+| integrations.md       | 3rd party service integrations          |
+| testing.md            | test frameworks, patterns, coverage     |
+| guides/               | how-to docs, recipes                    |
+| parts/overview        | part entry point, stack, purpose        |
 
 ## Temp Files
 

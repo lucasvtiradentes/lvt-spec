@@ -22,7 +22,7 @@ Instructions for the orchestrator agent (include everything below in its prompt)
 
 ### Step 3.1 - Create folder structure
 
-Create directories based on the Output Structure defined above. Only include docs that were selected.
+Create directories based on the Output Structure defined above. Generate all docs unless the user skipped them.
 
 ### Step 3.2 - Launch Generation Agents
 
