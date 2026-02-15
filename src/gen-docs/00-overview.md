@@ -16,6 +16,46 @@ Interactive, state-aware command that generates structured project documentation
 └─────────────┘    └─────────────┘    └──────────────────────────────┘    └───────────────┘
 ```
 
+## Output Structure
+
+```
+single repo:                         monorepo:
+docs/                                docs/
+├── overview.md                      ├── overview.md
+├── architecture.md                  ├── architecture.md
+├── concepts.md                      ├── concepts.md
+├── repo/                            ├── repo/
+│   ├── structure.md                 │   ├── structure.md
+│   ├── tooling.md                   │   ├── tooling.md
+│   ├── local-setup.md               │   ├── local-setup.md
+│   └── cicd.md                      │   └── cicd.md
+├── features/                        ├── features/
+---------------------------------------------------
+├── db.md                            └── parts/
+├── rules.md                             └── {part}/
+├── integrations.md                          ├── overview.md
+├── testing.md                               ├── db.md
+└── guides/                                  ├── rules.md
+                                             ├── integrations.md
+                                             ├── testing.md
+                                             └── guides/                        
+                                      
+```
+
+| Output           | Single Repo    | Monorepo       |
+|------------------|----------------|----------------|
+| overview.md      | yes            | yes            |
+| architecture.md  | yes            | yes            |
+| concepts.md      | skippable      | skippable      |
+| repo/            | skippable      | skippable      |
+| features/        | skippable      | skippable      |
+| db.md            | skippable      | per-part       |
+| rules.md         | skippable      | per-part       |
+| integrations.md  | skippable      | per-part       |
+| testing.md       | skippable      | per-part       |
+| guides/          | skippable      | per-part       |
+| parts/overview   | N/A            | always per-part|
+
 ## Temp Files
 
 All progress is tracked in `.docs-state.tmp` (single file, no folder needed).
@@ -25,7 +65,7 @@ After `Step 1.4` (header only):
 phase: 2
 type: monorepo
 parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,integrations,parts,problems
+docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features
 ```
 
 After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
@@ -33,7 +73,7 @@ After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
 phase: 2
 type: monorepo
 parts: apps/api,apps/web,packages/infra
-docs: overview,architecture,repo,concepts,db,cicd,rules,guides,features,integrations,parts,problems
+docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features
 
 --- PREVIEW ---
 
@@ -46,10 +86,6 @@ features/auth.md:
   - email/password + Google OAuth
   - JWT with refresh rotation
   - role-based: guest, host, admin
-
-features/booking.md:
-  - availability check → hold → payment → confirm
-  - cancellation policies: flexible, moderate, strict
 
 ...etc
 ```

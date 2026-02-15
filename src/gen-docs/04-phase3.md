@@ -29,27 +29,43 @@ For single repo:
 docs/
 ├── overview.md                          (always)
 ├── architecture.md                      (always)
-├── repo.md                              (always)
 ├── concepts.md                          (if selected)
+├── repo/                                (if selected)
+│   ├── structure.md
+│   ├── tooling.md
+│   ├── local-setup.md
+│   └── cicd.md
 ├── db.md                                (if selected)
-├── cicd.md                              (if selected)
 ├── rules.md                             (if selected)
 ├── integrations.md                      (if selected)
+├── testing.md                           (if selected)
 ├── guides/                              (if selected)
 │   └── {topic}.md
-├── features/                            (if selected)
-│   └── {feature-name}.md
-└── problems/                            (if selected)
+└── features/                            (if selected)
+    └── {feature-name}.md
 ```
 
-For monorepo, add:
+For monorepo:
 ```
 docs/
-└── parts/                               (if selected)
+├── overview.md                          (always)
+├── architecture.md                      (always)
+├── concepts.md                          (if selected)
+├── repo/                                (if selected)
+│   ├── structure.md
+│   ├── tooling.md
+│   ├── local-setup.md
+│   └── cicd.md
+├── features/                            (if selected)
+│   └── {feature-name}.md
+└── parts/
     └── {part-name}/
-        ├── overview.md
-        ├── rules.md
-        └── guides/
+        ├── overview.md                  (always)
+        ├── db.md                        (if selected)
+        ├── rules.md                     (if selected)
+        ├── integrations.md              (if selected)
+        ├── testing.md                   (if selected)
+        └── guides/                      (if selected)
             └── {topic}.md
 ```
 
@@ -91,40 +107,40 @@ concepts agent → `docs/concepts.md`:
 - Use Grep for type definitions, interfaces, enums, DB models
 - Document domain entities, relationships, key business rules
 
-repo agent → `docs/repo.md`:
-- Read package.json, tsconfig, docker-compose, Makefile, scripts/
-- Use Glob to map folder structure
-- Scan for tooling configs (eslint, prettier, husky, etc.)
-- Use Grep for env var references, read .env.example
+repo agent → `docs/repo/*.md` (structure.md, tooling.md, local-setup.md, cicd.md):
+- structure.md: Use Glob to map folder structure, identify directory organization
+- tooling.md: scan for tooling configs (eslint, prettier, husky, etc.), read tsconfig, docker-compose
+- local-setup.md: read docker-compose, .env.example, package.json scripts, Makefile
+- cicd.md: read .github/workflows/, CI config files, use Grep for deploy scripts
 - MONOREPO: distinguish root vs part-specific tooling
 
-db agent → `docs/db.md`:
+db agent → `docs/db.md` (single) or `docs/parts/{part}/db.md` (monorepo, per-part):
 - Use Grep for DB schemas, ORM models, migrations, seeds
 - Read DB config files, scan for caching layer
+- MONOREPO: generate one db.md per part that has DB, skip parts without DB
 
-cicd agent → `docs/cicd.md`:
-- Read .github/workflows/, CI config files
-- Use Grep for deploy scripts
-
-rules agent → `docs/rules.md`:
+rules agent → `docs/rules.md` (single) or `docs/parts/{part}/rules.md` (monorepo, per-part):
 - Use Grep for conventions docs, coding patterns
-- MONOREPO: identify per-part rules
+- Sections: principles, conventions, anti-patterns
+- MONOREPO: generate one rules.md per part with part-specific conventions
 
-guides agent → `docs/guides/*.md`:
-- Scan for repetitive patterns, test files, existing docs/READMEs
-- MONOREPO: distinguish root vs part-specific guides
+integrations agent → `docs/integrations.md` (single) or `docs/parts/{part}/integrations.md` (monorepo, per-part):
+- Scan for 3rd party service integrations (payment, email, SMS, storage, search, auth, PMS)
+- MONOREPO: generate one integrations.md per part with part-specific integrations
+
+testing agent → `docs/testing.md` (single) or `docs/parts/{part}/testing.md` (monorepo, per-part):
+- Scan test files, frameworks, patterns, test locations, coverage config
+- MONOREPO: generate one testing.md per part with part-specific test setup
+
+guides agent → `docs/guides/*.md` (single) or `docs/parts/{part}/guides/*.md` (monorepo, per-part):
+- Scan for repetitive patterns, existing docs/READMEs
+- MONOREPO: generate guides per part
 
 features agent → `docs/features/*.md`:
 - Read route definitions, page components, CLI commands, API endpoints
 
-integrations agent → `docs/integrations.md`:
-- Scan for 3rd party service integrations (payment, email, SMS, storage, search, auth, PMS)
-
-parts agent (monorepo only) → `docs/parts/{name}/*.md`:
-- For each part: read package.json, scan entry points, identify patterns
-
-problems agent → `docs/problems/*.md`:
-- Check for existing ADRs, CHANGELOG, postmortems
+parts-overview agent (monorepo only) → `docs/parts/{part}/overview.md`:
+- For each part: read package.json, scan entry points, identify stack and patterns
 
 ### Step 3.3 - Align Docs
 

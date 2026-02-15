@@ -3,23 +3,6 @@
 
 ## Reference
 
-### Single Repo vs Monorepo
-
-| Output           | Single Repo                            | Monorepo                               |
-|------------------|----------------------------------------|----------------------------------------|
-| overview.md      | yes                                    | yes                                    |
-| architecture.md  | yes (includes observability + infra)   | yes (includes observability + infra)   |
-| repo.md          | yes                                    | yes                                    |
-| concepts.md      | skippable                              | skippable                              |
-| db.md            | skippable                              | skippable                              |
-| cicd.md          | skippable                              | skippable                              |
-| rules.md         | skippable                              | skippable                              |
-| guides/          | skippable                              | skippable (part guides live in parts/) |
-| features/        | skippable                              | skippable                              |
-| integrations.md  | skippable                              | skippable                              |
-| parts/           | N/A                                    | skippable (overview + rules + guides)  |
-| problems/        | skippable                              | skippable                              |
-
 ### Preview Format
 
 The preview is PER-FILE with bullet points. Each file entry should ALSO include related docs and sources when known (lines starting with `>` are metadata hints so Phase 3 can write metadata without re-scanning).
@@ -45,16 +28,22 @@ concepts.md:
   - {concept}: {1-line description}
   - {concept}: {1-line description}
 
-repo.md:
-  - stack: {language}, {framework}, {ORM}, {DB}
-  - folder structure: {key dirs and what they contain}
-  - tooling: {eslint (root + api), prettier (root only), husky, lint-staged, ...}
-  - scripts: {available commands from Makefile/package.json}
-  - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
-  - services: {service}:{port}, {service}:{port}
-  - setup: {key steps to run locally}
+repo/:
+  structure.md:
+    - {key dirs and what they contain}
+  tooling.md:
+    - {eslint (root + api), prettier (root only), husky, lint-staged, ...}
+    - env vars: {VAR_1}, {VAR_2}, {VAR_3} (+ {N} more)
+  local-setup.md:
+    - services: {service}:{port}, {service}:{port}
+    - {key steps to run locally}
+  cicd.md:
+    - pipelines: {pipeline 1}, {pipeline 2}
+    - deploy: {environments and targets}
+    - secrets: {required secrets}
+    - branch strategy: {strategy description}
 
-db.md:
+db.md:                                  (single repo at root, monorepo per-part)
   - entities: {entity1}, {entity2}, {entity3} (+ {N} more)
   - key relationships: {entity} → {entity}, {entity} → {entity}
   - config: {pooling, replicas, timeouts}
@@ -63,18 +52,21 @@ db.md:
   - caching: {redis/in-memory, strategy}
   - patterns: {soft deletes, views, indexes, etc.}
 
-cicd.md:
-  - pipelines: {pipeline 1}, {pipeline 2}
-  - deploy: {environments and targets}
-  - secrets: {required secrets}
-  - branch strategy: {strategy description}
-
-rules.md:
+rules.md:                               (single repo at root, monorepo per-part)
   - principles: {principle 1}, {principle 2}
   - conventions: {convention 1}, {convention 2}
   - anti-patterns: {anti-pattern 1}, {anti-pattern 2}
 
-guides/{topic}.md:
+integrations.md:                         (single repo at root, monorepo per-part)
+  - {service}: {purpose} ({N} integrations total)
+  - {service}: {purpose}
+
+testing.md:                              (single repo at root, monorepo per-part)
+  - framework: {jest/playwright/vitest}
+  - patterns: {unit, functional, e2e}
+  - locations: {test dirs}
+
+guides/{topic}.md:                       (single repo at root, monorepo per-part)
   - {bullet 1}
   - {bullet 2}
   - {bullet 3}
@@ -84,22 +76,10 @@ features/{feature-name}.md:
   - {bullet 2}
   - {bullet 3}
 
-integrations.md:
-  - {service}: {purpose} ({N} integrations total)
-  - {service}: {purpose}
-
 parts/{name}/:                          (monorepo only)
   overview.md:
     - {what it does}, entry: {file}
     - stack: {part-specific stack}
-  rules.md:
-    - {part-specific rules that override/extend root}
-  guides/{topic}.md:
-    - {bullet 1}
-    - {bullet 2}
-
-problems/:
-  - (empty on first gen - grows over time as problems are solved)
 
 (metadata hints example)
 features/booking.md:

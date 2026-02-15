@@ -17,7 +17,7 @@ Each agent gets in its prompt:
 - if deepening with direction: the user's focus area
 
 Agent 1 (100-200 lines):
-- covers: overview, architecture, repo, concepts, db, cicd
+- covers: overview, architecture, repo, concepts
 - scan README, package.json (root + per-part), pyproject.toml, go.mod, tsconfig, docker-compose
 - scan entry points: main/index files, route definitions, main exports
 - grep for type definitions, interfaces, enums, DB models/schemas/entities
@@ -26,13 +26,13 @@ Agent 1 (100-200 lines):
 - glob folder structure, identify directory organization
 - scan tooling configs: eslint, prettier, husky, lint-staged, commitlint
 - read Makefile, package.json scripts, shell scripts in scripts/
-- scan for DB config (connection pooling, replicas, migrations, seeds, caching)
 - scan for observability (logging, tracing, monitoring, error tracking)
 - scan for cloud resources (Cloud Run, GCS, Pub/Sub, Lambda, S3, etc.)
 - MONOREPO: distinguish root vs part-specific tooling
 
 Agent 2 (100-200 lines):
-- covers: rules, guides, features, integrations, parts, problems
+- covers: db, rules, integrations, testing, guides, features
+- grep for DB schemas, ORM models, migrations, seeds, caching config
 - grep for coding conventions docs, CLAUDE.md, .editorconfig, lint configs
 - scan for consistent coding patterns, principles, anti-patterns
 - scan test files to understand testing patterns, frameworks, test locations
@@ -40,9 +40,7 @@ Agent 2 (100-200 lines):
 - look for existing docs, READMEs in subdirectories, inline "how to" comments
 - read route definitions, page components, CLI commands, API endpoints
 - scan for 3rd party integrations (payment, email, SMS, storage, search, auth)
-- for each monorepo part: read package.json, scan entry points, identify patterns
-- check for ADRs, CHANGELOG, postmortems, solved problem docs
-- MONOREPO: identify per-part rules, per-part guides
+- MONOREPO: scan each part separately for db, rules, integrations, testing, guides - produce per-part preview entries
 
 Each agent returns its output in `### Preview Format` (bullet-point outlines per file, NOT full documentation).
 
