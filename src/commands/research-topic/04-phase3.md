@@ -18,17 +18,17 @@ Use `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`
 Each agent receives:
 - The topic
 - The preview bullets for its doc
-- The doc writing rules (see below)
+- The Doc Specs from `## Reference` section
 - Instruction to WebSearch for detailed content and write the file
 
-Doc writing rules:
+Doc writing rules (include in every agent prompt):
 - Follow `docs/doc-style.md` formatting rules
 - Use tables for commands/options/flags
 - Include code examples with proper syntax highlighting
 - Keep explanations concise, no fluff
 - Write in English
 - No bold text, no emojis
-- `5-best-practices.md` MUST end with a Sources section listing URLs used
+- The `references.md` file collects ALL URLs used across all docs during research
 
 Wait for all agents to complete.
 <!--@claude-->
@@ -54,8 +54,9 @@ Use `$align-docs {folder}`.
 ├── 1-overview.md
 ├── 2-{subtopic}.md
 ├── 3-{subtopic}.md
-├── 4-{subtopic}.md (if generated)
-└── 5-best-practices.md
+├── ...
+├── {N-1}-best-practices.md
+└── {N}-references.md
 
 Done! Generated {N} files. Review and adjust as needed.
 ```

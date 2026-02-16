@@ -19,37 +19,57 @@ Research a topic and create structured documentation. Use when the user wants to
 
 ## Output Structure
 
+The number of files is variable based on what discovery agents find. Typical range: 5-9 files.
+
 ```
 docs/research/{topic-name}/
-├── 1-overview.md        - what it is, installation, core concepts
-├── 2-{subtopic}.md      - main functionality/commands
-├── 3-{subtopic}.md      - common use cases/examples
-├── 4-{subtopic}.md      - advanced topics (optional)
-└── 5-best-practices.md  - best practices, tips, sources
+├── 1-overview.md              - always: what it is, installation, core concepts
+├── 2-{subtopic}.md            - discovered: main functionality area
+├── 3-{subtopic}.md            - discovered: secondary topic
+├── ...                        - discovered: additional topics as needed
+├── {N-1}-best-practices.md    - always: best practices, tips, troubleshooting
+└── {N}-references.md          - always last: sources, URLs, further reading
 ```
 
-Subtopic names are discovered in Phase 1 based on the topic. For example:
-- "docker" → 2-containers.md, 3-images.md, 4-compose.md
-- "gcloud cli" → 2-commands.md, 3-services.md, 4-iam.md
+Examples of discovered structures:
+
+```
+docker/                          gcloud-cli/                     kubernetes/
+├── 1-overview.md                ├── 1-overview.md               ├── 1-overview.md
+├── 2-containers.md              ├── 2-core-commands.md          ├── 2-architecture.md
+├── 3-images.md                  ├── 3-compute.md                ├── 3-workloads.md
+├── 4-compose.md                 ├── 4-storage.md                ├── 4-networking.md
+├── 5-networking.md              ├── 5-iam.md                    ├── 5-configuration.md
+├── 6-best-practices.md          ├── 6-best-practices.md         ├── 6-scaling.md
+└── 7-references.md              └── 7-references.md             ├── 7-best-practices.md
+                                                                  └── 8-references.md
+```
 
 ## Temp File
 
 All progress is tracked in `.research-state.tmp`.
 
-After Phase 1 (discovery):
+After Phase 1 Step 1.2 (before agents):
 ```
-phase: 2
+phase: 1
 topic: docker
 folder: docs/research/docker
-docs: 1-overview.md,2-containers.md,3-images.md,4-compose.md,5-best-practices.md
 ```
 
-After Phase 2 adjustments (preview updated):
+After Phase 1 Step 1.5 (discovery complete):
 ```
 phase: 2
 topic: docker
 folder: docs/research/docker
-docs: 1-overview.md,2-containers.md,3-images.md,4-networking.md,5-best-practices.md
+docs: 1-overview.md,2-containers.md,3-images.md,4-compose.md,5-networking.md,6-best-practices.md,7-references.md
+```
+
+After Phase 2 (preview added):
+```
+phase: 2
+topic: docker
+folder: docs/research/docker
+docs: 1-overview.md,2-containers.md,3-images.md,4-compose.md,5-networking.md,6-best-practices.md,7-references.md
 
 --- PREVIEW ---
 
@@ -124,18 +144,18 @@ Use `TaskOutput(block=true)` to wait for each agent.
 
 ### Step 1.4 - Build Doc List
 
-Combine agent results and build a numbered doc list:
+Combine agent results and build a numbered doc list. Typical range: 4-8 files.
 
-Fixed files (always present):
-- `1-overview.md` - What it is, installation, core concepts
-- `5-best-practices.md` - Best practices, tips, troubleshooting, sources
+Fixed positions:
+- `1-overview.md` - always first: what it is, installation, core concepts
+- `{N-1}-best-practices.md` - always second-to-last: best practices, tips, troubleshooting
+- `{N}-references.md` - always last: sources, URLs, further reading
 
-Dynamic files (from discovery):
-- `2-{subtopic}.md` - Main functionality (most important subtopic)
-- `3-{subtopic}.md` - Secondary topic (use cases, examples)
-- `4-{subtopic}.md` - Advanced topic (optional, only if relevant)
-
-Name files as kebab-case nouns (e.g., `2-commands.md`, `3-networking.md`).
+Discovered files (variable count):
+- `2-{subtopic}.md` through `{N-2}-{subtopic}.md` - based on discovery results
+- Group related concepts into single files
+- Name files as kebab-case nouns (e.g., `2-commands.md`, `3-networking.md`)
+- Aim for 3-6 subtopic files depending on topic complexity
 
 ### Step 1.5 - Update State
 
@@ -224,17 +244,17 @@ Use `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`
 Each agent receives:
 - The topic
 - The preview bullets for its doc
-- The doc writing rules (see below)
+- The Doc Specs from `## Reference` section
 - Instruction to WebSearch for detailed content and write the file
 
-Doc writing rules:
+Doc writing rules (include in every agent prompt):
 - Follow `docs/doc-style.md` formatting rules
 - Use tables for commands/options/flags
 - Include code examples with proper syntax highlighting
 - Keep explanations concise, no fluff
 - Write in English
 - No bold text, no emojis
-- `5-best-practices.md` MUST end with a Sources section listing URLs used
+- The `references.md` file collects ALL URLs used across all docs during research
 
 Wait for all agents to complete.
 Use `TaskOutput(block=true)` to wait for each agent.
@@ -254,8 +274,130 @@ Use `/docs:align-docs {folder}`.
 ├── 1-overview.md
 ├── 2-{subtopic}.md
 ├── 3-{subtopic}.md
-├── 4-{subtopic}.md (if generated)
-└── 5-best-practices.md
+├── ...
+├── {N-1}-best-practices.md
+└── {N}-references.md
 
 Done! Generated {N} files. Review and adjust as needed.
 ```
+
+## Reference
+
+### Doc Specs
+
+Per-doc content guidelines. Used by Phase 2 (preview outlines) and Phase 3 (full generation).
+
+```
+1-overview.md (always first):
+  content:
+    - What is {topic}? 1-2 sentence definition
+    - Why use it? Key benefits
+    - Installation steps for major platforms
+    - Core concepts/terminology table
+    - Architecture overview (if applicable)
+  preview:
+    - definition: {1-line what it is}
+    - benefits: {key benefits}
+    - install: {platforms supported}
+    - concepts: {concept1}, {concept2}, {concept3}
+
+2 to {N-2} (discovered subtopics):
+  content:
+    - Commands/API table with syntax and description
+    - Code examples with proper syntax highlighting
+    - Common flags/options table
+    - Gotchas and edge cases
+  preview:
+    - {main concept}: {1-line description}
+    - commands: {cmd1}, {cmd2}, {cmd3}
+    - examples: {example scenarios}
+
+{N-1}-best-practices.md (always second-to-last):
+  content:
+    - Best practices list (do's)
+    - Common mistakes (don'ts)
+    - Performance tips
+    - Security considerations
+    - Troubleshooting common issues
+  preview:
+    - practices: {practice1}, {practice2}
+    - avoid: {mistake1}, {mistake2}
+    - tips: {tip1}, {tip2}
+
+{N}-references.md (always last):
+  content:
+    - Official documentation links
+    - Tutorials and guides used
+    - Community resources
+    - Further reading
+    - Related tools/projects
+  preview:
+    - official: {N} docs
+    - tutorials: {N} guides
+    - related: {tool1}, {tool2}
+```
+
+### Content Format
+
+Follow `docs/doc-style.md` for all files. Key rules:
+
+- Use tables for commands, flags, options, comparisons
+- Include code blocks with proper language tags
+- No bold text, no emojis
+- Keep explanations concise
+- Align table columns and list descriptions
+
+Command tables:
+```md
+| Command          | Description                    |
+|------------------|--------------------------------|
+| `docker run`     | Create and start a container   |
+| `docker build`   | Build an image from Dockerfile |
+```
+
+Flag tables:
+```md
+| Flag        | Short | Description              |
+|-------------|-------|--------------------------|
+| `--detach`  | `-d`  | Run in background        |
+| `--publish` | `-p`  | Map port host:container  |
+```
+
+### References Format
+
+The `{N}-references.md` file lists all sources used during research:
+
+```md
+# References
+
+## Official Documentation
+
+- [Docker Documentation](https://docs.docker.com/)
+- [Docker CLI Reference](https://docs.docker.com/engine/reference/commandline/cli/)
+
+## Tutorials and Guides
+
+- [Getting Started with Docker](https://docs.docker.com/get-started/)
+- [Docker Best Practices](https://docs.docker.com/develop/develop-images/dockerfile_best-practices/)
+
+## Related Tools
+
+- [Docker Compose](https://docs.docker.com/compose/)
+- [Podman](https://podman.io/) - Docker alternative
+```
+
+Include all URLs used during research. Prefer official docs over blog posts.
+
+---
+
+## Important Rules
+
+- Discovery agents determine the number and names of subtopic files
+- The user can add/remove/rename files during Phase 2 adjust loop
+- `1-overview.md` is always first
+- `{N-1}-best-practices.md` is always second-to-last
+- `{N}-references.md` is always last
+- Preview in `.research-state.tmp` is the SOURCE OF TRUTH for Phase 3
+- Each generation agent writes ONE file and does its own WebSearch for detailed content
+- Phase 1 agents: `Task` with `subagent_type: "general-purpose"`, `run_in_background: true`
+- Phase 3 agents: `Task` with `subagent_type: "general-purpose"`, `run_in_background: true`, one per file

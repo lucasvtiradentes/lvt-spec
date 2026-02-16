@@ -44,18 +44,18 @@ Use `TaskOutput(block=true)` to wait for each agent.
 
 ### Step 1.4 - Build Doc List
 
-Combine agent results and build a numbered doc list:
+Combine agent results and build a numbered doc list. Typical range: 4-8 files.
 
-Fixed files (always present):
-- `1-overview.md` - What it is, installation, core concepts
-- `5-best-practices.md` - Best practices, tips, troubleshooting, sources
+Fixed positions:
+- `1-overview.md` - always first: what it is, installation, core concepts
+- `{N-1}-best-practices.md` - always second-to-last: best practices, tips, troubleshooting
+- `{N}-references.md` - always last: sources, URLs, further reading
 
-Dynamic files (from discovery):
-- `2-{subtopic}.md` - Main functionality (most important subtopic)
-- `3-{subtopic}.md` - Secondary topic (use cases, examples)
-- `4-{subtopic}.md` - Advanced topic (optional, only if relevant)
-
-Name files as kebab-case nouns (e.g., `2-commands.md`, `3-networking.md`).
+Discovered files (variable count):
+- `2-{subtopic}.md` through `{N-2}-{subtopic}.md` - based on discovery results
+- Group related concepts into single files
+- Name files as kebab-case nouns (e.g., `2-commands.md`, `3-networking.md`)
+- Aim for 3-6 subtopic files depending on topic complexity
 
 ### Step 1.5 - Update State
 
