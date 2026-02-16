@@ -49,13 +49,15 @@ Option 2 - exit:
 Based on user description, launch agent(s) to:
 <!--@claude-->
 Use `Task` with `subagent_type: "general-purpose"`.
+<!--@gemini,codex-->
+Launch an agent to perform the requested update.
 <!--@end-->
 
 Possible actions:
-- **Add content** - WebSearch + append/modify existing file
-- **Add new file** - WebSearch + create new numbered file, renumber if needed
-- **Update existing** - WebSearch for fresh info + modify file
-- **Fix formatting** - Read file + apply fixes
+- Add content: WebSearch + append/modify existing file
+- Add new file: WebSearch + create new numbered file, renumber if needed
+- Update existing: WebSearch for fresh info + modify file
+- Fix formatting: Read file + apply fixes
 
 Each agent receives:
 - The user's request

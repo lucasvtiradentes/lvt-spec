@@ -1,24 +1,29 @@
 ```
-┌──────────────┐    ┌──────────────┐    ┌─────────────────────────────┐    ┌──────────────┐
-│ PHASE 0      │    │ PHASE 1      │    │ PHASE 2                     │    │ PHASE 3      │
-│ Route        │    │ Discovery    │    │ Preview Loop                │    │ Generate     │
-│              │    │              │    │                             │    │              │
-│ .tmp exists? │───>│ WebSearch +  │───>│ show doc list to user       │───>│ write docs/  │
-│ folder exists│    │ agents find  │    │ menu: adjust / generate     │    │ align-docs   │
-│ or new topic │    │ subtopics    │    │      <loop until "go">      │    │ cleanup      │
-└──────┬───────┘    └──────────────┘    └─────────────────────────────┘    └──────────────┘
-       │
-       │ (if folder exists)
-       v
-┌─────────────────────────────────┐
-│ PHASE 4                         │
-│ Iterate                         │
-│                                 │
-│ show current docs               │
-│ menu: update / exit             │
-│ user describes changes          │
-│ agents update → align-docs      │
-└─────────────────────────────────┘
+┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐
+│ PHASE 0           │    │ PHASE 1           │    │ PHASE 2           │    │ PHASE 3           │
+│ Route             │    │ Discovery         │    │ Preview Loop      │    │ Generate          │
+│                   │    │                   │    │                   │    │                   │
+│ .tmp exists?      │───>│ WebSearch +       │───>│ show doc list     │───>│ write docs/       │
+│ folder exists?    │    │ agents find       │    │ menu: adjust /    │    │ align-docs        │
+│ or new topic?     │    │ subtopics         │    │ generate          │    │ cleanup           │
+└─────────┬─────────┘    └───────────────────┘    └───────────────────┘    └─────────┬─────────┘
+          │                                                                          │
+          │ (folder exists)                                                          │
+          │                                                                          │
+          │    ┌─────────────────────────────────────────────────────────────────────┘
+          │    │
+          v    v
+    ┌───────────────────┐
+    │ PHASE 4           │<───┐
+    │ Iterate           │    │
+    │                   │    │
+    │ show current docs │    │ (update)
+    │ menu: update/exit │    │
+    │ agents + align    │────┘
+    └─────────┬─────────┘
+              │ (exit)
+              v
+           [done]
 ```
 
 ## Arguments

@@ -4,26 +4,31 @@ description: Research a topic and create structured documentation, or iterate on
 ---
 
 ```
-┌──────────────┐    ┌──────────────┐    ┌─────────────────────────────┐    ┌──────────────┐
-│ PHASE 0      │    │ PHASE 1      │    │ PHASE 2                     │    │ PHASE 3      │
-│ Route        │    │ Discovery    │    │ Preview Loop                │    │ Generate     │
-│              │    │              │    │                             │    │              │
-│ .tmp exists? │───>│ WebSearch +  │───>│ show doc list to user       │───>│ write docs/  │
-│ folder exists│    │ agents find  │    │ menu: adjust / generate     │    │ align-docs   │
-│ or new topic │    │ subtopics    │    │      <loop until "go">      │    │ cleanup      │
-└──────┬───────┘    └──────────────┘    └─────────────────────────────┘    └──────────────┘
-       │
-       │ (if folder exists)
-       v
-┌─────────────────────────────────┐
-│ PHASE 4                         │
-│ Iterate                         │
-│                                 │
-│ show current docs               │
-│ menu: update / exit             │
-│ user describes changes          │
-│ agents update → align-docs      │
-└─────────────────────────────────┘
+┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐
+│ PHASE 0           │    │ PHASE 1           │    │ PHASE 2           │    │ PHASE 3           │
+│ Route             │    │ Discovery         │    │ Preview Loop      │    │ Generate          │
+│                   │    │                   │    │                   │    │                   │
+│ .tmp exists?      │───>│ WebSearch +       │───>│ show doc list     │───>│ write docs/       │
+│ folder exists?    │    │ agents find       │    │ menu: adjust /    │    │ align-docs        │
+│ or new topic?     │    │ subtopics         │    │ generate          │    │ cleanup           │
+└─────────┬─────────┘    └───────────────────┘    └───────────────────┘    └─────────┬─────────┘
+          │                                                                          │
+          │ (folder exists)                                                          │
+          │                                                                          │
+          │    ┌─────────────────────────────────────────────────────────────────────┘
+          │    │
+          v    v
+    ┌───────────────────┐
+    │ PHASE 4           │<───┐
+    │ Iterate           │    │
+    │                   │    │
+    │ show current docs │    │ (update)
+    │ menu: update/exit │    │
+    │ agents + align    │────┘
+    └─────────┬─────────┘
+              │ (exit)
+              v
+           [done]
 ```
 
 ## Arguments
@@ -142,14 +147,15 @@ folder: docs/research/{kebab-case-topic}
 ### Step 1.3 - Launch Discovery Agents
 
 Launch 2 agents in PARALLEL to discover relevant subtopics.
+Launch background agents to research in parallel.
 
 Agent 1 - Official Sources:
-- WebSearch for "{topic} official documentation 2026"
+- WebSearch for "{topic} official documentation"
 - WebSearch for "{topic} getting started guide"
 - Identify: main concepts, installation steps, core features
 
 Agent 2 - Community Sources:
-- WebSearch for "{topic} tutorial 2026"
+- WebSearch for "{topic} tutorial"
 - WebSearch for "{topic} best practices"
 - WebSearch for "{topic} common use cases examples"
 - Identify: practical subtopics, common patterns, tips
@@ -157,6 +163,7 @@ Agent 2 - Community Sources:
 Each agent returns a bullet list of discovered subtopics with 1-line descriptions.
 
 Wait for both agents to complete.
+Wait for all background agents to finish before proceeding.
 
 ### Step 1.4 - Build Doc List
 
@@ -190,6 +197,7 @@ Proceed to `## Phase 2`.
 ### Step 2.1 - Build Preview
 
 If no preview exists yet in `.research-state.tmp`, launch a single agent to build preview outlines.
+Launch an agent to build the preview.
 
 The agent receives:
 - The topic and doc list from `.research-state.tmp`
@@ -254,6 +262,7 @@ mkdir -p {folder}
 ### Step 3.2 - Launch Generation Agents
 
 Launch one agent per doc file in PARALLEL.
+Launch one background agent per file to generate content in parallel.
 
 Each agent receives:
 - The topic
@@ -271,6 +280,7 @@ Doc writing rules (include in every agent prompt):
 - The `references.md` file collects ALL URLs used across all docs during research
 
 Wait for all agents to complete.
+Wait for all background agents to finish before proceeding.
 
 ### Step 3.3 - Align Docs
 
@@ -291,8 +301,91 @@ Use `$align-docs {folder}`.
 ├── {N-1}-best-practices.md
 └── {N}-references.md
 
-Done! Generated {N} files. Review and adjust as needed.
+Generated {N} files.
 ```
+
+### Step 3.5 - Transition to Phase 4
+
+After generation completes, proceed to `## Phase 4` Step 4.2 to show the iterate menu.
+This allows the user to review and make adjustments immediately.
+
+## Phase 4 - Iterate
+
+Continue or improve an existing research.
+
+### Step 4.1 - Read Current Docs
+
+Read all markdown files in the provided folder and build a summary:
+- List files with their h1 titles
+- Count total lines/sections per file
+
+### Step 4.2 - Show Current Structure
+
+Display to the user:
+
+```
+Existing research: {folder}
+
+Files:
+├── 1-overview.md         - {h1 title}
+├── 2-{subtopic}.md       - {h1 title}
+├── ...
+├── {N-1}-best-practices.md
+└── {N}-references.md
+
+What's next?
+1. update - describe what you want to change
+2. exit   - done, no changes
+```
+
+### Step 4.3 - Interactive Menu
+
+CRITICAL: After displaying the menu you MUST STOP and produce NO further output. The NEXT message MUST come from the USER.
+
+Option 1 - update:
+- User describes what they want in free text:
+  - "add a section about security"
+  - "deep dive into networking"
+  - "update the installation steps for v2"
+  - "add new file about plugins"
+  - "fix the table alignment in overview"
+- Proceed to `Step 4.4`
+
+Option 2 - exit:
+- Stop, no changes made
+
+### Step 4.4 - Execute Update
+
+Based on user description, launch agent(s) to:
+Launch an agent to perform the requested update.
+
+Possible actions:
+- Add content: WebSearch + append/modify existing file
+- Add new file: WebSearch + create new numbered file, renumber if needed
+- Update existing: WebSearch for fresh info + modify file
+- Fix formatting: Read file + apply fixes
+
+Each agent receives:
+- The user's request
+- The current file content (if modifying)
+- The Doc Specs from `## Reference`
+- The existing `references.md` content as context (sources already consulted)
+- Instruction to:
+  - Use existing sources as starting point, NOT as limit
+  - WebSearch for new/updated information beyond existing sources
+  - Add any new sources used to `references.md`
+
+### Step 4.5 - Align and Show Result
+
+1. Run align-docs on the folder
+   Use `$align-docs {folder}`.
+
+2. Show what changed:
+```
+Updated: {list of modified/added files}
+```
+
+3. Return to `Step 4.2` (show structure + menu again)
 
 ## Reference
 
@@ -414,80 +507,3 @@ Include all URLs used during research. Prefer official docs over blog posts.
 - Each generation agent writes ONE file and does its own WebSearch for detailed content
 - Phase 4 allows iterating on existing research without starting over
 - When adding new files in Phase 4, renumber subsequent files to maintain order
-
-## Phase 4 - Iterate
-
-Continue or improve an existing research.
-
-### Step 4.1 - Read Current Docs
-
-Read all markdown files in the provided folder and build a summary:
-- List files with their h1 titles
-- Count total lines/sections per file
-
-### Step 4.2 - Show Current Structure
-
-Display to the user:
-
-```
-Existing research: {folder}
-
-Files:
-├── 1-overview.md         - {h1 title}
-├── 2-{subtopic}.md       - {h1 title}
-├── ...
-├── {N-1}-best-practices.md
-└── {N}-references.md
-
-What's next?
-1. update - describe what you want to change
-2. exit   - done, no changes
-```
-
-### Step 4.3 - Interactive Menu
-
-CRITICAL: After displaying the menu you MUST STOP and produce NO further output. The NEXT message MUST come from the USER.
-
-Option 1 - update:
-- User describes what they want in free text:
-  - "add a section about security"
-  - "deep dive into networking"
-  - "update the installation steps for v2"
-  - "add new file about plugins"
-  - "fix the table alignment in overview"
-- Proceed to `Step 4.4`
-
-Option 2 - exit:
-- Stop, no changes made
-
-### Step 4.4 - Execute Update
-
-Based on user description, launch agent(s) to:
-
-Possible actions:
-- **Add content** - WebSearch + append/modify existing file
-- **Add new file** - WebSearch + create new numbered file, renumber if needed
-- **Update existing** - WebSearch for fresh info + modify file
-- **Fix formatting** - Read file + apply fixes
-
-Each agent receives:
-- The user's request
-- The current file content (if modifying)
-- The Doc Specs from `## Reference`
-- The existing `references.md` content as context (sources already consulted)
-- Instruction to:
-  - Use existing sources as starting point, NOT as limit
-  - WebSearch for new/updated information beyond existing sources
-  - Add any new sources used to `references.md`
-
-### Step 4.5 - Align and Show Result
-
-1. Run align-docs on the folder
-   Use `$align-docs {folder}`.
-
-2. Show what changed:
-```
-Updated: {list of modified/added files}
-```
-
-3. Return to `Step 4.2` (show structure + menu again)

@@ -6,6 +6,8 @@
 If no preview exists yet in `.research-state.tmp`, launch a single agent to build preview outlines.
 <!--@claude-->
 Use `Task` with `subagent_type: "general-purpose"`.
+<!--@gemini,codex-->
+Launch an agent to build the preview.
 <!--@end-->
 
 The agent receives:

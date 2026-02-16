@@ -22,15 +22,17 @@ folder: docs/research/{kebab-case-topic}
 Launch 2 agents in PARALLEL to discover relevant subtopics.
 <!--@claude-->
 Use `Task` with `subagent_type: "general-purpose"` and `run_in_background: true` for each agent.
+<!--@gemini,codex-->
+Launch background agents to research in parallel.
 <!--@end-->
 
 Agent 1 - Official Sources:
-- WebSearch for "{topic} official documentation 2026"
+- WebSearch for "{topic} official documentation"
 - WebSearch for "{topic} getting started guide"
 - Identify: main concepts, installation steps, core features
 
 Agent 2 - Community Sources:
-- WebSearch for "{topic} tutorial 2026"
+- WebSearch for "{topic} tutorial"
 - WebSearch for "{topic} best practices"
 - WebSearch for "{topic} common use cases examples"
 - Identify: practical subtopics, common patterns, tips
@@ -40,6 +42,8 @@ Each agent returns a bullet list of discovered subtopics with 1-line description
 Wait for both agents to complete.
 <!--@claude-->
 Use `TaskOutput(block=true)` to wait for each agent.
+<!--@gemini,codex-->
+Wait for all background agents to finish before proceeding.
 <!--@end-->
 
 ### Step 1.4 - Build Doc List

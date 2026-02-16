@@ -13,6 +13,8 @@ mkdir -p {folder}
 Launch one agent per doc file in PARALLEL.
 <!--@claude-->
 Use `Task` with `subagent_type: "general-purpose"` and `run_in_background: true` for each agent.
+<!--@gemini,codex-->
+Launch one background agent per file to generate content in parallel.
 <!--@end-->
 
 Each agent receives:
@@ -33,6 +35,8 @@ Doc writing rules (include in every agent prompt):
 Wait for all agents to complete.
 <!--@claude-->
 Use `TaskOutput(block=true)` to wait for each agent.
+<!--@gemini,codex-->
+Wait for all background agents to finish before proceeding.
 <!--@end-->
 
 ### Step 3.3 - Align Docs
@@ -58,5 +62,10 @@ Use `$align-docs {folder}`.
 ├── {N-1}-best-practices.md
 └── {N}-references.md
 
-Done! Generated {N} files. Review and adjust as needed.
+Generated {N} files.
 ```
+
+### Step 3.5 - Transition to Phase 4
+
+After generation completes, proceed to `## Phase 4` Step 4.2 to show the iterate menu.
+This allows the user to review and make adjustments immediately.
