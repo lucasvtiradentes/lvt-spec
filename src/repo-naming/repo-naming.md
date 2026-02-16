@@ -1,4 +1,16 @@
+<!--@only codex-->
+---
+name: repo-naming
+description: Generate GitHub repository names and/or descriptions following established naming conventions. Use when the user asks for help naming a repo, generating a repo description, or both. Do NOT use for renaming existing repos or updating GitHub settings.
+---
+<!--@end-->
+<!--@only claude-->
 You help the user generate GitHub repository names and/or descriptions following their established conventions.
+<!--@end-->
+<!--@only gemini-->
+description = "Generate GitHub repository names and/or descriptions following naming conventions"
+prompt = """
+<!--@end-->
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
@@ -8,7 +20,13 @@ You help the user generate GitHub repository names and/or descriptions following
 │ read args   │───>│ ask: name,  │───>│ read README │───>│ combine     │───>│ present     │
 │ or ask user │    │ desc, or    │    │ pkg.json,   │    │ args + repo │    │ options,    │
 │ to describe │    │ both?       │    │ structure,  │    │ data to id  │    │ wait for    │
+<!--@claude-->
 │             │    │             │    │ CLAUDE.md   │    │ core func   │    │ user choice │
+<!--@codex-->
+│             │    │             │    │ AGENTS.md   │    │ core func   │    │ user choice │
+<!--@gemini-->
+│             │    │             │    │ GEMINI.md   │    │ core func   │    │ user choice │
+<!--@end-->
 └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
 ```
 
@@ -16,9 +34,15 @@ You help the user generate GitHub repository names and/or descriptions following
 
 The user MUST provide a brief description of what the project does as argument. If the argument is empty, ask the user to describe the project and STOP.
 
+<!--@claude-->
 <arguments>
 #$ARGUMENTS
 </arguments>
+<!--@codex-->
+User input: $ARGUMENTS
+<!--@gemini-->
+User input: {{args}}
+<!--@end-->
 
 ## Naming Conventions
 
@@ -55,7 +79,11 @@ Read the user's argument. If empty, ask for a project description and STOP.
 
 ### Phase 1: Scope
 
+<!--@claude-->
 Ask the user what they need using AskUserQuestion:
+<!--@codex,gemini-->
+Ask the user what they need:
+<!--@end-->
 - Name only
 - Description only
 - Both (name + description)
@@ -68,7 +96,13 @@ Explore the current repo to understand what the project actually does. Read thes
 - README.md (or README) at repo root
 - package.json, pyproject.toml, Cargo.toml, go.mod, or equivalent manifest
 - Top-level folder structure (ls root)
+<!--@claude-->
 - CLAUDE.md if it exists
+<!--@codex-->
+- AGENTS.md if it exists
+<!--@gemini-->
+- GEMINI.md if it exists
+<!--@end-->
 
 Use this data together with the user's argument to build a complete picture.
 
@@ -125,4 +159,13 @@ If scope is "both":
 
 After presenting, STOP and ask which one they prefer, or if they want to mix-and-match parts from different options. The user may also ask for more options or tweaks.
 
+<!--@claude-->
 Do NOT run any commands or create anything — this is purely a suggestion tool.
+<!--@codex-->
+You may run read-only commands to inspect the repo (e.g., `ls`, `rg`, `cat`, `sed`) as part of Phase 2. Do not create or modify files.
+<!--@gemini-->
+You may run read-only commands to inspect the repo as part of Phase 2. Do not create or modify files.
+<!--@end-->
+<!--@only gemini-->
+"""
+<!--@end-->
