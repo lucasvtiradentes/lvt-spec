@@ -1,6 +1,6 @@
 ---
 name: research-topic
-description: Research a topic and create structured documentation. Use when the user wants to learn about a technology, tool, or concept. Creates docs/research/{topic}/ with numbered markdown files.
+description: Research a topic and create structured documentation, or iterate on existing research. Use when the user wants to learn about a technology, tool, or concept. Pass a topic name for new research or a folder path to update existing.
 ---
 
 ```
@@ -32,7 +32,7 @@ description: Research a topic and create structured documentation. Use when the 
 
 ## Output Structure
 
-The number of files is variable based on what discovery agents find. Typical range: 5-9 files.
+The number of files is variable based on what discovery agents find. Typical range: 5-8 files.
 
 ```
 docs/research/{topic-name}/
@@ -163,7 +163,7 @@ Wait for both agents to complete.
 
 ### Step 1.4 - Build Doc List
 
-Combine agent results and build a numbered doc list. Typical range: 4-8 files.
+Combine agent results and build a numbered doc list. Typical range: 5-8 files.
 
 Fixed positions:
 - `1-overview.md` - always first: what it is, installation, core concepts

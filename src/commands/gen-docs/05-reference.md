@@ -167,7 +167,9 @@ Rules:
 - Generate all docs unless the user skipped them in Step 1.3
 - The preview in `.docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
 - Phase 2 uses 3 agents for discovery (compact outlines). Phase 3 is delegated to a SINGLE orchestrator agent that internally launches up to 11 generation agents. The main agent NEVER launches 11 agents directly.
+- Phase 4 allows iterating on existing docs without regenerating everything
 <!--@claude-->
 - Phase 2 agents: `Task` with `subagent_type: "Explore"`, `run_in_background: true`, results via `TaskOutput(block=true)`. Phase 3 orchestrator: single `Task` with `subagent_type: "general-purpose"` (foreground), which internally launches generation `Task` agents in background.
+- Phase 4 agents: `Task` with `subagent_type: "general-purpose"`, targeted updates based on user request.
 <!--@end-->
 - Step 2.2 is done by the MAIN agent (combines 3 agent results into .docs-state.tmp).

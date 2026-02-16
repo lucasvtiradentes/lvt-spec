@@ -2,13 +2,25 @@
 ```
 ┌─────────────┐    ┌─────────────┐    ┌──────────────────────────────┐    ┌───────────────┐
 │ PHASE 0     │    │ PHASE 1     │    │  PHASE 2                     │    │ PHASE 3       │
-│ Resume      │    │ Setup       │    │  Preview Loop                │    │ Generate      │
+│ Route       │    │ Setup       │    │  Preview Loop                │    │ Generate      │
 │             │    │             │    │                              │    │               │
-│ read .tmp   │───>│ project     │───>│ 2.1 launch agents → scan     │───>│ write docs/   │
-│ resume or   │    │ type?       │    │ 2.2 build preview in .tmp    │    │ from approved │
-│ start fresh │    │ packages?   │    │ 2.3 show preview to user     │    │ preview       │
-│             │    │ skip docs?  │    │      <loop until "go">       │    │               │
-└─────────────┘    └─────────────┘    └──────────────────────────────┘    └───────────────┘
+│ .tmp exists?│───>│ project     │───>│ 2.1 launch agents → scan     │───>│ write docs/   │
+│ docs/ exists│    │ type?       │    │ 2.2 build preview in .tmp    │    │ from approved │
+│ or fresh?   │    │ packages?   │    │ 2.3 show preview to user     │    │ preview       │
+└──────┬──────┘    │ skip docs?  │    │      <loop until "go">       │    │               │
+       │           └─────────────┘    └──────────────────────────────┘    └───────────────┘
+       │
+       │ (if docs/ exists)
+       v
+┌─────────────────────────────────┐
+│ PHASE 4                         │
+│ Iterate                         │
+│                                 │
+│ show current docs               │
+│ menu: update / exit             │
+│ user describes changes          │
+│ agents update → align-docs      │
+└─────────────────────────────────┘
 ```
 
 ## Output Structure

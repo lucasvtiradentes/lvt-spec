@@ -12,7 +12,7 @@
   "gen-docs": {
     "namespace": "docs",
     "title": "Gen Docs",
-    "description": "Interactive, state-aware command that generates structured project documentation for AI context. Supports single repo and monorepo. Use when the user asks to generate or create project documentation. Do NOT use for editing existing docs."
+    "description": "Interactive, state-aware command that generates or updates structured project documentation for AI context. Supports single repo and monorepo. Use when the user asks to generate, create, or update project documentation."
   },
   "repo-naming": {
     "namespace": "gh",
