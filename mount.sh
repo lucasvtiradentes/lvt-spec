@@ -3,7 +3,7 @@ set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
 SRC="$REPO_ROOT/src/gen-docs"
-OUT="$REPO_ROOT/.claude/commands/gen-docs.md"
+OUT="$REPO_ROOT/.claude/commands/docs/gen-docs.md"
 
 cat \
   "$SRC/00-overview.md" \

@@ -289,6 +289,8 @@ Doc writing rules (include in every agent prompt):
 - Use ASCII diagrams generously. architecture.md should have multiple diagrams (request lifecycle, data flow, deploy topology, auth flow, etc.). Other docs should also include diagrams when they help explain flows or relationships.
 - ALLOWED box-drawing chars (single-width only): ─ │ ┌ ┐ └ ┘ ├ ┤ ┬ ┴ ┼ and arrows → ← ↑ ↓. FORBIDDEN: any double-width or special unicode chars (▶ ▷ ◆ ◇ ● ○ ■ □ ★ ☆ etc.) - these break monospace alignment.
 - No bold text, no emojis
+- Headers: `#` for page title (one per file), `##` for sections, `###` for subsections, no deeper - use bullet lists instead
+- File trees: use `├──`/`└──` with aligned inline descriptions after each entry
 - The preview bullets are the OUTLINE - expand each into proper documentation
 - overview.md MUST include a doc index listing all generated files with 1-line descriptions
 - EVERY .md file MUST end with a metadata section (see Metadata Format)
