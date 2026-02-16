@@ -1,4 +1,16 @@
-You help the user generate GitHub repository names and descriptions following their established naming conventions.
+You help the user generate GitHub repository names and/or descriptions following their established conventions.
+
+```
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│  PHASE 0    │    │  PHASE 1    │    │  PHASE 2    │    │  PHASE 3    │    │  PHASE 4    │
+│  Input      │    │  Scope      │    │  Scan Repo  │    │  Analyze    │    │  Suggest    │
+│             │    │             │    │             │    │             │    │             │
+│ read args   │───>│ ask: name,  │───>│ read README │───>│ combine     │───>│ present     │
+│ or ask user │    │ desc, or    │    │ pkg.json,   │    │ args + repo │    │ options,    │
+│ to describe │    │ both?       │    │ structure,  │    │ data to id  │    │ wait for    │
+│             │    │             │    │ CLAUDE.md   │    │ core func   │    │ user choice │
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+```
 
 ## Input
 
@@ -31,49 +43,84 @@ The user MUST provide a brief description of what the project does as argument. 
 - ominidocs: `📚 unified docs for humans and agents`
 - claude-code-scheduler: `🤖 automated claude code session runner for power users`
 - repositories-manager: `🔄 sync and manage your git repositories effortlessly`
-- site-tweaker: `🔧 chrome extension to customize any website with custom js scripts and css styles`
-- gcal-sync: `🔄 add an one way synchronization from github commits to google calendar and track your progress effortlessly`
-- dotfiles: `⚙️ my complete dotfiles for all-os`
-- dev-panel: `⚡ all-in-one command center for ai-assisted development`
-- sheet-cmd: `📈 manage Google Sheets from the command line`
-- chrome-cmd: `🌐 interact your Chrome browser from the command line`
-- linear-cmd: `⚡ a GitHub CLI-like tool for Linear.`
-- vault: `📝 personal obsidian vault for knowledge management`
 - md-align: `📏 Auto-fix alignment in markdown docs`
 
 ## Process
 
-### Step 1: Understand the project
+### Phase 0: Input
 
-Analyze the user's description to identify:
+Read the user's argument. If empty, ask for a project description and STOP.
+
+### Phase 1: Scope
+
+Ask the user what they need using AskUserQuestion:
+- Name only
+- Description only
+- Both (name + description)
+
+STOP and wait for the answer before proceeding.
+
+### Phase 2: Scan Repo
+
+Explore the current repo to understand what the project actually does. Read these in parallel:
+- README.md (or README) at repo root
+- package.json, pyproject.toml, Cargo.toml, go.mod, or equivalent manifest
+- Top-level folder structure (ls root)
+- CLAUDE.md if it exists
+
+Use this data together with the user's argument to build a complete picture.
+
+### Phase 3: Analyze
+
+Combine the user's description + repo scan to identify:
 - core functionality
 - target audience
 - key differentiator
 
-### Step 2: Generate options
+### Phase 4: Suggest
 
-Generate 3-5 name + description combos. For each:
-- pick a name that is memorable and searchable
-- pick an emoji that represents the core function
-- write a description that sells the project in one line
+Generate 3-5 options based on scope chosen in Phase 1.
 
-Present in this format:
+If scope is "name only":
 
 ```
-# Repo Naming Suggestions
+# Repo Name Suggestions
 
-1. **name-one**
-   📦 short description that explains the project
-
-2. **name-two**
-   🔧 alternative description angle
-
-3. **name-three**
-   ⚡ yet another take on it
+1. name-one
+2. name-two
+3. name-three
+4. name-four
+5. name-five
 ```
 
-### Step 3: Wait for user choice
+If scope is "description only":
 
-STOP and ask which one they prefer, or if they want to mix-and-match parts from different options. The user may also ask for more options or tweaks.
+```
+# Repo Description Suggestions
+
+1. 📦 short description that explains the project
+2. 🔧 alternative description angle
+3. ⚡ yet another take on it
+```
+
+If scope is "both":
+
+```
+# Repo Name Suggestions
+
+1. name-one
+2. name-two
+3. name-three
+4. name-four
+5. name-five
+
+# Repo Description Suggestions
+
+1. 📦 short description that explains the project
+2. 🔧 alternative description angle
+3. ⚡ yet another take on it
+```
+
+After presenting, STOP and ask which one they prefer, or if they want to mix-and-match parts from different options. The user may also ask for more options or tweaks.
 
 Do NOT run any commands or create anything — this is purely a suggestion tool.
