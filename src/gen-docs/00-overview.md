@@ -1,8 +1,8 @@
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌──────────────────────────────┐    ┌───────────────┐
-│  PHASE 0    │    │  PHASE 1    │    │  PHASE 2                     │    │  PHASE 3      │
-│  Resume     │    │  Setup      │    │  Preview Loop                │    │  Generate     │
+│ PHASE 0     │    │ PHASE 1     │    │  PHASE 2                     │    │ PHASE 3       │
+│ Resume      │    │ Setup       │    │  Preview Loop                │    │ Generate      │
 │             │    │             │    │                              │    │               │
 │ read .tmp   │───>│ project     │───>│ 2.1 launch agents → scan     │───>│ write docs/   │
 │ resume or   │    │ type?       │    │ 2.2 build preview in .tmp    │    │ from approved │
@@ -57,7 +57,7 @@ All docs are generated unless the user explicitly skips them in Step 1.3.
 | integrations   | integrations.md        | 3rd party service integrations         |
 | testing        | testing.md             | test frameworks, patterns, coverage    |
 | guides         | guides/                | how-to docs, recipes                   |
-| pkg-overview   | packages/{pkg}/overview | package entry point, stack, purpose    |
+| pkg-overview   | packages/{pkg}/overview| package entry point, stack, purpose    |
 
 ## Temp Files
 

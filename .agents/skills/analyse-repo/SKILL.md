@@ -16,11 +16,11 @@ description: Analyse a GitHub repository and create structured documentation abo
 3. Clone Repo: Clone the repo to a temp directory using `gh repo clone` or `git clone`. Use `--depth 1` for speed.
 
 4. Analyse with Agents: Launch parallel agents to analyse different aspects:
-   - Agent 1: Overview    - README, project purpose, features, core concepts, possible usages
-   - Agent 2: Technical   - tech stack, dependencies, installation, configuration
-   - Agent 3: Architecture - folder structure, entry points, design patterns, data flow, component relationships
+   - Agent 1: Overview      - README, project purpose, features, core concepts, possible usages
+   - Agent 2: Technical     - tech stack, dependencies, installation, configuration
+   - Agent 3: Architecture  - folder structure, entry points, design patterns, data flow, component relationships
    - Agent 4: Code Patterns - coding style, testing approach, CI/CD, conventions
-   - Agent 5: Usage        - how to use, examples from README/docs, common workflows
+   - Agent 5: Usage         - how to use, examples from README/docs, common workflows
 
    Each agent should read the actual source files in the cloned repo to extract accurate information. Do NOT rely on guessing.
 

@@ -8,7 +8,7 @@
 <!--@claude-->
 Use `AskUserQuestion`:
 - question: "What type of project is this?"
-- header: "Project type"
+- header:   "Project type"
 - options:
   - label: "Single Repo"
     description: "One language/concern, personal projects, libraries, single-service apps"

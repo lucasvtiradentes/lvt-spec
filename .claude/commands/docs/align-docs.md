@@ -3,15 +3,15 @@
 Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists). Use when the user asks to fix or check markdown alignment. Do NOT use for general markdown editing.
 
 ```
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│  PHASE 0     │    │  PHASE 1     │    │  PHASE 2     │    │  PHASE 3     │
-│  Preflight   │    │  Check       │    │  Auto-fix    │    │  Manual fix  │
-│              │    │              │    │              │    │              │
-│ mdalign      │───>│ mdalign      │───>│ mdalign      │───>│ read files   │
-│ installed?   │    │ check target │    │ --fix        │    │ fix remaining│
-│ ask to       │    │              │    │ target       │    │ re-run until │
-│ install      │    │              │    │              │    │ clean        │
-└──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌───────────────┐
+│ PHASE 0      │    │  PHASE 1     │    │ PHASE 2      │    │ PHASE 3       │
+│ Preflight    │    │  Check       │    │ Auto-fix     │    │ Manual fix    │
+│              │    │              │    │              │    │               │
+│ mdalign      │───>│ mdalign      │───>│ mdalign      │───>│ read files    │
+│ installed?   │    │ check target │    │ --fix        │    │ fix remaining │
+│ ask to       │    │              │    │ target       │    │ re-run until  │
+│ install      │    │              │    │              │    │ clean         │
+└──────────────┘    └──────────────┘    └──────────────┘    └───────────────┘
 ```
 
 ## Arguments

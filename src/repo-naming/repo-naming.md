@@ -1,18 +1,12 @@
 ```
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│  PHASE 0    │    │  PHASE 1    │    │  PHASE 2    │    │  PHASE 3    │    │  PHASE 4    │
-│  Input      │    │  Scope      │    │  Scan Repo  │    │  Analyze    │    │  Suggest    │
+│ PHASE 0     │    │ PHASE 1     │    │ PHASE 2     │    │ PHASE 3     │    │ PHASE 4     │
+│ Input       │    │ Scope       │    │ Scan Repo   │    │ Analyze     │    │ Suggest     │
 │             │    │             │    │             │    │             │    │             │
 │ read args   │───>│ ask: name,  │───>│ read README │───>│ combine     │───>│ present     │
 │ or ask user │    │ desc, or    │    │ pkg.json,   │    │ args + repo │    │ options,    │
 │ to describe │    │ both?       │    │ structure,  │    │ data to id  │    │ wait for    │
-<!--@claude-->
-│             │    │             │    │ CLAUDE.md   │    │ core func   │    │ user choice │
-<!--@codex-->
-│             │    │             │    │ AGENTS.md   │    │ core func   │    │ user choice │
-<!--@gemini-->
-│             │    │             │    │ GEMINI.md   │    │ core func   │    │ user choice │
-<!--@end-->
+│             │    │             │    │ etc         │    │ core func   │    │ user choice │
 └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
 ```
 
@@ -51,11 +45,11 @@ User input: {{args}}
 - suggestions must be in English
 
 ### Reference Examples
-- tscanner: `🔍 code quality scanner for the AI-generated code era`
-- ominidocs: `📚 unified docs for humans and agents`
+- tscanner:              `🔍 code quality scanner for the AI-generated code era`
+- ominidocs:             `📚 unified docs for humans and agents`
 - claude-code-scheduler: `🤖 automated claude code session runner for power users`
-- repositories-manager: `🔄 sync and manage your git repositories effortlessly`
-- md-align: `📏 Auto-fix alignment in markdown docs`
+- repositories-manager:  `🔄 sync and manage your git repositories effortlessly`
+- md-align:              `📏 Auto-fix alignment in markdown docs`
 
 ## Process
 
@@ -120,9 +114,9 @@ If scope is "description only":
 ```
 # Repo Description Suggestions
 
-1. 📦 short description that explains the project
-2. 🔧 alternative description angle
-3. ⚡ yet another take on it
+1. {emoji} short description that explains the project
+2. {emoji} alternative description angle
+3. {emoji} yet another take on it
 ```
 
 If scope is "both":
@@ -138,9 +132,9 @@ If scope is "both":
 
 # Repo Description Suggestions
 
-1. 📦 short description that explains the project
-2. 🔧 alternative description angle
-3. ⚡ yet another take on it
+1. {emoji} short description that explains the project
+2. {emoji} alternative description angle
+3. {emoji} yet another take on it
 ```
 
 After presenting, STOP and ask which one they prefer, or if they want to mix-and-match parts from different options. The user may also ask for more options or tweaks.

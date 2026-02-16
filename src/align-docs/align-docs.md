@@ -1,13 +1,13 @@
 ```
-┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
-│  PHASE 0     │    │  PHASE 1     │    │  PHASE 2     │    │  PHASE 3     │
-│  Preflight   │    │  Check       │    │  Auto-fix    │    │  Manual fix  │
-│              │    │              │    │              │    │              │
-│ mdalign      │───>│ mdalign      │───>│ mdalign      │───>│ read files   │
-│ installed?   │    │ check target │    │ --fix        │    │ fix remaining│
-│ ask to       │    │              │    │ target       │    │ re-run until │
-│ install      │    │              │    │              │    │ clean        │
-└──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌───────────────┐
+│ PHASE 0      │    │  PHASE 1     │    │ PHASE 2      │    │ PHASE 3       │
+│ Preflight    │    │  Check       │    │ Auto-fix     │    │ Manual fix    │
+│              │    │              │    │              │    │               │
+│ mdalign      │───>│ mdalign      │───>│ mdalign      │───>│ read files    │
+│ installed?   │    │ check target │    │ --fix        │    │ fix remaining │
+│ ask to       │    │              │    │ target       │    │ re-run until  │
+│ install      │    │              │    │              │    │ clean         │
+└──────────────┘    └──────────────┘    └──────────────┘    └───────────────┘
 ```
 
 ## Arguments
