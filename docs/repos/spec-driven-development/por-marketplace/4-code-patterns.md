@@ -75,13 +75,13 @@ Commands auto-chain to the next stage:
 
 All commands write to the `specs/` directory in the target project:
 - Full workflow: `specs/<feature_slug>/spec.md`, `architecture.md`, `contracts.md`, `plan.md`
-- Fast track: `specs/<task-name>.md` (single file)
+- Fast track:    `specs/<task-name>.md` (single file)
 
 ## Notable Patterns
 
-- Phased execution     - `/implement` supports `--ff` (autonomous) and `--phases` (stop-and-review) modes
-- Plan-as-code         - markdown plans serve as executable specifications with checkbox tracking
-- Parallelization      - tasks marked with `[P]` indicate safe parallel execution
-- MVP-first            - plans prioritize P1 user story as MVP with "STOP and VALIDATE" checkpoints
-- Model pinning        - only `discover` and `design` pin to `model: opus` via frontmatter
+- Phased execution       - `/implement` supports `--ff` (autonomous) and `--phases` (stop-and-review) modes
+- Plan-as-code           - markdown plans serve as executable specifications with checkbox tracking
+- Parallelization        - tasks marked with `[P]` indicate safe parallel execution
+- MVP-first              - plans prioritize P1 user story as MVP with "STOP and VALIDATE" checkpoints
+- Model pinning          - only `discover` and `design` pin to `model: opus` via frontmatter
 - Variable interpolation - `$ARGUMENTS` placeholder for user input injection

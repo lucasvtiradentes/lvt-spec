@@ -10,11 +10,11 @@ Type hints: mandatory, enforced by mypy strict mode with Pydantic plugin. Modern
 - `from __future__ import annotations` in 120+ source files
 
 Naming:
-- Classes: PascalCase (`CrewAIEventsBus`, `BaseAgent`, `TaskOutput`)
+- Classes:           PascalCase (`CrewAIEventsBus`, `BaseAgent`, `TaskOutput`)
 - Functions/methods: snake_case (`execute_task`, `kickoff_for_each`)
-- Private: single underscore prefix (`_execute_tasks`, `_cache_handler`)
-- Constants: UPPER_SNAKE_CASE (`MCP_CONNECTION_TIMEOUT`, `FINAL_ANSWER_ACTION`)
-- Enum members: lowercase (`Process.sequential`, `Process.hierarchical`)
+- Private:           single underscore prefix (`_execute_tasks`, `_cache_handler`)
+- Constants:         UPPER_SNAKE_CASE (`MCP_CONNECTION_TIMEOUT`, `FINAL_ANSWER_ACTION`)
+- Enum members:      lowercase (`Process.sequential`, `Process.hierarchical`)
 
 Imports: absolute only (relative imports banned), sorted by ruff isort with 2 blank lines after imports.
 
@@ -257,9 +257,9 @@ def key(self):
 ```
 
 Async duality - three levels:
-- `kickoff()` - synchronous
+- `kickoff()`       - synchronous
 - `kickoff_async()` - thread-wrapped (`asyncio.to_thread`)
-- `akickoff()` - native async
+- `akickoff()`      - native async
 
 Deep copy with remapping:
 ```python

@@ -82,11 +82,11 @@ The central Claude Code agent delegates specialized work to sub-agents. Each sub
 └───────┬──────────┬──────────┬──────────┬────────────┘
         |          |          |          |
         v          v          v          v
-┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────┐
-│  python  │ │  react   │ │   test   │ │   code   │
-│developer │ │developer │ │ engineer │ │ reviewer │
-│ (sonnet) │ │ (sonnet) │ │ (sonnet) │ │  (opus)  │
-└──────────┘ └──────────┘ └──────────┘ └──────────┘
+┌───────────┐ ┌───────────┐ ┌──────────┐ ┌──────────┐
+│  python   │ │  react    │ │ test     │ │   code   │
+│ developer │ │ developer │ │ engineer │ │ reviewer │
+│  (sonnet) │ │  (sonnet) │ │ (sonnet) │ │  (opus)  │
+└───────────┘ └───────────┘ └──────────┘ └──────────┘
 ```
 
 ### Pipeline / Chain Pattern
@@ -119,7 +119,7 @@ Metaspec gate-keeper and branch-metaspec-checker agents act as architectural gua
 ### Scoped Variants Pattern
 
 Several agents exist in two variants:
-- Global: analyzes entire codebase (`code-reviewer`, `test-planner`)
+- Global:        analyzes entire codebase (`code-reviewer`, `test-planner`)
 - Branch-scoped: analyzes only `git diff origin/main...HEAD` (`branch-code-reviewer`, `branch-test-planner`)
 
 ### Session State via Filesystem
@@ -153,7 +153,7 @@ Feature development state persists in `.claude/sessions/<feature_slug>/` with fi
 │                      AGENT LAYER (Specialists)                     │
 │                                                                    │
 │  ┌─────────────────┐ ┌──────────────────┐ ┌───────────────────┐    │
-│  │  Dev Agents     │ │  Review Agents   │ │ Analysis Agents   │    │
+│  │ Dev Agents      │ │ Review Agents    │ │ Analysis Agents   │    │
 │  │                 │ │                  │ │                   │    │
 │  │ python-dev      │ │ code-reviewer    │ │ test-planner      │    │
 │  │ react-dev       │ │ branch-reviewer  │ │ branch-test-plan  │    │
@@ -168,7 +168,7 @@ Feature development state persists in `.claude/sessions/<feature_slug>/` with fi
 │                     ARTIFACT LAYER (Outputs)                       │
 │                                                                    │
 │  ┌──────────────────┐  ┌──────────────┐  ┌──────────────────────┐  │
-│  │ Session Files    │  │  ai_docs/    │  │   Meta Specs         │  │
+│  │ Session Files    │  │  ai_docs/    │  │ Meta Specs           │  │
 │  │ context.md       │  │  stack.md    │  │ (External Docs)      │  │
 │  │ architecture.md  │  │  patterns.md │  │ Business context     │  │
 │  │ plan.md          │  │  features.md │  │ Strategic intent     │  │
@@ -291,19 +291,19 @@ User: /check <feature>
 
 ```
 Single-Repo:
-┌───────────────────────┐  ┌────────────────────┐  ┌─────────────┐
-│ /build-tech-docs      │->│ Technical docs     │->│             │
-└───────────────────────┘  └────────────────────┘  │             │
-                                                   │ /build-index│
-┌───────────────────────┐  ┌────────────────────┐  │             │
-│ /build-business-docs  │->│ Business docs      │->│             │
-└───────────────────────┘  └────────────────────┘  └─────────────┘
+┌───────────────────────┐  ┌────────────────────┐  ┌──────────────┐
+│ /build-tech-docs      │->│ Technical docs     │->│              │
+└───────────────────────┘  └────────────────────┘  │              │
+                                                   │ /build-index │
+┌───────────────────────┐  ┌────────────────────┐  │              │
+│ /build-business-docs  │->│ Business docs      │->│              │
+└───────────────────────┘  └────────────────────┘  └──────────────┘
 
 Multi-Repo:
-┌──────────────────┐     ┌──────────┐     ┌────────────────────┐
-│ /generate-docs   │---->│ ai_docs/ │---->│ /build-repo-summary│
-│ (per each repo)  │     │ per repo │     │ (per each repo)    │
-└──────────────────┘     └──────────┘     └─────────┬──────────┘
+┌──────────────────┐     ┌──────────┐     ┌─────────────────────┐
+│ /generate-docs   │---->│ ai_docs/ │---->│ /build-repo-summary │
+│ (per each repo)  │     │ per repo │     │ (per each repo)     │
+└──────────────────┘     └──────────┘     └─────────┬───────────┘
                                                     |
                                                     v
                                           ┌─────────────────────────┐
@@ -364,7 +364,7 @@ Main Orchestrator (Claude Code)
 └──────────────────────┘   └─────────────────────┘
 
 ┌──────────────────────────────────┐
-│ .claude/sessions/<feature>/      │
+│  .claude/sessions/<feature>/     │
 │                                  │
 │  context.md -----> /plan, /work  │
 │  architecture.md -> /plan, /work │

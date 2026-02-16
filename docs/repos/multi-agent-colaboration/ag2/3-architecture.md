@@ -242,7 +242,7 @@ User Code
     |  agent_a.initiate_chat(agent_b, message="Hello")
     v
 ┌─────────────────────┐
-│ initiate_chat()     │
+│   initiate_chat()   │
 │   prepare_chat()    │
 │   generate_init_msg │
 │   self.send()       │
@@ -275,8 +275,8 @@ User Code
          |
          v
 ┌─────────────────────┐
-│ _summarize_chat()   │
-│ return ChatResult   │
+│   _summarize_chat() │
+│   return ChatResult │
 │   chat_history      │
 │   summary           │
 │   cost              │
@@ -339,9 +339,9 @@ User Code
 │ │  └── config[N]   │   │
 │ │                  │   │
 │ │ create():        │   │
-│ │  try config[0]   │   │
-│ │  fallback [1]    │   │
-│ │  fallback [N]    │   │
+│ │ try config[0]    │   │
+│ │ fallback [1]     │   │
+│ │ fallback [N]     │   │
 │ └────────┬─────────┘   │
 │          |             │
 └──────────┼─────────────┘
@@ -350,10 +350,10 @@ User Code
     ┌──────┴──────────────────────────────────┐
     |                                          |
     v                                          v
-┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐
-│ OpenAI   │  │ Anthropic│  │ Gemini   │  │ Ollama   │
-│ client   │  │ client   │  │ client   │  │ client   │
-└──────────┘  └──────────┘  └──────────┘  └──────────┘
+┌──────────┐  ┌───────────┐  ┌──────────┐  ┌──────────┐
+│ OpenAI   │  │ Anthropic │  │ Gemini   │  │ Ollama   │
+│ client   │  │ client    │  │ client   │  │ client   │
+└──────────┘  └───────────┘  └──────────┘  └──────────┘
     ... and Bedrock, Cerebras, Cohere, Groq,
     Mistral, Together, OpenAI Responses ...
 ```
@@ -366,8 +366,8 @@ User Code
 │ (caller)         │          │ (executor)        │
 │                  │          │                   │
 │ LLM decides:     │          │ _function_map:    │
-│ "call tool X"    │          │   tool_x -> fn()  │
-│                  │          │   tool_y -> fn()  │
+│ "call tool X"    │          │ tool_x -> fn()    │
+│                  │          │ tool_y -> fn()    │
 └────────┬─────────┘          └───────┬───────────┘
          |                            |
          | 1. LLM returns             |
@@ -450,7 +450,7 @@ Key dependency directions:
 
 ```
 ┌──────────────────────────────────┐
-│ BaseEvent (Pydantic ABC)         │
+│   BaseEvent (Pydantic ABC)       │
 │   uuid: UUID                     │
 │   print(f) method                │
 └──────────┬───────────────────────┘
@@ -459,7 +459,7 @@ Key dependency directions:
            |
            v
 ┌──────────────────────────────────────────────────────────┐
-│ Wrapped Event                                            │
+│   Wrapped Event                                          │
 │   type: Literal["event_name"]  (discriminator field)     │
 │   content: EventClass                                    │
 └──────────────────────────────────────────────────────────┘
@@ -468,7 +468,7 @@ Events flow through IOStream:
 ┌───────────────┐     ┌───────────────┐     ┌──────────────────┐
 │ Agent action  │---->│ IOStream      │---->│ Consumer         │
 │ iostream.send │     │ (pluggable)   │     │ - IOConsole      │
-│  (Event)      │     │               │     │ - IOWebsockets   │
+│ (Event)       │     │               │     │ - IOWebsockets   │
 │               │     │               │     │ - AGUIStream     │
 │               │     │               │     │ - ThreadIOStream │
 └───────────────┘     └───────────────┘     └──────────────────┘
@@ -483,23 +483,23 @@ agent.run(message)
 ┌──────────────────────────────────────┐
 │ Creates ThreadIOStream               │
 │ Spawns background thread:            │
-│   initiate_chat() with ThreadIO      │
+│ initiate_chat() with ThreadIO        │
 │                                      │
 │ Returns RunResponse immediately      │
 └──────────┬───────────────────────────┘
            |
            v
-┌──────────────────────────────────────┐
-│ RunResponse                          │
-│   .events / __iter__  - iterate      │
-│   .result             - wait + get   │
-│   .is_complete        - check done   │
-│                                      │
-│ Powers:                              │
-│   - AG-UI (SSE streaming to frontend)│
-│   - A2A (expose as A2A server)       │
-│   - WebSocket UIs                    │
-└──────────────────────────────────────┘
+┌───────────────────────────────────────┐
+│   RunResponse                         │
+│   .events / __iter__  - iterate       │
+│   .result             - wait + get    │
+│   .is_complete        - check done    │
+│                                       │
+│   Powers:                             │
+│   - AG-UI (SSE streaming to frontend) │
+│   - A2A (expose as A2A server)        │
+│   - WebSocket UIs                     │
+└───────────────────────────────────────┘
 ```
 
 ## Code Execution Architecture
@@ -508,27 +508,27 @@ agent.run(message)
 ┌───────────────────────────────────────────────────┐
 │ ConversableAgent (code_execution_config enabled)  │
 │                                                   │
-│ generate_code_execution_reply()                   │
+│   generate_code_execution_reply()                 │
 │   |                                               │
 │   v                                               │
-│ CodeExtractor.extract_code_blocks(message)        │
+│   CodeExtractor.extract_code_blocks(message)      │
 │   (MarkdownCodeExtractor: parses ``` blocks)      │
 │   |                                               │
 │   v                                               │
-│ CodeExecutor.execute_code_blocks(blocks)          │
+│   CodeExecutor.execute_code_blocks(blocks)        │
 │   |                                               │
 │   v                                               │
-│ CodeResult(exit_code, output)                     │
+│   CodeResult(exit_code, output)                   │
 └───────────────────────────────────────────────────┘
 
 CodeExecutor implementations:
-┌──────────────────┐  ┌──────────────────┐  ┌──────────────────┐
-│ LocalCommandLine │  │ DockerCommandLine│  │ Jupyter          │
-│   subprocess.run │  │   Docker API     │  │   kernel gateway │
-│   temp files     │  │   bind mounts    │  │   rich output    │
-└──────────────────┘  └──────────────────┘  └──────────────────┘
-┌──────────────────┐  ┌────────────────────────────────────────┐
-│ YepCode          │  │ Remyx                                  │
-│   cloud API      │  │   remote Docker                        │
-└──────────────────┘  └────────────────────────────────────────┘
+┌──────────────────┐  ┌───────────────────┐  ┌──────────────────┐
+│ LocalCommandLine │  │ DockerCommandLine │  │   Jupyter        │
+│   subprocess.run │  │   Docker API      │  │   kernel gateway │
+│   temp files     │  │   bind mounts     │  │   rich output    │
+└──────────────────┘  └───────────────────┘  └──────────────────┘
+┌──────────────────┐  ┌─────────────────────────────────────────┐
+│ YepCode          │  │ Remyx                                   │
+│   cloud API      │  │   remote Docker                         │
+└──────────────────┘  └─────────────────────────────────────────┘
 ```

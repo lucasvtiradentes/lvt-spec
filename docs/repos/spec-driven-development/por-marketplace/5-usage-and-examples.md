@@ -57,10 +57,10 @@ Reads `spec.md`, researches libraries via WebSearch/Context7/Perplexity, analyze
 /plan
 ```
 Reads `spec.md` + `architecture.md`. Produces `plan.md` with phased tasks:
-- Phase 1: Setup (dependencies, config)
-- Phase 2: Foundational (core infrastructure)
-- Phase 3: User Story P1 (MVP)
-- Phase 4+: Additional user stories by priority
+- Phase 1:     Setup (dependencies, config)
+- Phase 2:     Foundational (core infrastructure)
+- Phase 3:     User Story P1 (MVP)
+- Phase 4+:    Additional user stories by priority
 - Final Phase: Polish (tests, docs)
 
 ```

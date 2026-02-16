@@ -27,7 +27,7 @@
 │  ┌────────────────┐  ┌──────────────────┐  ┌───────────────────────┐    │
 │  │ GraphExecutor  │  │ GraphManager     │  │ TopologyBuilder       │    │
 │  │ (strategy      │  │ (builds graph    │  │ (cycle detection,     │    │
-│  │  dispatch)     │  │  from config)    │  │  toposort, layers)    │    │
+│  │ dispatch)      │  │ from config)     │  │ toposort, layers)     │    │
 │  └───────┬────────┘  └──────────────────┘  └───────────────────────┘    │
 │          │                                                              │
 │  ┌───────┴──────────────────────────────────────────────────────┐       │
@@ -55,7 +55,7 @@
 │  │  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌────────────────┐    │    │
 │  │  │ Providers│  │ Memory   │  │ Thinking │  │ Tool Manager   │    │    │
 │  │  │ (OpenAI, │  │ (Simple, │  │ (Reflect,│  │ (Function,     │    │    │
-│  │  │  Gemini) │  │  File,   │  │  CoT)    │  │  MCP local,    │    │    │
+│  │  │ Gemini)  │  │  File,   │  │ CoT)     │  │  MCP local,    │    │    │
 │  │  │          │  │  Board)  │  │          │  │  MCP remote)   │    │    │
 │  │  └──────────┘  └──────────┘  └──────────┘  └────────────────┘    │    │
 │  └──────────────────────────────────────────────────────────────────┘    │
@@ -91,12 +91,12 @@
                     └────────┬────────┘
                              │
                              v
-                    ┌─────────────────┐
-                    │  load_config()  │
-                    │  parse YAML     │
-                    │  resolve ${VAR} │
-                    │  validate schema│
-                    └────────┬────────┘
+                    ┌──────────────────┐
+                    │  load_config()   │
+                    │  parse YAML      │
+                    │  resolve ${VAR}  │
+                    │  validate schema │
+                    └────────┬─────────┘
                              │
                              v
                     ┌─────────────────┐
@@ -122,12 +122,12 @@
             └────┬──────────┬──────────────┬───┘
                  │          │              │
                  v          v              v
-          ┌──────────┐ ┌────────┐  ┌────────────┐
-          │   DAG    │ │ Cycle  │  │  Majority  │
-          │ Executor │ │Executor│  │   Vote     │
-          └────┬─────┘ └───┬────┘  └────────────┘
-               │           │
-               v           v
+          ┌──────────┐ ┌──────────┐  ┌────────────┐
+          │   DAG    │ │  Cycle   │  │  Majority  │
+          │ Executor │ │ Executor │  │   Vote     │
+          └────┬─────┘ └────┬─────┘  └────────────┘
+               │            │
+               v            v
     ┌──────────────────────────────────┐
     │  For each layer / cycle round:   │
     │                                  │
@@ -341,14 +341,14 @@ Every extensible component uses a two-phase registration system:
 Applied to: node types, edge condition types, edge processor types, memory store types, thinking types, model providers.
 
 ```
-┌──────────────────────────────┐   ┌──────────────────────────────────┐
-│  schema_registry             │   │  runtime registry                │
-│                              │   │                                  │
-│  "agent"  ---> AgentConfig   │   │  "agent"  ---> AgentNodeExecutor │
-│  "human"  ---> HumanConfig   │   │  "human"  ---> HumanNodeExecutor │
-│  "python" ---> PythonConfig  │   │  "python" ---> PythonNodeExecutor│
-│  ...                         │   │  ...                             │
-└──────────────────────────────┘   └──────────────────────────────────┘
+┌──────────────────────────────┐   ┌───────────────────────────────────┐
+│  schema_registry             │   │  runtime registry                 │
+│                              │   │                                   │
+│  "agent"  ---> AgentConfig   │   │  "agent"  ---> AgentNodeExecutor  │
+│  "human"  ---> HumanConfig   │   │  "human"  ---> HumanNodeExecutor  │
+│  "python" ---> PythonConfig  │   │  "python" ---> PythonNodeExecutor │
+│  ...                         │   │  ...                              │
+└──────────────────────────────┘   └───────────────────────────────────┘
               ^                                  ^
               │                                  │
               └─────────── bootstrap ────────────┘
@@ -369,21 +369,21 @@ GraphExecutor
 
 ### Factory Pattern
 
-- NodeExecutorFactory.create_executors() - creates executor per node type from registry
-- MemoryFactory.create_memory() - creates memory store from config
-- ThinkingManagerFactory.get_thinking_manager() - creates thinking manager
+- NodeExecutorFactory.create_executors()                  - creates executor per node type from registry
+- MemoryFactory.create_memory()                           - creates memory store from config
+- ThinkingManagerFactory.get_thinking_manager()           - creates thinking manager
 - build_edge_condition_manager() / build_edge_processor() - factory functions
 
 ### Message Passing Model
 
 ```
-┌─────────┐   output    ┌──────┐   condition    ┌──────┐   input    ┌─────────┐
-│ Node A  │──────────-->│ Edge │──── check ───->│ Edge │──────────->│ Node B  │
-│         │  Message[]  │      │  (keyword/fn)  │      │  Message[] │         │
-│ input[] │             │      │                │      │            │ input[] │
-│output[] │             │      │   transform    │      │            │output[] │
-└─────────┘             │      │──── payload ──>│      │            └─────────┘
-                        └──────┘   (regex/fn)   └──────┘
+┌──────────┐   output    ┌──────┐   condition    ┌──────┐   input    ┌──────────┐
+│  Node A  │──────────-->│ Edge │──── check ───->│ Edge │──────────->│  Node B  │
+│          │  Message[]  │      │  (keyword/fn)  │      │  Message[] │          │
+│  input[] │             │      │                │      │            │  input[] │
+│ output[] │             │      │   transform    │      │            │ output[] │
+└──────────┘             │      │──── payload ──>│      │            └──────────┘
+                         └──────┘   (regex/fn)   └──────┘
 ```
 
 ## Module Dependency Graph
@@ -416,16 +416,16 @@ check/ (validation)
   ┌───┐     ┌───┐                ┌─────────────────────┐
   │ A │────>│ B │──┐             │   Super-Node SCC1   │
   └───┘     └───┘  │             │  ┌───┐    ┌───┐     │
-    ^         │    │             │  │ B │--->│ C │     │
-    │         v    v             │  └───┘    └───┘     │
-    │       ┌───┐  │             │    ^        │       │
-    │       │ C │──┘             │    │        │       │
+    ^       │      │             │  │ B │--->│ C │     │
+    │       v      v             │  └───┘    └───┘     │
+    │       ┌───┐  │             │  ^          │       │
+    │       │ C │──┘             │  │          │       │
     │       └───┘                │  ┌───┐      │       │
-    │         │                  │  │ D │<─────┘       │
-    └─────────┘                  └────┬────────────────┘
-                                      │
-  Nodes B,C,D form an SCC       ┌───┐ │
-  A is outside the cycle        │ A │─┘
+    │       │                    │  │ D │<─────┘       │
+    └───────┘                    └──────┬──────────────┘
+                                        │
+  Nodes B,C,D form an SCC       ┌───┐   │
+  A is outside the cycle        │ A │───┘
                                 └───┘ 
 
   Step 3: Execute cycle repeatedly until exit condition

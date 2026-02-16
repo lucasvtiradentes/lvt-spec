@@ -43,7 +43,7 @@
         │                  │
         v                  v
 ┌───────────────┐   ┌──────────────────────────────────────────┐
-│   LLM Layer   │   │            Tool System                   │
+│  LLM Layer    │   │            Tool System                   │
 │  llm.py       │   │  tools/base_tool.py                      │
 │  llms/        │   │  70+ built-in (crewai-tools)             │
 │  providers/   │   │  @tool decorator                         │
@@ -243,23 +243,23 @@ lib/crewai/src/crewai/
 crew.kickoff(inputs={"topic": "AI"})
          │
          v
-┌────────────────────────────────┐
-│  1. prepare_kickoff()          │
-│  - Emit CrewKickoffStartedEvent│
-│  - Run before_kickoff_callbacks│
-│  - Interpolate {topic} in all  │
-│    task descriptions/agents    │
-│  - Setup agents (create        │
-│    executors, assign knowledge)│
-│  - Run planning if enabled     │
-└────────┬───────────────────────┘
+┌─────────────────────────────────┐
+│  1. prepare_kickoff()           │
+│  - Emit CrewKickoffStartedEvent │
+│  - Run before_kickoff_callbacks │
+│  - Interpolate {topic} in all   │
+│  task descriptions/agents       │
+│  - Setup agents (create         │
+│  executors, assign knowledge)   │
+│  - Run planning if enabled      │
+└────────┬────────────────────────┘
          │
          v
 ┌────────────────────────────────┐
 │  2. Process Selection          │
 │  sequential: _execute_tasks()  │
 │  hierarchical: create manager  │
-│    then _execute_tasks()       │
+│  then _execute_tasks()         │
 └────────┬───────────────────────┘
          │
          v (for each task)
@@ -301,15 +301,15 @@ crew.kickoff(inputs={"topic": "AI"})
          │
          v
 ┌────────────────────────────────────────────────────────────┐
-│  5. Executor Loop (2 modes)                                │
+│    5. Executor Loop (2 modes)                              │
 │                                                            │
-│  Native Function Calling (when LLM supports it):           │
+│    Native Function Calling (when LLM supports it):         │
 │    - Convert tools to OpenAI schema                        │
 │    - LLM returns structured tool_calls                     │
 │    - Execute ONE tool at a time (with reflection)          │
 │    - Loop until LLM returns text (final answer)            │
 │                                                            │
-│  ReAct Text Pattern (fallback):                            │
+│    ReAct Text Pattern (fallback):                          │
 │    - Tools described in prompt text                        │
 │    - LLM outputs: Thought/Action/Action Input              │
 │    - Or: Thought/Final Answer                              │
@@ -327,7 +327,7 @@ crew.kickoff(inputs={"topic": "AI"})
 │  - Run after_kickoff_callbacks                             │
 │  - Emit CrewKickoffCompletedEvent                          │
 │  - Return CrewOutput(raw, pydantic, json_dict,             │
-│    tasks_output, token_usage)                              │
+│  tasks_output, token_usage)                                │
 └────────────────────────────────────────────────────────────┘
 ```
 
@@ -389,13 +389,13 @@ LLM.call(messages, tools)
        └── (anything else) ─────────> _call_litellm()
                │
                v
-       ┌───────────────────────┐
-       │  Emit events:         │
-       │  LLMCallStartedEvent  │
-       │  LLMStreamChunkEvent  │
-       │  LLMCallCompletedEvent│
-       │  LLMCallFailedEvent   │
-       └───────────────────────┘
+       ┌────────────────────────┐
+       │  Emit events:          │
+       │  LLMCallStartedEvent   │
+       │  LLMStreamChunkEvent   │
+       │  LLMCallCompletedEvent │
+       │  LLMCallFailedEvent    │
+       └────────────────────────┘
 ```
 
 ## Memory Architecture
@@ -410,8 +410,8 @@ LLM.call(messages, tools)
         │          │          │          │
         v          v          v          v
 ┌────────────┐ ┌────────────┐ ┌───────────┐ ┌───────────────┐
-│ Short-Term │ │ Long-Term  │ │  Entity   │ │   External    │
-│  Memory    │ │  Memory    │ │  Memory   │ │   Memory      │
+│ Short-Term │ │ Long-Term  │ │ Entity    │ │   External    │
+│ Memory     │ │ Memory     │ │ Memory    │ │   Memory      │
 │            │ │            │ │           │ │               │
 │ ChromaDB   │ │ SQLite3    │ │ ChromaDB  │ │ User-provided │
 │ RAG search │ │ Task-based │ │ Entity    │ │ Storage impl  │
@@ -422,10 +422,10 @@ LLM.call(messages, tools)
 ## Knowledge Architecture
 
 ```
-┌────────────────────────────────────────────────┐
-│                  Knowledge                     │
-│  query(queries, results_limit, score_threshold)│
-└────────┬───────────────────────────────────────┘
+┌─────────────────────────────────────────────────┐
+│                  Knowledge                      │
+│  query(queries, results_limit, score_threshold) │
+└────────┬────────────────────────────────────────┘
          │
          v
 ┌────────────────────────────────────────────────┐
@@ -491,16 +491,16 @@ LLM.call(messages, tools)
    ┌──────────┐    ┌──────────┐    ┌──────────┐    ┌─────────┐
    │   Crew   │    │  Agent   │    │   Task   │    │   Flow  │
    │ crew.py  │    │ agent/   │    │ task.py  │    │ flow/   │
-   └────┬─────┘    └────┬─────┘    └────┬─────┘    └────┬────┘
-        │               │               │               │
-   ┌────┴────┐     ┌────┴────┐     ┌────┴────┐          │
-   │ crews/  │     │ agents/ │     │ tasks/  │          │
-   │ utils   │     │executor │     │cond_task│          │
-   │ output  │     │parser   │     │output   │          │
-   └────┬────┘     │base_agt │     │guardrail│          │
-        │          └────┬────┘     └────┬────┘          │
-        │               │               │               │
-   ┌────┴───────────────┴───────────────┴───────────────┴────┐
+   └────┬─────┘    └─────┬────┘    └────┬─────┘    └────┬────┘
+        │                │              │               │
+   ┌────┴────┐     ┌─────┴────┐     ┌─────┴─────┐       │
+   │ crews/  │     │ agents/  │     │ tasks/    │       │
+   │ utils   │     │ executor │     │ cond_task │       │
+   │ output  │     │ parser   │     │ output    │       │
+   └────┬────┘     │ base_agt │     │ guardrail │       │
+        │          └─────┬────┘     └─────┬─────┘       │
+        │                │              │               │
+   ┌────┴────────────────┴──────────────┴───────────────┴────┐
    │                 Shared Infrastructure                   │
    ├─────────────────────────────────────────────────────────┤
    │  events/    - event bus, 40+ event types, listeners     │

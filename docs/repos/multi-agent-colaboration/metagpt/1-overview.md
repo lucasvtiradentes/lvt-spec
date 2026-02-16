@@ -35,21 +35,21 @@ Developed by DeepWisdom (authored by Alexander Wu), backed by peer-reviewed rese
 
 ## Core Concepts
 
-- Role       - the fundamental agent building block; has name, profile, goal, constraints, and a set of Actions; observes messages, thinks, and acts
-- RoleZero   - advanced dynamic base role with broader toolset (Editor, Browser, Terminal), tool recommendation, experience retrieval
-- Action     - atomic unit of work; has a name, LLM, and run() method; can use ActionNodes for structured output
-- ActionNode - structured output schema definition; generates Pydantic model classes from schemas for LLM output extraction
+- Role        - the fundamental agent building block; has name, profile, goal, constraints, and a set of Actions; observes messages, thinks, and acts
+- RoleZero    - advanced dynamic base role with broader toolset (Editor, Browser, Terminal), tool recommendation, experience retrieval
+- Action      - atomic unit of work; has a name, LLM, and run() method; can use ActionNodes for structured output
+- ActionNode  - structured output schema definition; generates Pydantic model classes from schemas for LLM output extraction
 - Environment - shared space where roles live and communicate; hosts roles, maintains address mapping, runs roles concurrently
-- MGXEnv     - default environment with TeamLeader as message router; supports direct chat and public/private modes
-- Message    - communication primitive carrying content, routing metadata (sent_from, send_to, cause_by), and role field
-- Team       - top-level orchestrator; has an Environment, hires Roles, manages budget, runs project through rounds
-- Context    - global config and state container holding Config, CostManager, and shared state
-- Memory     - stores messages with action-based indexing; LongTermMemory adds persistent storage with similarity-based dedup
-- Plan/Task  - plan is a sequence of tasks toward a goal; tasks have dependencies and are topologically sorted
+- MGXEnv      - default environment with TeamLeader as message router; supports direct chat and public/private modes
+- Message     - communication primitive carrying content, routing metadata (sent_from, send_to, cause_by), and role field
+- Team        - top-level orchestrator; has an Environment, hires Roles, manages budget, runs project through rounds
+- Context     - global config and state container holding Config, CostManager, and shared state
+- Memory      - stores messages with action-based indexing; LongTermMemory adds persistent storage with similarity-based dedup
+- Plan/Task   - plan is a sequence of tasks toward a goal; tasks have dependencies and are topologically sorted
 
 ## Possible Usages
 
-- Software Development       - generate entire projects from a one-line requirement, incremental development, automated code review/testing/debugging
+- Software Development        - generate entire projects from a one-line requirement, incremental development, automated code review/testing/debugging
 - Data Science and Analysis   - automated EDA with DataInterpreter, ML pipelines, interactive data analysis in notebook style
 - Research                    - automated web research with Researcher role, competitive analysis, market research
 - Content Generation          - tutorial writing, novel writing, teaching plan generation
@@ -61,15 +61,15 @@ Developed by DeepWisdom (authored by Alexander Wu), backed by peer-reviewed rese
 
 ## How It Differs From Other Frameworks
 
-- SOP-driven design             - explicitly models Standard Operating Procedures rather than generic agent loops, reducing hallucination
-- Multi-role specialization     - assigns specialized roles with domain-specific prompts/actions/constraints instead of interchangeable agents
+- SOP-driven design              - explicitly models Standard Operating Procedures rather than generic agent loops, reducing hallucination
+- Multi-role specialization      - assigns specialized roles with domain-specific prompts/actions/constraints instead of interchangeable agents
 - Structured artifact production - produces intermediate artifacts (PRDs, system designs, task lists) before generating code
-- Message-based pub/sub         - roles communicate through a structured Environment with explicit routing, not free-form chains
-- Built-in software engineering - deep git integration, project repo structures, code review, testing lifecycle
-- Human-in-the-loop             - supports human review at plan, task, and code levels; HumanProvider allows human to act as LLM
-- Budget and cost management    - built-in CostManager with configurable budget; stops execution when exceeded
-- Academic rigor                - backed by ICLR publications, implements ReAct, Tree of Thought, Plan-and-Act
-- Dynamic orchestration (MGX)   - TeamLeader dynamically delegates tasks to specialized roles
+- Message-based pub/sub          - roles communicate through a structured Environment with explicit routing, not free-form chains
+- Built-in software engineering  - deep git integration, project repo structures, code review, testing lifecycle
+- Human-in-the-loop              - supports human review at plan, task, and code levels; HumanProvider allows human to act as LLM
+- Budget and cost management     - built-in CostManager with configurable budget; stops execution when exceeded
+- Academic rigor                 - backed by ICLR publications, implements ReAct, Tree of Thought, Plan-and-Act
+- Dynamic orchestration (MGX)    - TeamLeader dynamically delegates tasks to specialized roles
 
 ## Target Audience
 

@@ -22,7 +22,7 @@ Type Hints:
 
 Python Version:
 - Requires 3.12+ (strict: `>=3.12,<3.13`)
-- Uses modern syntax: `X | None`, `@dataclass(slots=True)`
+- Uses modern syntax:     `X | None`, `@dataclass(slots=True)`
 
 Docstrings:
 - Module-level docstrings on most files (triple-quote, short description)

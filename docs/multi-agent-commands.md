@@ -10,15 +10,15 @@ src/
 ├── <command>/
 │   └── <command>.md           single-file source with agent tags
 └── <command>/
-    ├── 00-section.md          split source (concat alphabetically)
-    ├── 01-section.md
-    └── _generated.md          auto-generated intermediate (gitignored)
+├── 00-section.md          split source (concat alphabetically)    
+├── 01-section.md    
+└── _generated.md          auto-generated intermediate (gitignored)    
 
      scripts/build.sh
             │
             v
 ┌──────────────────┐     ┌──────────────────┐
-│  src/config.json │────>│  src/<command>/   │
+│  src/config.json │────>│  src/<command>/  │
 │  (routing)       │     │  (source files)  │
 └──────────────────┘     └────┬─────┬─────┬─┘
                               │     │     │
@@ -57,12 +57,12 @@ All commands are registered in `src/config.json`:
 }
 ```
 
-| Field         | Required | Default                       | Description                                   |
-|---------------|----------|-------------------------------|-----------------------------------------------|
-| `namespace`   | yes      | -                             | output subdirectory (gh, docs, research)      |
-| `title`       | yes      | -                             | command title (used in claude h1)             |
-| `description` | yes      | -                             | command description (all agents), include usage hints (when to use, when NOT to use) |
-| `agents`      | no       | `["claude","codex","gemini"]` | which agents to build for                     |
+| Field         | Required | Default                       | Description                                                                         |
+|---------------|----------|-------------------------------|-------------------------------------------------------------------------------------|
+| `namespace`   | yes      | -                             | output subdirectory (gh, docs, research)                                            |
+| `title`       | yes      | -                             | command title (used in claude h1)                                                   |
+| `description` | yes      | -                             | command description (all agents), include usage hints (when to use, when NOT to use)|
+| `agents`      | no       | `["claude","codex","gemini"]` | which agents to build for                                                           |
 
 ## Auto-generated headers and footers
 
@@ -71,8 +71,8 @@ The build script prepends/appends the correct format per agent using config meta
 | Agent  | Header                                       | Footer |
 |--------|----------------------------------------------|--------|
 | claude | `# {title}\n\n{description}`                 | -      |
-| codex  | `---\nname: {name}\ndescription: {desc}\n---` | -      |
-| gemini | `description = "{desc}"\nprompt = """`        | `"""`  |
+| codex  | `---\nname: {name}\ndescription: {desc}\n---`| -      |
+| gemini | `description = "{desc}"\nprompt = """`       | `"""`  |
 
 Source files should NOT include these - they are injected automatically.
 
@@ -186,20 +186,20 @@ Lines without any tag are shared and appear in every output.
 
 ## CLI-specific differences to handle
 
-| Concern      | Claude Code                          | Codex CLI                  | Gemini CLI                 |
-|--------------|--------------------------------------|----------------------------|----------------------------|
-| arguments    | `<arguments>#$ARGUMENTS</arguments>` | `$ARGUMENTS`               | `{{args}}`                 |
-| config file  | CLAUDE.md                            | AGENTS.md                  | GEMINI.md                  |
-| tool ref     | AskUserQuestion                      | generic "ask the user"     | generic "ask the user"     |
-| agent launch | Task (subagent_type, run_in_background) | generic "launch agent"  | generic "launch agent"     |
-| agent wait   | TaskOutput(block=true)               | generic "wait for agent"   | generic "wait for agent"   |
-| permissions  | read-only by default                 | can run read-only commands | can run read-only commands |
+| Concern      | Claude Code                            | Codex CLI                  | Gemini CLI                 |
+|--------------|----------------------------------------|----------------------------|----------------------------|
+| arguments    | `<arguments>#$ARGUMENTS</arguments>`   | `$ARGUMENTS`               | `{{args}}`                 |
+| config file  | CLAUDE.md                              | AGENTS.md                  | GEMINI.md                  |
+| tool ref     | AskUserQuestion                        | generic "ask the user"     | generic "ask the user"     |
+| agent launch | Task (subagent_type, run_in_background)| generic "launch agent"     | generic "launch agent"     |
+| agent wait   | TaskOutput(block=true)                 | generic "wait for agent"   | generic "wait for agent"   |
+| permissions  | read-only by default                   | can run read-only commands | can run read-only commands |
 
 ## Current commands
 
-| Command       | Namespace  | Source format | Tags |
-|---------------|------------|---------------|------|
-| align-docs    | docs       | single-file   | yes  |
-| analyse-repo  | research   | single-file   | yes  |
-| gen-docs      | docs       | split (6 files) | yes |
-| repo-naming   | gh         | single-file   | yes  |
+| Command       | Namespace  | Source format  | Tags |
+|---------------|------------|----------------|------|
+| align-docs    | docs       | single-file    | yes  |
+| analyse-repo  | research   | single-file    | yes  |
+| gen-docs      | docs       | split (6 files)| yes  |
+| repo-naming   | gh         | single-file    | yes  |

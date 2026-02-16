@@ -128,9 +128,9 @@ Rules:
   cancel    reschedule     complete
     │            │              │
     v            v              v
-┌─────────┐ ┌────────────┐ ┌───────────┐
-│canceled │ │rescheduled │ │ completed │
-└─────────┘ └────────────┘ └───────────┘
+┌──────────┐ ┌─────────────┐ ┌───────────┐
+│ canceled │ │ rescheduled │ │ completed │
+└──────────┘ └─────────────┘ └───────────┘
 ```
 
 ### Entity relationships

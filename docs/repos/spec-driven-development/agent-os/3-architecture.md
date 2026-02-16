@@ -63,8 +63,8 @@ Three primary interaction methods:
 
 ```
 ┌───────────────┐   ┌───────────────┐   ┌───────────────────────┐
-│   Commands    │   │   Profiles    │   │      Scripts          │
-│  (markdown)   │   │  (standards)  │   │      (bash)           │
+│ Commands      │   │ Profiles      │   │      Scripts          │
+│ (markdown)    │   │ (standards)   │   │      (bash)           │
 │               │   │               │   │                       │
 │ discover      │   │ default/      │   │ project-install.sh    │
 │ index         │   │ profile-a/    │   │ sync-to-profile.sh    │
@@ -123,13 +123,13 @@ Later profiles override earlier ones. Circular dependencies detected and rejecte
 ## Standards Injection Flow
 
 ```
-┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
-│ User invokes     │---->│ Detect scenario  │---->│ Read index.yml   │
-│ /inject-standards│     │ (convo/skill/    │     │ Match against    │
-│                  │     │  plan)           │     │ current context  │
-└──────────────────┘     └──────────────────┘     └────────┬─────────┘
-                                                           │
-                                                           v
+┌───────────────────┐     ┌──────────────────┐     ┌──────────────────┐
+│ User invokes      │---->│ Detect scenario  │---->│ Read index.yml   │
+│ /inject-standards │     │ (convo/skill/    │     │ Match against    │
+│                   │     │ plan)            │     │ current context  │
+└───────────────────┘     └──────────────────┘     └────────┬─────────┘
+                                                            │
+                                                            v
                          ┌──────────────────┐     ┌──────────────────┐
                          │ Format output    │<----│ User confirms    │
                          │ per scenario     │     │ selection        │
@@ -137,11 +137,11 @@ Later profiles override earlier ones. Circular dependencies detected and rejecte
                                   │
                     ┌─────────────┼─────────────┐
                     v             v             v 
-             ┌───────────┐ ┌───────────┐ ┌────────────┐
-             │ Convo:    │ │ Skill:    │ │ Plan:      │
-             │ full text │ │ file refs │ │ file refs  │
-             │ in chat   │ │ or content│ │ or content │
-             └───────────┘ └───────────┘ └────────────┘
+             ┌───────────┐ ┌────────────┐ ┌────────────┐
+             │ Convo:    │ │ Skill:     │ │ Plan:      │
+             │ full text │ │ file refs  │ │ file refs  │
+             │ in chat   │ │ or content │ │ or content │
+             └───────────┘ └────────────┘ └────────────┘
 ```
 
 ## Installation Flow
@@ -157,7 +157,7 @@ Later profiles override earlier ones. Circular dependencies detected and rejecte
 ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
 │ Install commands │<----│ Generate         │<----│ Copy standards   │
 │ to .claude/      │     │ index.yml        │     │ (base first,     │
-│ commands/        │     │                  │     │  overrides next) │
+│ commands/        │     │                  │     │ overrides next)  │
 └──────────────────┘     └──────────────────┘     └──────────────────┘
 ```
 
@@ -182,7 +182,7 @@ Later profiles override earlier ones. Circular dependencies detected and rejecte
 ┌──────────────────┐     ┌──────────────────┐     ┌──────────────────┐
 │ User enters      │---->│ /shape-spec      │---->│ Clarify scope    │
 │ plan mode        │     │ (validates plan  │     │ Gather visuals   │
-│                  │     │  mode active)    │     │ Find references  │
+│                  │     │ mode active)     │     │ Find references  │
 └──────────────────┘     └──────────────────┘     └────────┬─────────┘
                                                            │
                                                            v

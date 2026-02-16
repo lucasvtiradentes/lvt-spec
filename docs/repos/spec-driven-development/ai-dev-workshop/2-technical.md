@@ -95,7 +95,7 @@ color: green | red | blue | cyan
 ```
 
 Model selection:
-- `opus` - review and analysis tasks (higher reasoning)
+- `opus`   - review and analysis tasks (higher reasoning)
 - `sonnet` - development and research tasks (faster, cheaper)
 
 ### .gitignore

@@ -86,8 +86,8 @@ class SenderRequiredError(Exception):
 Tests mirror source structure: `test/agentchat/`, `test/tools/`, `test/oai/`, etc.
 
 Two styles coexist:
-- Functional: `def test_conversable_agent_name(...)`
-- Class-based: `class TestTool:` with `@pytest.fixture(autouse=True)`
+- Functional:         `def test_conversable_agent_name(...)`
+- Class-based:        `class TestTool:` with `@pytest.fixture(autouse=True)`
 - Parametrized tests: `@pytest.mark.parametrize("name", [...])`
 
 ### Fixtures (conftest.py)

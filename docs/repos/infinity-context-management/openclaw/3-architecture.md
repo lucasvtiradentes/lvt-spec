@@ -7,14 +7,14 @@ OpenClaw is a multi-layer system: a central Gateway process manages all communic
 ```
 ┌──────────────────────────────────────────────────────────────────┐
 │                        User Devices                              │
-│  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────────────┐      │
-│  │ macOS   │  │  iOS    │  │ Android │  │ Browser (Lit UI)│      │
-│  │ Menu Bar│  │  App    │  │  App    │  │ Control UI      │      │
-│  └────┬────┘  └────┬────┘  └────┬────┘  └───────┬─────────┘      │
-│       │            │            │               │                │
-└───────┼────────────┼────────────┼───────────────┼────────────────┘
-        │            │            │               │ 
-        v            v            v               v 
+│  ┌──────────┐  ┌─────────┐  ┌─────────┐  ┌──────────────────┐    │
+│  │ macOS    │  │  iOS    │  │ Android │  │ Browser (Lit UI) │    │
+│  │ Menu Bar │  │  App    │  │  App    │  │ Control UI       │    │
+│  └────┬─────┘  └────┬────┘  └────┬────┘  └───────┬──────────┘    │
+│       │             │            │               │               │
+└───────┼─────────────┼────────────┼───────────────┼───────────────┘
+        │             │            │               │
+        v             v            v               v
    ┌────────────────────────────────────────────────────┐
    │              Gateway (WebSocket + HTTP)            │
    │                  Port 18789                        │
@@ -34,7 +34,7 @@ OpenClaw is a multi-layer system: a central Gateway process manages all communic
             │                               │ 
             v                               v 
    ┌─────────────────┐    ┌──────────────────────────────────────────┐
-   │  LLM Providers  │    │          Messaging Platforms             │
+   │ LLM Providers   │    │          Messaging Platforms             │
    │                 │    │                                          │
    │ - Anthropic     │    │ - WhatsApp    - Telegram   - Slack       │
    │ - OpenAI        │    │ - Discord     - Signal     - Teams       │
@@ -172,15 +172,15 @@ openclaw/
 ## Message Flow (Inbound)
 
 ```
-┌──────────┐     ┌──────────────┐     ┌───────────────┐
-│ Messaging│     │   Channel    │     │   Pairing /   │
-│ Platform │---->│   Adapter    │---->│   Allowlist   │
-│ (e.g. WA)│     │   (monitor)  │     │   Check       │
-└──────────┘     └──────────────┘     └───────┬───────┘
-                                              │
+┌───────────┐     ┌──────────────┐     ┌───────────────┐
+│ Messaging │     │   Channel    │     │   Pairing /   │
+│ Platform  │---->│   Adapter    │---->│   Allowlist   │
+│ (e.g. WA) │     │   (monitor)  │     │   Check       │
+└───────────┘     └──────────────┘     └───────┬───────┘
+                                               │
                                      ┌────────v────────┐
-                                     │   Auto-Reply    │
-                                     │   Dispatch      │
+                                     │ Auto-Reply      │
+                                     │ Dispatch        │
                                      │                 │
                                      │ - finalize ctx  │
                                      │ - extract tags  │
@@ -196,8 +196,8 @@ openclaw/
                                      └────────┬────────┘
                                               │
                                      ┌────────v────────┐
-                                     │   Pi Agent      │
-                                     │   Runtime       │
+                                     │ Pi Agent        │
+                                     │ Runtime         │
                                      │                 │
                                      │ - LLM call      │
                                      │ - tool exec     │
@@ -222,34 +222,34 @@ openclaw/
 ## Channel Plugin Architecture
 
 ```
-┌─────────────────────────────────────────────────────┐
-│                 ChannelPlugin Interface             │
-│                                                     │
-│  id: ChannelId                                      │
-│  meta: ChannelMeta                                  │
-│  capabilities: ChannelCapabilities                  │
-│                                                     │
-│  ┌──────────────────┐  ┌────────────────────────┐   │
-│  │ ConfigAdapter    │  │ MessagingAdapter       │   │
-│  │ - resolveAccount │  │ - send                 │   │
-│  │ - getConfig      │  │ - sendMedia            │   │
-│  └──────────────────┘  └────────────────────────┘   │
-│                                                     │
-│  ┌──────────────────┐  ┌────────────────────────┐   │
-│  │ SetupAdapter     │  │ SecurityAdapter        │   │
-│  │ - setup          │  │ - getDmPolicy          │   │
-│  │ - probe          │  │ - getAllowFrom         │   │
-│  └──────────────────┘  └────────────────────────┘   │
-│                                                     │
-│  ┌──────────────────┐  ┌────────────────────────┐   │
-│  │ OnboardingAdapter│  │ GatewayAdapter         │   │
-│  │ - steps[]        │  │ - registerRoutes       │   │
-│  │ - validate       │  │ - onStart/onStop       │   │
-│  └──────────────────┘  └────────────────────────┘   │
-│                                                     │
-│  Optional: HeartbeatAdapter, GroupAdapter,          │
-│  ThreadingAdapter, StreamingAdapter, OutboundAdapter│
-└─────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────┐
+│                 ChannelPlugin Interface              │
+│                                                      │
+│  id: ChannelId                                       │
+│  meta: ChannelMeta                                   │
+│  capabilities: ChannelCapabilities                   │
+│                                                      │
+│  ┌──────────────────┐  ┌────────────────────────┐    │
+│  │ ConfigAdapter    │  │ MessagingAdapter       │    │
+│  │ - resolveAccount │  │ - send                 │    │
+│  │ - getConfig      │  │ - sendMedia            │    │
+│  └──────────────────┘  └────────────────────────┘    │
+│                                                      │
+│  ┌──────────────────┐  ┌────────────────────────┐    │
+│  │ SetupAdapter     │  │ SecurityAdapter        │    │
+│  │ - setup          │  │ - getDmPolicy          │    │
+│  │ - probe          │  │ - getAllowFrom         │    │
+│  └──────────────────┘  └────────────────────────┘    │
+│                                                      │
+│  ┌──────────────────┐  ┌────────────────────────┐    │   
+│  │ OnboardingAdapter│  │ GatewayAdapter         │    │   
+│  │ - steps[]        │  │ - registerRoutes       │    │   
+│  │ - validate       │  │ - onStart/onStop       │    │   
+│  └──────────────────┘  └────────────────────────┘    │   
+│                                                      │
+│  Optional: HeartbeatAdapter, GroupAdapter,           │
+│  ThreadingAdapter, StreamingAdapter, OutboundAdapter │
+└──────────────────────────────────────────────────────┘
 ```
 
 Each extension in `extensions/` implements this `ChannelPlugin` contract and exports it via `openclaw.plugin.json`:
@@ -274,8 +274,8 @@ Each extension in `extensions/` implements this `ChannelPlugin` contract and exp
 │  │ (skills/)      │  │  (ClawHub registry) │     │
 │  │                │  │                     │     │
 │  │ - github       │  │  - installed via    │     │
-│  │ - weather      │  │    openclaw skill   │     │
-│  │ - slack        │  │    install <name>   │     │
+│  │ - weather      │  │  openclaw skill     │     │
+│  │ - slack        │  │  install <name>     │     │
 │  │ - spotify      │  │                     │     │
 │  │ - notion       │  │  Stored in:         │     │
 │  │ - obsidian     │  │  ~/.openclaw/       │     │
@@ -285,7 +285,7 @@ Each extension in `extensions/` implements this `ChannelPlugin` contract and exp
 │  ┌──────────────────────────────────────────┐    │
 │  │ Workspace Skills (local)                 │    │
 │  │ ~/.openclaw/workspace/skills/<name>/     │    │
-│  │   SKILL.md  (frontmatter + instructions) │    │
+│  │ SKILL.md  (frontmatter + instructions)   │    │
 │  └──────────────────────────────────────────┘    │
 │                                                  │
 │  SKILL.md format:                                │
@@ -304,26 +304,26 @@ Each extension in `extensions/` implements this `ChannelPlugin` contract and exp
 ## Module Dependency Graph
 
 ```
-┌──────────┐
-│  cli/    │
-│  commands│
-└────┬─────┘
+┌───────────┐
+│  cli/     │
+│  commands │
+└────┬──────┘
      │
      v
-┌──────────┐    ┌──────────┐    ┌──────────────┐
-│ gateway/ │--->│ channels/│--->│ extensions/  │
-│          │    │ plugins/ │    │ (pnpm pkgs)  │
-└────┬─────┘    └────┬─────┘    └──────────────┘
+┌──────────┐    ┌───────────┐    ┌──────────────┐
+│ gateway/ │--->│ channels/ │--->│ extensions/  │
+│          │    │ plugins/  │    │ (pnpm pkgs)  │
+└────┬─────┘    └────┬──────┘    └──────────────┘
      │               │
      v               v
-┌──────────┐    ┌──────────┐
-│ sessions/│    │auto-reply│
-└────┬─────┘    └────┬─────┘
-     │               │
-     v               v
-┌──────────┐    ┌──────────┐    ┌──────────┐
-│ agents/  │--->│providers/│--->│ LLM APIs │
-└────┬─────┘    └──────────┘    └──────────┘
+┌───────────┐    ┌────────────┐
+│ sessions/ │    │ auto-reply │
+└────┬──────┘    └─────┬──────┘
+     │                 │
+     v                 v
+┌──────────┐    ┌────────────┐    ┌──────────┐
+│ agents/  │--->│ providers/ │--->│ LLM APIs │
+└────┬─────┘    └────────────┘    └──────────┘
      │
      v
 ┌──────────┐    ┌──────────┐    ┌──────────┐

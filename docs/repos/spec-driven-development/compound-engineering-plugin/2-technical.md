@@ -141,14 +141,14 @@ Output config files:
 ## TypeScript Configuration
 
 From `tsconfig.json`:
-- target: ES2022
-- module: ESNext
-- moduleResolution: Bundler
-- strict: true
+- target:            ES2022
+- module:            ESNext
+- moduleResolution:  Bundler
+- strict:            true
 - resolveJsonModule: true
-- esModuleInterop: true
-- types: ["bun-types"]
-- include: src/**/*.ts
+- esModuleInterop:   true
+- types:             ["bun-types"]
+- include:           src/**/*.ts
 
 No build/compile step needed since Bun runs TypeScript directly.
 

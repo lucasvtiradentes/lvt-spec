@@ -80,8 +80,8 @@ Requirements: Node.js v18+, npm.
 
 ### Vite (vite.config.ts)
 
-- Plugins: `@vitejs/plugin-react` + `@tailwindcss/vite` (native Tailwind v4 integration)
-- Path alias: `@` mapped to `./src`
+- Plugins:         `@vitejs/plugin-react` + `@tailwindcss/vite` (native Tailwind v4 integration)
+- Path alias:      `@` mapped to `./src`
 - Dev server port: 3000
 
 ### TypeScript

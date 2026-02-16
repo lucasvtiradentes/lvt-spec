@@ -55,8 +55,8 @@ Commands accept dynamic input via `#$ARGUMENTS` placeholders wrapped in XML-like
 ### Anti-Pattern Sections
 
 Multiple agents include explicit "do not do this" sections (negative-example prompting):
-- Code reviewer: "Do not nitpick style when functionality is correct"
-- Test engineer: "Do not modify code to make tests pass"
+- Code reviewer:  "Do not nitpick style when functionality is correct"
+- Test engineer:  "Do not modify code to make tests pass"
 - Research agent: "Single-source claims not supported elsewhere"
 
 ### Confidence/Uncertainty Signals

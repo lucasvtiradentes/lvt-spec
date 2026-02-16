@@ -79,15 +79,15 @@ design-os/
 ## Bootstrap Flow
 
 ```
-┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
-│  index.html  │---->│  main.tsx    │---->│  router.tsx  │---->│  Pages       │
-│  (Vite entry)│     │  (React root)│     │  (10 routes) │     │  (AppLayout) │
-└──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
+┌───────────────┐     ┌───────────────┐     ┌──────────────┐     ┌──────────────┐
+│  index.html   │---->│  main.tsx     │---->│  router.tsx  │---->│  Pages       │
+│  (Vite entry) │     │  (React root) │     │  (10 routes) │     │  (AppLayout) │
+└───────────────┘     └───────────────┘     └──────────────┘     └──────────────┘
                            |
                      ┌─────┴──────┐
                      │ index.css  │
                      │ (Tailwind, │
-                     │  theme)    │
+                     │ theme)     │
                      └────────────┘
 ```
 
@@ -194,16 +194,16 @@ Theme synchronization between parent and iframe via localStorage polling (100ms)
 └───────┬─────────────────────────┬────────────────────────┬──────────┘
         |                         |                        |
         v                         v                        v
-┌───────────────┐   ┌─────────────────────┐   ┌───────────────────┐
-│product-loader │   │  section-loader     │   │  shell-loader     │
-│  imports:     │   │  (independent)      │   │  (spec + comps)   │
-│  data-model-  │   │                     │   │                   │
-│  loader       │   │  Handles:           │   │                   │
-│  design-sys-  │   │  - spec.md          │   │                   │
-│  loader       │   │  - data.json        │   │                   │
-│  shell-loader │   │  - *.tsx (lazy)     │   │                   │
-│               │   │  - *.png            │   │                   │
-└───────┬───────┘   └──────────┬──────────┘   └─────────┬─────────┘
+┌────────────────┐   ┌─────────────────────┐   ┌───────────────────┐
+│ product-loader │   │  section-loader     │   │  shell-loader     │
+│   imports:     │   │  (independent)      │   │  (spec + comps)   │
+│   data-model-  │   │                     │   │                   │
+│   loader       │   │  Handles:           │   │                   │
+│   design-sys-  │   │  - spec.md          │   │                   │
+│   loader       │   │  - data.json        │   │                   │
+│   shell-loader │   │  - *.tsx (lazy)     │   │                   │
+│                │   │  - *.png            │   │                   │
+└───────┬────────┘   └─────────┬───────────┘   └────────┬──────────┘
         |                      |                        |
         v                      v                        v
 ┌─────────────────────────────────────────────────────────────────────┐

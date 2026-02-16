@@ -21,10 +21,10 @@
 │                  (base_env.py / mgx_env.py)                            │
 │  - add_roles()  - publish_message()  - run()  - is_idle                │
 │                                                                        │
-│  ┌──────────┐  ┌──────────┐  ┌──────────┐  ┌──────────┐                │
-│  │TeamLeader│  │ProductMgr│  │ Architect│  │ Engineer2│  ...           │
-│  │  (Mike)  │  │  (Alice) │  │  (Bob)   │  │  (Alex)  │                │
-│  └──────────┘  └──────────┘  └──────────┘  └──────────┘                │
+│  ┌────────────┐  ┌────────────┐  ┌───────────┐  ┌───────────┐          │
+│  │ TeamLeader │  │ ProductMgr │  │ Architect │  │ Engineer2 │  ...     │
+│  │   (Mike)   │  │   (Alice)  │  │  (Bob)    │  │  (Alex)   │          │
+│  └────────────┘  └────────────┘  └───────────┘  └───────────┘          │
 │       ^              ^              ^              ^                   │
 │       |              |              |              |                   │
 │       +---------- Messages (pub/sub) -------------+                    │
@@ -283,19 +283,19 @@ await company.run(n_round=5, idea="Create a snake game")
 User Input: "Create a 2048 game"
      |
      v
-┌───────────────────────────────────────────────────┐
-│ Team.run(idea)                                    │
-│   |                                               │
-│   v                                               │
-│ publish_message(Message(cause_by=UserRequirement))│
-└────────────────────┬──────────────────────────────┘
+┌────────────────────────────────────────────────────┐
+│ Team.run(idea)                                     │
+│   |                                                │
+│   v                                                │
+│ publish_message(Message(cause_by=UserRequirement)) │
+└────────────────────┬───────────────────────────────┘
                      |
                      v
 ┌──────────────────────────────────────────────────┐
 │ MGXEnv.run() - Round Loop                        │
 │                                                  │
 │  ┌───────────────────────────────────────────┐   │
-│  │ TeamLeader (Mike)                         │   │
+│  │   TeamLeader (Mike)                       │   │
 │  │   _observe() <-- user requirement         │   │
 │  │   _think()   --> decide delegation        │   │
 │  │   _act()     --> send to ProductManager   │   │
@@ -303,7 +303,7 @@ User Input: "Create a 2048 game"
 │                     |                            │
 │                     v                            │
 │  ┌───────────────────────────────────────────┐   │
-│  │ ProductManager (Alice)                    │   │
+│  │   ProductManager (Alice)                  │   │
 │  │   _observe() <-- TeamLeader message       │   │
 │  │   _act()     --> WritePRD                 │   │
 │  │   publish()  --> PRD document             │   │
@@ -316,7 +316,7 @@ User Input: "Create a 2048 game"
 │                     |                            │
 │                     v                            │
 │  ┌───────────────────────────────────────────┐   │
-│  │ Architect (Bob)                           │   │
+│  │   Architect (Bob)                         │   │
 │  │   _observe() <-- PRD message              │   │
 │  │   _act()     --> WriteDesign              │   │
 │  │   publish()  --> system design + API spec │   │
@@ -329,7 +329,7 @@ User Input: "Create a 2048 game"
 │                     |                            │
 │                     v                            │
 │  ┌───────────────────────────────────────────┐   │
-│  │ Engineer2 (Alex)                          │   │
+│  │   Engineer2 (Alex)                        │   │
 │  │   _observe() <-- design message           │   │
 │  │   _act()     --> WriteCode (via Editor)   │   │
 │  │   publish()  --> code files               │   │
@@ -360,7 +360,7 @@ User Input: "Create a 2048 game"
                     │ Route to        │  │ Route directly  │
                     │ TeamLeader      │  │ to send_to      │
                     │ (always sees    │  │ target roles    │
-                    │  all messages)  │  └─────────────────┘
+                    │ all messages)   │  └─────────────────┘
                     └────────┬─────────────────────────────┘
                              |
                              v
@@ -372,10 +372,10 @@ User Input: "Create a 2048 game"
                     └────────┬────────┘
                    |
                    v
-          ┌─────────────────┐
-          │ Re-publish with │
-          │ explicit send_to│
-          └─────────────────┘
+          ┌──────────────────┐
+          │ Re-publish with  │
+          │ explicit send_to │
+          └──────────────────┘
 ```
 
 ## Role Execution Lifecycle

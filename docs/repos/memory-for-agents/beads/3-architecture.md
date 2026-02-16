@@ -62,7 +62,7 @@
          |
          v
   ┌──────────────────────────┐
-  │ PersistentPreRun         │
+  │  PersistentPreRun        │
   │  1. Config init (viper)  │
   │  2. Find .beads/ + DB    │
   │  3. Try daemon connect   │
@@ -109,7 +109,7 @@
     |
     v
   ┌──────────────────┐    ┌──────────────────┐    ┌──────────────────┐
-  │ 1. Export        │--->│ 2. Git commit    │--->│ 3. Git push      │
+  │ 1. Export        │--->│  2. Git commit   │--->│ 3. Git push      │
   │ DB ----> JSONL   │    │  .beads/issues.  │    │  origin          │
   │ (dirty issues)   │    │  jsonl           │    │                  │
   └──────────────────┘    └──────────────────┘    └──────────────────┘
@@ -119,7 +119,7 @@
   │ 6. Done          │<---│ 5. Import        │<---│ 4. Git pull      │
   │                  │    │ JSONL ----> DB   │    │ origin           │
   │                  │    │ (content-hash    │    │                  │
-  │                  │    │  dedup)          │    │                  │
+  │                  │    │ dedup)           │    │                  │
   └──────────────────┘    └──────────────────┘    └──────────────────┘
 ```
 
@@ -378,13 +378,13 @@ Every command transparently tries daemon first, falls back to direct DB:
   └──────┬──────────┬──────────┬─────────────────┘
          |          |          |
          v          v          v
-  ┌──────────┐ ┌────────┐ ┌──────────┐
-  │ SQLite   │ │ Dolt   │ │ Memory   │
-  │ (default)│ │(opt.)  │ │(--no-db) │
-  │ Wasm-    │ │CGO req.│ │ Maps     │
-  │ based    │ │embed+  │ │          │
-  │ ncruces  │ │server  │ │          │
-  └──────────┘ └────────┘ └──────────┘
+  ┌───────────┐ ┌──────────┐ ┌───────────┐
+  │ SQLite    │ │ Dolt     │ │  Memory   │
+  │ (default) │ │ (opt.)   │ │ (--no-db) │
+  │ Wasm-     │ │ CGO req. │ │  Maps     │
+  │ based     │ │ embed+   │ │           │
+  │ ncruces   │ │ server   │ │           │
+  └───────────┘ └──────────┘ └───────────┘
 ```
 
 ## JSONL Exchange Format
@@ -392,11 +392,11 @@ Every command transparently tries daemon first, falls back to direct DB:
 The JSONL file is the git-tracked source of truth:
 
 ```
-  ┌──────────┐    flush     ┌────────────────┐    git commit   ┌─────────┐
-  │ SQLite   │ -----------> │ issues.jsonl   │ ------------->  │Git Repo │
-  │ (cache)  │              │ (source of     │                 │(shared) │
-  │          │ <----------- │  truth)        │ <-------------  │         │
-  └──────────┘   import     └────────────────┘    git pull     └─────────┘
+  ┌──────────┐    flush     ┌────────────────┐    git commit   ┌──────────┐
+  │ SQLite   │ -----------> │ issues.jsonl   │ ------------->  │ Git Repo │
+  │ (cache)  │              │ (source of     │                 │ (shared) │
+  │          │ <----------- │ truth)         │ <-------------  │          │
+  └──────────┘   import     └────────────────┘    git pull     └──────────┘
 ```
 
 Content-hash deduplication (SHA256) prevents unnecessary writes during import/export cycles.

@@ -104,10 +104,10 @@ compound-engineering-plugin/
      +-----------+--------------+                   |
                  |                                  |
                  v                                  v
-     ┌───────────────────┐              ┌───────────────────┐
-     │  parsers/claude   │              │parsers/claude-home│
-     │  (plugin loader)  │              │ (home config)     │
-     └────────┬──────────┘              └────────┬──────────┘
+     ┌───────────────────┐              ┌─────────────────────┐
+     │  parsers/claude   │              │ parsers/claude-home │
+     │  (plugin loader)  │              │  (home config)      │
+     └────────┬──────────┘              └─────────┬───────────┘
               |                                   |
               v                                   v
      ┌───────────────────┐              ┌───────────────────┐
@@ -165,7 +165,7 @@ Detailed data flow:
              |
              v
 ┌─────────────────────────────────────────────────────────────────────┐
-│   loadClaudePlugin()                                                │
+│  loadClaudePlugin()                                                 │
 │                                                                     │
 │  1. Read plugin.json     -----> ClaudeManifest                      │
 │  2. Walk agents/*.md     -----> ClaudeAgent[]     (frontmatter)     │
@@ -185,17 +185,17 @@ Detailed data flow:
       |              |
       v              v
 ┌────────────┐   ┌──────────────┐
-│  OpenCode  │   │    Codex     │
-│  Convert   │   │   Convert    │
+│ OpenCode   │   │    Codex     │
+│ Convert    │   │   Convert    │
 │            │   │              │
 │ agents     │   │ commands     │
-│   -> .md   │   │  -> prompts  │
+│ -> .md     │   │  -> prompts  │
 │ commands   │   │    + skills  │
-│   -> cfg   │   │ agents       │
+│ -> cfg     │   │ agents       │
 │ hooks      │   │  -> skills   │
-│   -> .ts   │   │ syntax       │
+│ -> .ts     │   │ syntax       │
 │ MCP        │   │  transform   │
-│   -> cfg   │   │ MCP          │
+│ -> cfg     │   │ MCP          │
 │ perms      │   │  -> TOML     │
 └─────┬──────┘   └──────┬───────┘
      |              |
@@ -206,16 +206,16 @@ Detailed data flow:
 └────┬─────┘   └────┬─────┘
      |              |
      v              v
-┌──────────┐   ┌──────────┐
-│  Writer  │   │  Writer  │
-│          │   │          │
-│ backup   │   │ backup   │
-│ write    │   │ write    │
-│ config   │   │ config   │
-│ agents/  │   │ prompts/ │
-│ skills/  │   │ skills/  │
-│ plugins/ │   │ AGENTS.md│
-└──────────┘   └──────────┘
+┌──────────┐   ┌───────────┐
+│ Writer   │   │ Writer    │
+│          │   │           │
+│ backup   │   │ backup    │
+│ write    │   │ write     │
+│ config   │   │ config    │
+│ agents/  │   │ prompts/  │
+│ skills/  │   │ skills/   │
+│ plugins/ │   │ AGENTS.md │
+└──────────┘   └───────────┘
 ```
 
 ## Install Command Lifecycle
@@ -291,7 +291,7 @@ Detailed data flow:
        ┌────────────┐            |  ┌────────────┐  ┌──────────┐
        │  convert   │            |  │  install   │  │   sync   │
        └──────┬─────┘            |  └──────┬─────┘  └────┬─────┘
-              |                  v         |              |
+              |                     v      |              |
               |           ┌──────────┐     |     ┌────────+────────┐
               |           │   list   │     |     |                 |
               |           └──────────┘     |     v                 v
