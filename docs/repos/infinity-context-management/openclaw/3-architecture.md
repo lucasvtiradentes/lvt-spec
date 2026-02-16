@@ -15,24 +15,25 @@ OpenClaw is a multi-layer system: a central Gateway process manages all communic
 └───────┼─────────────┼────────────┼───────────────┼───────────────┘
         │             │            │               │
         v             v            v               v
-   ┌────────────────────────────────────────────────────┐
-   │              Gateway (WebSocket + HTTP)            │
-   │                  Port 18789                        │
-   │                                                    │
-   │  ┌───────────┐  ┌──────────┐  ┌─────────────────┐  │
-   │  │  Session  │  │  Router  │  │  Channel Mgr    │  │
-   │  │  Manager  │  │          │  │                 │  │
-   │  └─────┬─────┘  └─────┬────┘  └────────┬────────┘  │
-   │        │              │                │           │
-   │  ┌─────v─────┐  ┌─────v────┐  ┌────────v────────┐  │
-   │  │ Agent     │  │ Multi-   │  │ Channel Plugins │  │
-   │  │ Runtime   │  │ Agent    │  │ (Core + Ext)    │  │
-   │  │ (Pi)      │  │ Routing  │  │                 │  │
-   │  └─────┬─────┘  └──────────┘  └────────┬────────┘  │
-   │        │                               │           │
-   └────────┼───────────────────────────────┼───────────┘
-            │                               │ 
-            v                               v 
+   ┌─────────────────────────────────────────────────────┐
+   │              Gateway (WebSocket + HTTP)             │
+   │                  Port 18789                         │
+   │                                                     │
+   │  ┌───────────┐  ┌───────────┐  ┌──────────────────┐ │
+   │  │  Session  │  │  Router   │  │  Channel Mgr     │ │
+   │  │  Manager  │  │           │  │                  │ │
+   │  └─────┬─────┘  └─────┬─────┘  └────────┬─────────┘ │
+   │        │              │                 │           │
+   │        v              v                 v           │
+   │  ┌───────────┐  ┌───────────┐  ┌──────────────────┐ │
+   │  │ Agent     │  │ Multi-    │  │ Channel Plugins  │ │
+   │  │ Runtime   │  │ Agent     │  │ (Core + Ext)     │ │
+   │  │ (Pi)      │  │ Routing   │  │                  │ │
+   │  └─────┬─────┘  └───────────┘  └────────┬─────────┘ │
+   │        │                                │           │
+   └────────┼────────────────────────────────┼───────────┘
+            │                                │
+            v                                v
    ┌─────────────────┐    ┌──────────────────────────────────────────┐
    │ LLM Providers   │    │          Messaging Platforms             │
    │                 │    │                                          │
@@ -178,7 +179,9 @@ openclaw/
 │ (e.g. WA) │     │   (monitor)  │     │   Check       │
 └───────────┘     └──────────────┘     └───────┬───────┘
                                                │
-                                     ┌────────v────────┐
+                                               │
+                                               v
+                                     ┌─────────────────┐
                                      │ Auto-Reply      │
                                      │ Dispatch        │
                                      │                 │
@@ -187,7 +190,8 @@ openclaw/
                                      │ - route agent   │
                                      └────────┬────────┘
                                               │
-                                     ┌────────v────────┐
+                                              v
+                                     ┌─────────────────┐
                                      │   Session       │
                                      │   Manager       │
                                      │                 │
@@ -195,7 +199,8 @@ openclaw/
                                      │ - append msg    │
                                      └────────┬────────┘
                                               │
-                                     ┌────────v────────┐
+                                              v
+                                     ┌─────────────────┐
                                      │ Pi Agent        │
                                      │ Runtime         │
                                      │                 │
@@ -204,7 +209,8 @@ openclaw/
                                      │ - stream reply  │
                                      └────────┬────────┘
                                               │
-                                     ┌────────v────────┐
+                                              v
+                                     ┌─────────────────┐
                                      │   Reply         │
                                      │   Dispatcher    │
                                      │                 │
@@ -212,7 +218,8 @@ openclaw/
                                      │ - typing        │
                                      └────────┬────────┘
                                               │
-                                     ┌────────v────────┐
+                                              v
+                                     ┌─────────────────┐
                                      │   Channel       │
                                      │   Outbound      │
                                      │   (send)        │
@@ -241,11 +248,11 @@ openclaw/
 │  │ - probe          │  │ - getAllowFrom         │    │
 │  └──────────────────┘  └────────────────────────┘    │
 │                                                      │
-│  ┌──────────────────┐  ┌────────────────────────┐    │   
-│  │ OnboardingAdapter│  │ GatewayAdapter         │    │   
-│  │ - steps[]        │  │ - registerRoutes       │    │   
-│  │ - validate       │  │ - onStart/onStop       │    │   
-│  └──────────────────┘  └────────────────────────┘    │   
+│  ┌──────────────────┐  ┌────────────────────────┐    │
+│  │ OnboardingAdapter│  │ GatewayAdapter         │    │
+│  │ - steps[]        │  │ - registerRoutes       │    │
+│  │ - validate       │  │ - onStart/onStop       │    │
+│  └──────────────────┘  └────────────────────────┘    │
 │                                                      │
 │  Optional: HeartbeatAdapter, GroupAdapter,           │
 │  ThreadingAdapter, StreamingAdapter, OutboundAdapter │

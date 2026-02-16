@@ -80,38 +80,38 @@ The CLI bootstraps projects. The real "runtime" is the templates and scripts con
 ## High-Level Component Diagram
 
 ```
-┌──────────────────────────────────────────────────────────────────────┐
-│                        SPEC-KIT ECOSYSTEM                            │
-│                                                                      │
-│  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐  │
-│  │  Specify CLI     │   │  Template Engine │   │ Release System   │  │
-│  │  (Python/Typer)  │   │ (Shell scripts + │   │ (GH Actions +    │  │
-│  │                  │   │  MD templates)   │   │  build scripts)  │  │
-│  │  - init          │   │                  │   │                  │  │
-│  │  - check         │<->│  - commands/*.md │<->│  - Per-agent     │  │
-│  │  - version       │   │  - *-template.md │   │    ZIP packages  │  │
-│  │                  │   │  - scripts/bash/ │   │  - Version mgmt  │  │
-│  └────────┬─────────┘   └────────┬─────────┘   └────────┬─────────┘  │
-│           │                      │                      │            │
-│           │ downloads            │ installed into       │ produces   │
-│           v                      v                      │            │
-│  ┌────────┴──────────────────────┴───────┐              │            │
-│  │          USER'S PROJECT               │<─────────────┘            │
-│  │                                       │                           │
-│  │  .specify/ (templates, scripts, mem)  │                           │
-│  │  .<agent>/commands/ (slash commands)  │                           │
-│  │  specs/###-feature/ (artifacts)       │                           │
-│  └───────────────────┬───────────────────┘                           │
-│                      │ consumed by                                   │
-│                      v                                               │
-│  ┌───────────────────┴───────────────────┐                           │
-│  │          AI CODING AGENTS             │                           │
-│  │  Claude, Gemini, Copilot, Cursor,     │                           │
-│  │  Qwen, opencode, Codex, Windsurf,     │                           │
-│  │  Kilo Code, Auggie, Roo, CodeBuddy,   │                           │
-│  │  Amp, SHAI, Amazon Q, IBM Bob, Qoder  │                           │
-│  └───────────────────────────────────────┘                           │
-└──────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        SPEC-KIT ECOSYSTEM                               │
+│                                                                         │
+│  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐     │
+│  │  Specify CLI     │   │  Template Engine │   │  Release System  │     │
+│  │  (Python/Typer)  │   │ (Shell scripts + │   │ (GH Actions +    │     │
+│  │                  │   │  MD templates)   │   │  build scripts)  │     │
+│  │  - init          │   │                  │   │                  │     │
+│  │  - check         │<->│  - commands/*.md │<->│  - Per-agent     │     │
+│  │  - version       │   │  - *-template.md │   │    ZIP packages  │     │
+│  │                  │   │  - scripts/bash/ │   │  - Version mgmt  │     │
+│  └────────┬─────────┘   └────────┬─────────┘   └─────────┬────────┘     │
+│           │                      │                       │              │
+│           │ downloads            │ installed into        │ produces     │
+│           v                      v                       │              │
+│  ┌────────┴──────────────────────┴───────┐               │              │
+│  │          USER'S PROJECT               │<───────────── ┘              │
+│  │                                       │                              │
+│  │  .specify/ (templates, scripts, mem)  │                              │
+│  │  .<agent>/commands/ (slash commands)  │                              │
+│  │  specs/###-feature/ (artifacts)       │                              │
+│  └───────────────────┬───────────────────┘                              │
+│                      │ consumed by                                      │
+│                      v                                                  │
+│  ┌───────────────────┴───────────────────┐                              │
+│  │          AI CODING AGENTS             │                              │
+│  │  Claude, Gemini, Copilot, Cursor,     │                              │
+│  │  Qwen, opencode, Codex, Windsurf,     │                              │
+│  │  Kilo Code, Auggie, Roo, CodeBuddy,   │                              │
+│  │  Amp, SHAI, Amazon Q, IBM Bob, Qoder  │                              │
+│  └───────────────────────────────────────┘                              │
+└─────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## Two-Phase Architecture
@@ -120,35 +120,35 @@ The system operates in two distinct phases:
 
 ```
 PHASE 1: BOOTSTRAPPING (CLI)          PHASE 2: DEVELOPMENT (AI Agent)
-┌──────────────────────────┐          ┌───────────────────────────────────┐
-│                          │          │                                   │
-│  User runs               │          │  User launches AI agent           │
-│  `specify init my-app`   │          │  (e.g., `claude`)                 │
-│         │                │          │         │                         │
-│         v                │          │         v                         │
-│  ┌──────────────┐        │          │  /speckit.constitution            │
-│  │ Interactive  │        │          │          │                        │
-│  │ prompts      │        │          │          v                        │
-│  └──────┬───────┘        │          │  /speckit.specify                 │
-│         v                │          │         │                         │
-│  ┌──────────────┐        │          │         v                         │   
-│  │ GitHub API   │        │          │        /speckit.clarify (optional)│   
-│  │ fetch release│        │          │          │                        │   
-│  └──────┬───────┘        │          │          v                        │   
-│         v                │          │  /speckit.plan                    │
-│  ┌──────────────┐        │          │          │                        │
-│  │ Extract ZIP  │        │          │          v                        │
-│  │ to project   │        │          │  /speckit.tasks                   │
-│  └──────┬───────┘        │          │         │                         │
-│         v                │          │         v                         │
-│  ┌──────────────┐        │          │  /speckit.analyze (optional)      │
-│  │ Git init     │        │          │          │                        │
-│  └──────────────┘        │          │          v                        │
-│                          │          │  /speckit.implement               │
-│  PROJECT BOOTSTRAPPED    │          │         │                         │
-│                          │          │         v                         │
-│                          │          │  WORKING CODE                     │
-└──────────────────────────┘          └───────────────────────────────────┘
+┌──────────────────────────┐          ┌─────────────────────────────────────────┐
+│                          │          │                                         │
+│  User runs               │          │  User launches AI agent                 │
+│  `specify init my-app`   │          │  (e.g., `claude`)                       │
+│         │                │          │         │                               │
+│         v                │          │         v                               │
+│  ┌──────────────┐        │          │  /speckit.constitution                  │
+│  │ Interactive  │        │          │         │                               │
+│  │ prompts      │        │          │         v                               │
+│  └──────┬───────┘        │          │  /speckit.specify                       │
+│         v                │          │         │                               │
+│  ┌──────────────┐        │          │         v                               │
+│  │ GitHub API   │        │          │  /speckit.clarify (optional)            │
+│  │ fetch release│        │          │         │                               │
+│  └──────┬───────┘        │          │         v                               │
+│         v                │          │  /speckit.plan                          │
+│  ┌──────────────┐        │          │         │                               │
+│  │ Extract ZIP  │        │          │         v                               │
+│  │ to project   │        │          │  /speckit.tasks                         │
+│  └──────┬───────┘        │          │         │                               │
+│         v                │          │         v                               │
+│  ┌──────────────┐        │          │  /speckit.analyze (optional)            │
+│  │ Git init     │        │          │         │                               │
+│  └──────────────┘        │          │         v                               │
+│                          │          │  /speckit.implement                     │
+│  PROJECT BOOTSTRAPPED    │          │         │                               │
+│                          │          │         v                               │
+│                          │          │  WORKING CODE                           │
+└──────────────────────────┘          └─────────────────────────────────────────┘
 ```
 
 ## Data Flow Through Slash Commands
@@ -222,10 +222,10 @@ src/specify_cli/__init__.py
 │  └────────────────────────────────────────────────────┘  │
 │                                                          │
 │  Classes                                                 │
-│  ┌────────────────────────────────────────────────────┐  │   
-│  │ StepTracker   - UI progress tree (Rich Tree)       │  │   
-│  │ BannerGroup   - custom Typer group for help display│  │   
-│  └────────────────────────────────────────────────────┘  │   
+│  ┌────────────────────────────────────────────────────┐  │
+│  │ StepTracker   - UI progress tree (Rich Tree)       │  │
+│  │ BannerGroup   - custom Typer group for help display│  │
+│  └────────────────────────────────────────────────────┘  │
 │                                                          │
 │  Utility Functions                                       │
 │  ┌────────────────────────────────────────────────────┐  │
@@ -304,23 +304,23 @@ The release system transforms agent-neutral templates into 34 agent-specific pac
 
 ```
 Template Source                    Agent Package (e.g., Claude)
-┌──────────────────────┐          ┌──────────────────────────────┐
-│ templates/commands/  │          │   .claude/commands/          │
-│   specify.md         │ -------> │   speckit.specify.md         │
-│   plan.md            │          │   speckit.plan.md            │
-│   tasks.md           │ -------> │   speckit.tasks.md           │
-│   implement.md       │          │   speckit.implement.md       │
-│   ...                │          │   ...                        │
-├──────────────────────┤          ├──────────────────────────────┤
-│   templates/         │          │   .specify/templates/        │
-│   spec-template.md   │ -------> │   spec-template.md           │
-│   plan-template.md   │          │   plan-template.md           │
-├──────────────────────┤          ├──────────────────────────────┤
-│   scripts/bash/      │          │   .specify/scripts/bash/     │
-│   common.sh          │ -------> │   common.sh                  │
-│   create-new-feature │          │   create-new-feature.sh      │
-├──────────────────────┤          ├──────────────────────────────┤
-│   memory/            │          │   .specify/memory/           │
-│   constitution.md    │ -------> │   constitution.md            │
-└──────────────────────┘          └──────────────────────────────┘
+┌────────────────────────┐          ┌──────────────────────────────┐
+│   templates/commands/  │          │   .claude/commands/          │
+│   specify.md           │ -------> │   speckit.specify.md         │
+│   plan.md              │          │   speckit.plan.md            │
+│   tasks.md             │ -------> │   speckit.tasks.md           │
+│   implement.md         │          │   speckit.implement.md       │
+│   ...                  │          │   ...                        │
+├────────────────────────┤          ├──────────────────────────────┤
+│   templates/           │          │   .specify/templates/        │
+│   spec-template.md     │ -------> │   spec-template.md           │
+│   plan-template.md     │          │   plan-template.md           │
+├────────────────────────┤          ├──────────────────────────────┤
+│   scripts/bash/        │          │   .specify/scripts/bash/     │
+│   common.sh            │ -------> │   common.sh                  │
+│   create-new-feature   │          │   create-new-feature.sh      │
+├────────────────────────┤          ├──────────────────────────────┤
+│   memory/              │          │   .specify/memory/           │
+│   constitution.md      │ -------> │   constitution.md            │
+└────────────────────────┘          └──────────────────────────────┘
 ```

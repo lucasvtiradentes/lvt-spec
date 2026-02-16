@@ -157,27 +157,16 @@ Product ---> Data Model ---> Design ---> Sections ---> Export
 ## Screen Design Preview Architecture
 
 ```
-┌─────────────────────────────────────────────────┐
-│ ScreenDesignPage (parent window)                │
-│ ┌─────────────────────────────────────────────┐ │
-│ │ Header: Back + Breadcrumb + Device Presets  │ │
-│ │         + ThemeToggle + Fullscreen link     │ │
-│ └─────────────────────────────────────────────┘ │
-│ ┌─────────────────────────────────────────────┐ │
-│ │ Resizable Container                         │ │
-│ │ ┌─────────────────────────────────────────┐ │ │
-│ │ │ <iframe src="/fullscreen">              │ │ │
-│ │ │ ┌─────────────────────────────────────┐ │ │ │
-│ │ │ │ ScreenDesignFullscreen              │ │ │ │
-│ │ │ │ ┌─────────────────────────────────┐ │ │ │ │
-│ │ │ │ │ <Suspense>                      │ │ │ │ │
-│ │ │ │ │   AppShell (if useShell=true)   │ │ │ │ │
-│ │ │ │ │     ScreenDesignComponent       │ │ │ │ │
-│ │ │ │ └─────────────────────────────────┘ │ │ │ │
-│ │ │ └─────────────────────────────────────┘ │ │ │
-│ │ └─────────────────────────────────────────┘ │ │
-│ └─────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────┘
+ScreenDesignPage (parent window)
+├── Header
+│   └── Back + Breadcrumb + Device Presets + ThemeToggle + Fullscreen link
+│
+└── Resizable Container
+    └── <iframe src="/fullscreen">
+        └── ScreenDesignFullscreen
+            └── <Suspense>
+                └── AppShell (if useShell=true)
+                    └── ScreenDesignComponent
 ```
 
 Theme synchronization between parent and iframe via localStorage polling (100ms) + storage events.
@@ -194,16 +183,16 @@ Theme synchronization between parent and iframe via localStorage polling (100ms)
 └───────┬─────────────────────────┬────────────────────────┬──────────┘
         |                         |                        |
         v                         v                        v
-┌────────────────┐   ┌─────────────────────┐   ┌───────────────────┐
-│ product-loader │   │  section-loader     │   │  shell-loader     │
-│   imports:     │   │  (independent)      │   │  (spec + comps)   │
-│   data-model-  │   │                     │   │                   │
-│   loader       │   │  Handles:           │   │                   │
-│   design-sys-  │   │  - spec.md          │   │                   │
-│   loader       │   │  - data.json        │   │                   │
-│   shell-loader │   │  - *.tsx (lazy)     │   │                   │
-│                │   │  - *.png            │   │                   │
-└───────┬────────┘   └─────────┬───────────┘   └────────┬──────────┘
+┌──────────────────┐   ┌─────────────────────┐   ┌───────────────────┐
+│   product-loader │   │   section-loader    │   │   shell-loader    │
+│   imports:       │   │   (independent)     │   │   (spec + comps)  │
+│   data-model-    │   │                     │   │                   │
+│   loader         │   │   Handles:          │   │                   │
+│   design-sys-    │   │   - spec.md         │   │                   │
+│   loader         │   │   - data.json       │   │                   │
+│   shell-loader   │   │   - *.tsx (lazy)    │   │                   │
+│                  │   │   - *.png           │   │                   │
+└────────┬─────────┘   └──────────┬──────────┘   └─────────┬─────────┘
         |                      |                        |
         v                      v                        v
 ┌─────────────────────────────────────────────────────────────────────┐

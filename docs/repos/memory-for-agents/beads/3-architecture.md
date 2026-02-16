@@ -378,13 +378,13 @@ Every command transparently tries daemon first, falls back to direct DB:
   └──────┬──────────┬──────────┬─────────────────┘
          |          |          |
          v          v          v
-  ┌───────────┐ ┌──────────┐ ┌───────────┐
-  │ SQLite    │ │ Dolt     │ │  Memory   │
-  │ (default) │ │ (opt.)   │ │ (--no-db) │
-  │ Wasm-     │ │ CGO req. │ │  Maps     │
-  │ based     │ │ embed+   │ │           │
-  │ ncruces   │ │ server   │ │           │
-  └───────────┘ └──────────┘ └───────────┘
+  ┌─────────────┐ ┌────────────┐ ┌─────────────┐
+  │   SQLite    │ │   Dolt     │ │   Memory    │
+  │   (default) │ │   (opt.)   │ │  (--no-db)  │
+  │   Wasm-     │ │   CGO req. │ │    Maps     │
+  │   based     │ │   embed+   │ │             │
+  │   ncruces   │ │   server   │ │             │
+  └─────────────┘ └────────────┘ └─────────────┘
 ```
 
 ## JSONL Exchange Format

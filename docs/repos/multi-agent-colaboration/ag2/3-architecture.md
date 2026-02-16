@@ -323,28 +323,24 @@ User Code
 ## LLM Client Architecture
 
 ```
-┌────────────────────────┐
-│ ConversableAgent       │
-│                        │
-│ generate_oai_reply()   │
-│        |               │
-│        v               │
-│ ┌──────────────────┐   │
-│ │ OpenAIWrapper    │   │
-│ │ (oai/client.py)  │   │
-│ │                  │   │
-│ │ config_list:     │   │
-│ │  ├── config[0]   │   │
-│ │  ├── config[1]   │   │
-│ │  └── config[N]   │   │
-│ │                  │   │
-│ │ create():        │   │
-│ │ try config[0]    │   │
-│ │ fallback [1]     │   │
-│ │ fallback [N]     │   │
-│ └────────┬─────────┘   │
-│          |             │
-└──────────┼─────────────┘
+ConversableAgent
+│
+├── generate_oai_reply()
+│   │
+│   v
+│   OpenAIWrapper (oai/client.py)
+│   │
+│   ├── config_list:
+│   │   ├── config[0]
+│   │   ├── config[1]
+│   │   └── config[N]
+│   │
+│   └── create():
+│       ├── try config[0]
+│       ├── fallback [1]
+│       └── fallback [N]
+│
+v
            |
            v
     ┌──────┴──────────────────────────────────┐
@@ -505,30 +501,30 @@ agent.run(message)
 ## Code Execution Architecture
 
 ```
-┌───────────────────────────────────────────────────┐
-│ ConversableAgent (code_execution_config enabled)  │
-│                                                   │
-│   generate_code_execution_reply()                 │
-│   |                                               │
-│   v                                               │
-│   CodeExtractor.extract_code_blocks(message)      │
-│   (MarkdownCodeExtractor: parses ``` blocks)      │
-│   |                                               │
-│   v                                               │
-│   CodeExecutor.execute_code_blocks(blocks)        │
-│   |                                               │
-│   v                                               │
-│   CodeResult(exit_code, output)                   │
-└───────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────┐
+│   ConversableAgent (code_execution_config enabled)  │
+│                                                     │
+│   generate_code_execution_reply()                   │
+│   |                                                 │
+│   v                                                 │
+│   CodeExtractor.extract_code_blocks(message)        │
+│   (MarkdownCodeExtractor: parses ``` blocks)        │
+│   |                                                 │
+│   v                                                 │
+│   CodeExecutor.execute_code_blocks(blocks)          │
+│   |                                                 │
+│   v                                                 │
+│   CodeResult(exit_code, output)                     │
+└─────────────────────────────────────────────────────┘
 
 CodeExecutor implementations:
-┌──────────────────┐  ┌───────────────────┐  ┌──────────────────┐
-│ LocalCommandLine │  │ DockerCommandLine │  │   Jupyter        │
-│   subprocess.run │  │   Docker API      │  │   kernel gateway │
-│   temp files     │  │   bind mounts     │  │   rich output    │
-└──────────────────┘  └───────────────────┘  └──────────────────┘
-┌──────────────────┐  ┌─────────────────────────────────────────┐
-│ YepCode          │  │ Remyx                                   │
-│   cloud API      │  │   remote Docker                         │
-└──────────────────┘  └─────────────────────────────────────────┘
+┌──────────────────────┐  ┌─────────────────────┐  ┌──────────────────────┐
+│   LocalCommandLine   │  │   DockerCommandLine │  │   Jupyter            │
+│   subprocess.run     │  │   Docker API        │  │   kernel gateway     │
+│   temp files         │  │   bind mounts       │  │   rich output        │
+└──────────────────────┘  └─────────────────────┘  └──────────────────────┘
+┌──────────────────┐ ┌──────────────────────────────────────────┐
+│ YepCode          │ │ Remyx                                    │
+│   cloud API      │ │   remote Docker                          │
+└──────────────────┘ └──────────────────────────────────────────┘
 ```
