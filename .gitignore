@@ -1,2 +1,3 @@
 **/.venv
-.ignore 
+.ignore
+_generated.md
