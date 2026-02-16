@@ -18,5 +18,10 @@
     "namespace": "gh",
     "title": "Repo Naming",
     "description": "Generate GitHub repository names and/or descriptions following established naming conventions. Use when the user asks for help naming a repo, generating a repo description, or both. Do NOT use for renaming existing repos or updating GitHub settings."
+  },
+  "research-topic": {
+    "namespace": "research",
+    "title": "Topic",
+    "description": "Research a topic and create structured documentation. Use when the user wants to learn about a technology, tool, or concept. Creates docs/research/{topic}/ with numbered markdown files."
   }
 }
