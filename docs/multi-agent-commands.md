@@ -34,25 +34,35 @@ All commands are registered in `src/config.json`:
 
 ```json
 {
-  "repo-naming": {
-    "namespace": "gh",
-    "title": "Repo Naming",
-    "description": "Generate GitHub repository names and/or descriptions following naming conventions."
+  "align-docs": {
+    "namespace": "docs",
+    "title": "Align Docs",
+    "description": "Auto-fix alignment issues in markdown files using mdalign..."
+  },
+  "analyse-repo": {
+    "namespace": "research",
+    "title": "Analyse Repo",
+    "description": "Analyse a GitHub repository and create structured documentation..."
   },
   "gen-docs": {
     "namespace": "docs",
     "title": "Gen Docs",
-    "description": "Interactive command that generates structured project documentation."
+    "description": "Interactive, state-aware command that generates structured project documentation..."
+  },
+  "repo-naming": {
+    "namespace": "gh",
+    "title": "Repo Naming",
+    "description": "Generate GitHub repository names and/or descriptions following naming conventions..."
   }
 }
 ```
 
-| Field         | Required | Default                       | Description                        |
-|---------------|----------|-------------------------------|------------------------------------|
-| `namespace`   | yes      | -                             | output subdirectory (gh, docs)     |
-| `title`       | yes      | -                             | command title (used in claude h1)  |
-| `description` | yes      | -                             | command description (all agents)   |
-| `agents`      | no       | `["claude","codex","gemini"]` | which agents to build for          |
+| Field         | Required | Default                       | Description                                   |
+|---------------|----------|-------------------------------|-----------------------------------------------|
+| `namespace`   | yes      | -                             | output subdirectory (gh, docs, research)      |
+| `title`       | yes      | -                             | command title (used in claude h1)             |
+| `description` | yes      | -                             | command description (all agents), include usage hints (when to use, when NOT to use) |
+| `agents`      | no       | `["claude","codex","gemini"]` | which agents to build for                     |
 
 ## Auto-generated headers and footers
 
@@ -78,11 +88,11 @@ Note: Codex CLI does not support project-level custom slash commands. The only w
 
 ## Invoking commands
 
-| Agent  | Syntax         | Example            |
-|--------|----------------|--------------------|
-| claude | `/<ns>:<name>` | `/gh:repo-naming`  |
-| codex  | `$<name>`      | `$repo-naming`     |
-| gemini | `/<ns>:<name>` | `/gh:repo-naming`  |
+| Agent  | Syntax         | Example               |
+|--------|----------------|-----------------------|
+| claude | `/<ns>:<name>` | `/docs:gen-docs`      |
+| codex  | `$<name>`      | `$gen-docs`           |
+| gemini | `/<ns>:<name>` | `/docs:gen-docs`      |
 
 - Claude and Gemini use slash commands with namespace derived from subdirectory path
 - Codex uses `$` prefix to mention a skill by name (no namespace support)
@@ -141,6 +151,19 @@ You may run read-only commands.
 <!--@end-->
 ```
 
+### Inline addendum
+
+Shared generic line + agent-specific details below it. The shared line appears for all agents; the tagged block only for the matching agent:
+
+```md
+Launch exactly 3 agents in PARALLEL to explore the codebase.
+<!--@claude-->
+Use `Task` with `subagent_type: "Explore"` and `run_in_background: true` for each agent.
+<!--@end-->
+```
+
+Claude output gets both lines. Codex/Gemini output gets only the shared line. Use this pattern for tool-specific instructions that augment shared text without duplicating it.
+
 ### No tag
 
 Lines without any tag are shared and appear in every output.
@@ -163,9 +186,20 @@ Lines without any tag are shared and appear in every output.
 
 ## CLI-specific differences to handle
 
-| Concern     | Claude Code                          | Codex CLI                  | Gemini CLI                 |
-|-------------|--------------------------------------|----------------------------|----------------------------|
-| arguments   | `<arguments>#$ARGUMENTS</arguments>` | `$ARGUMENTS`               | `{{args}}`                 |
-| config file | CLAUDE.md                            | AGENTS.md                  | GEMINI.md                  |
-| tool ref    | AskUserQuestion                      | generic "ask the user"     | generic "ask the user"     |
-| permissions | read-only by default                 | can run read-only commands | can run read-only commands |
+| Concern      | Claude Code                          | Codex CLI                  | Gemini CLI                 |
+|--------------|--------------------------------------|----------------------------|----------------------------|
+| arguments    | `<arguments>#$ARGUMENTS</arguments>` | `$ARGUMENTS`               | `{{args}}`                 |
+| config file  | CLAUDE.md                            | AGENTS.md                  | GEMINI.md                  |
+| tool ref     | AskUserQuestion                      | generic "ask the user"     | generic "ask the user"     |
+| agent launch | Task (subagent_type, run_in_background) | generic "launch agent"  | generic "launch agent"     |
+| agent wait   | TaskOutput(block=true)               | generic "wait for agent"   | generic "wait for agent"   |
+| permissions  | read-only by default                 | can run read-only commands | can run read-only commands |
+
+## Current commands
+
+| Command       | Namespace  | Source format | Tags |
+|---------------|------------|---------------|------|
+| align-docs    | docs       | single-file   | yes  |
+| analyse-repo  | research   | single-file   | yes  |
+| gen-docs      | docs       | split (6 files) | yes |
+| repo-naming   | gh         | single-file   | yes  |
