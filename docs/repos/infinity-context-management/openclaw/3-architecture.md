@@ -248,11 +248,11 @@ openclaw/
 │  │ - probe          │  │ - getAllowFrom         │    │
 │  └──────────────────┘  └────────────────────────┘    │
 │                                                      │
-│  ┌──────────────────┐  ┌────────────────────────┐    │
-│  │ OnboardingAdapter│  │ GatewayAdapter         │    │
-│  │ - steps[]        │  │ - registerRoutes       │    │
-│  │ - validate       │  │ - onStart/onStop       │    │
-│  └──────────────────┘  └────────────────────────┘    │
+│  ┌────────────────────┐  ┌────────────────────────┐  │
+│  │ OnboardingAdapter  │  │ GatewayAdapter         │  │
+│  │ - steps[]          │  │ - registerRoutes       │  │
+│  │ - validate         │  │ - onStart/onStop       │  │
+│  └────────────────────┘  └────────────────────────┘  │
 │                                                      │
 │  Optional: HeartbeatAdapter, GroupAdapter,           │
 │  ThreadingAdapter, StreamingAdapter, OutboundAdapter │

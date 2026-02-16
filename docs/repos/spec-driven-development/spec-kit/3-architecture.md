@@ -83,20 +83,20 @@ The CLI bootstraps projects. The real "runtime" is the templates and scripts con
 ┌─────────────────────────────────────────────────────────────────────────┐
 │                        SPEC-KIT ECOSYSTEM                               │
 │                                                                         │
-│  ┌──────────────────┐   ┌──────────────────┐   ┌──────────────────┐     │
-│  │  Specify CLI     │   │  Template Engine │   │  Release System  │     │
-│  │  (Python/Typer)  │   │ (Shell scripts + │   │ (GH Actions +    │     │
-│  │                  │   │  MD templates)   │   │  build scripts)  │     │
-│  │  - init          │   │                  │   │                  │     │
-│  │  - check         │<->│  - commands/*.md │<->│  - Per-agent     │     │
-│  │  - version       │   │  - *-template.md │   │    ZIP packages  │     │
-│  │                  │   │  - scripts/bash/ │   │  - Version mgmt  │     │
-│  └────────┬─────────┘   └────────┬─────────┘   └─────────┬────────┘     │
-│           │                      │                       │              │
-│           │ downloads            │ installed into        │ produces     │
-│           v                      v                       │              │
-│  ┌────────┴──────────────────────┴───────┐               │              │
-│  │          USER'S PROJECT               │<───────────── ┘              │
+│  ┌──────────────────┐   ┌───────────────────┐   ┌──────────────────┐    │
+│  │  Specify CLI     │   │  Template Engine  │   │  Release System  │    │
+│  │  (Python/Typer)  │   │  (Shell scripts + │   │  (GH Actions +   │    │
+│  │                  │   │  MD templates)    │   │  build scripts)  │    │
+│  │  - init          │   │                   │   │                  │    │
+│  │  - check         │<->│  - commands/*.md  │<->│  - Per-agent     │    │
+│  │  - version       │   │  - *-template.md  │   │  ZIP packages    │    │
+│  │                  │   │  - scripts/bash/  │   │  - Version mgmt  │    │
+│  └────────┬─────────┘   └────────┬──────────┘   └─────────┬────────┘    │
+│           │                      │                        │             │
+│           │ downloads            │ installed into         │ produces    │
+│           v                      v                        │             │
+│  ┌────────┴──────────────────────┴───────┐                │             │
+│  │          USER'S PROJECT               │<───────────────┘             │
 │  │                                       │                              │
 │  │  .specify/ (templates, scripts, mem)  │                              │
 │  │  .<agent>/commands/ (slash commands)  │                              │
@@ -133,7 +133,7 @@ PHASE 1: BOOTSTRAPPING (CLI)          PHASE 2: DEVELOPMENT (AI Agent)
 │         v                │          │         │                               │
 │  ┌──────────────┐        │          │         v                               │
 │  │ GitHub API   │        │          │  /speckit.clarify (optional)            │
-│  │ fetch release│        │          │         │                               │
+│  │ fetch rel    │        │          │         │                               │
 │  └──────┬───────┘        │          │         v                               │
 │         v                │          │  /speckit.plan                          │
 │  ┌──────────────┐        │          │         │                               │
@@ -224,7 +224,7 @@ src/specify_cli/__init__.py
 │  Classes                                                 │
 │  ┌────────────────────────────────────────────────────┐  │
 │  │ StepTracker   - UI progress tree (Rich Tree)       │  │
-│  │ BannerGroup   - custom Typer group for help display│  │
+│  │ BannerGroup   - Typer group for custom help        │  │
 │  └────────────────────────────────────────────────────┘  │
 │                                                          │
 │  Utility Functions                                       │
