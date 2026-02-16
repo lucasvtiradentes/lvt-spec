@@ -1,14 +1,38 @@
+<!--@only codex-->
+---
+name: analyse-repo
+description: Analyse a GitHub repository and create structured documentation about its codebase. Use when the user wants to understand or document an external repo. Do NOT use for the current project.
+---
+<!--@end-->
+<!--@only claude-->
 # Analyse Repo Command
 
 Analyse a GitHub repository and create structured documentation about its codebase.
+<!--@end-->
+<!--@only gemini-->
+description = "Analyse a GitHub repository and create structured documentation about its codebase"
+prompt = """
+<!--@end-->
 
 ## Arguments
 
+<!--@claude-->
 - $ARGUMENTS: GitHub repo URL (e.g., "https://github.com/user/repo") or shorthand "user/repo"
+<!--@codex-->
+- $ARGUMENTS: GitHub repo URL (e.g., "https://github.com/user/repo") or shorthand "user/repo"
+<!--@gemini-->
+- {{args}}: GitHub repo URL (e.g., "https://github.com/user/repo") or shorthand "user/repo"
+<!--@end-->
 
 ## Instructions
 
+<!--@claude-->
 1. Parse Input: Extract owner and repo name from $ARGUMENTS. Support both full URL and shorthand format.
+<!--@codex-->
+1. Parse Input: Extract owner and repo name from $ARGUMENTS. Support both full URL and shorthand format.
+<!--@gemini-->
+1. Parse Input: Extract owner and repo name from {{args}}. Support both full URL and shorthand format.
+<!--@end-->
 
 2. Fetch Repo Metadata: Use `gh repo view {owner}/{repo} --json url,createdAt,stargazerCount` to get repo info.
 
@@ -103,6 +127,15 @@ Analyse a GitHub repository and create structured documentation about its codeba
 
 10. Cleanup: Remove the cloned temp directory after analysis.
 
+<!--@claude-->
 11. Post-Generation: After all docs are created, run `/docs:align-docs` on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
+<!--@codex-->
+11. Post-Generation: After all docs are created, run `$align-docs` on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
+<!--@gemini-->
+11. Post-Generation: After all docs are created, run `/docs:align-docs` on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
+<!--@end-->
 
 12. Output: Show the folder structure created and a brief summary of findings.
+<!--@only gemini-->
+"""
+<!--@end-->

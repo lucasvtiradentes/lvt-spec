@@ -1,6 +1,7 @@
-# Analyse Repo Command
-
-Analyse a GitHub repository and create structured documentation about its codebase.
+---
+name: analyse-repo
+description: Analyse a GitHub repository and create structured documentation about its codebase. Use when the user wants to understand or document an external repo. Do NOT use for the current project.
+---
 
 ## Arguments
 
@@ -103,6 +104,6 @@ Analyse a GitHub repository and create structured documentation about its codeba
 
 10. Cleanup: Remove the cloned temp directory after analysis.
 
-11. Post-Generation: After all docs are created, run `/docs:align-docs` on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
+11. Post-Generation: After all docs are created, run `$align-docs` on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
 
 12. Output: Show the folder structure created and a brief summary of findings.
