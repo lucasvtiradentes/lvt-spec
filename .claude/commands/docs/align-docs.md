@@ -1,6 +1,18 @@
 # Align Docs
 
-Auto-fix alignment issues in documentation files (tables and ASCII diagrams).
+Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists).
+
+```
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│  PHASE 0     │    │  PHASE 1     │    │  PHASE 2     │    │  PHASE 3     │
+│  Preflight   │    │  Check       │    │  Auto-fix    │    │  Manual fix  │
+│              │    │              │    │              │    │              │
+│ mdalign      │───>│ mdalign      │───>│ mdalign      │───>│ read files   │
+│ installed?   │    │ $ARGUMENTS   │    │ --fix        │    │ fix remaining│
+│ ask to       │    │              │    │ $ARGUMENTS   │    │ re-run until │
+│ install      │    │              │    │              │    │ clean        │
+└──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
+```
 
 ## Arguments
 
@@ -8,71 +20,35 @@ Auto-fix alignment issues in documentation files (tables and ASCII diagrams).
 
 ## Instructions
 
-1. Run the alignment check on the target files:
+### Phase 0 - Preflight
+
+Check if mdalign is installed:
 
 ```bash
-mdalign $ARGUMENTS
+which mdalign
 ```
 
-2. If errors are found, auto-fix them:
+If not found, ask the user if they want to install it (`pipx install mdalign`). Stop if they decline.
+
+### Phase 1 - Check
+
+Run alignment check on target files:
+
+```bash
+mdalign --verbose $ARGUMENTS
+```
+
+If exit code 0 (all aligned), report success and stop.
+
+### Phase 2 - Auto-fix
+
+If errors found, auto-fix them:
 
 ```bash
 mdalign --fix $ARGUMENTS
 ```
 
-3. If unfixable issues remain, read each reported file and fix manually.
+### Phase 3 - Manual fix
 
-4. Re-run to verify. Repeat until clean.
-
-## What It Fixes
-
-### Tables
-
-Every cell in a column MUST have the same width as the separator row.
-
-- Widens separator and pads all cells to match the widest content in each column.
-
-### ASCII Diagrams - Box Widths
-
-Every line in a box group MUST have the same total character length.
-
-- Border lines (┌─┐ / └─┘): adjusts dash count
-- Content lines (│...│): adds/removes trailing spaces before closing │
-- Skips tree structures (├── with /)
-- Never removes non-space characters (reports as unfixable instead)
-
-### ASCII Diagrams - Rail Alignment
-
-Vertically adjacent box chars (│ ┌ └ ┐ ┘ ├ ┤ ┬ ┴ ┼) at the same logical rail MUST be at the same column.
-
-- Groups nearby columns (±1) into rails, segments by line gap
-- Uses structural priority: ┬/┴ (pipe origins) > ┌/└/┐/┘/├/┤ (borders) > ┼ (crossings) > │ (content)
-- Adjusts spaces/dashes around box chars to shift them to the correct column
-- Clusters same-count lines by position similarity to avoid false positives
-
-### ASCII Diagrams - Arrow Alignment
-
-Standalone v/^ arrows MUST align with the nearest box char above (for v) or below (for ^).
-
-- Only checks arrows surrounded by spaces (not embedded in borders like ─v─)
-- Shifts arrows by adjusting adjacent spaces, works on mixed-content lines too
-
-### Wide Characters
-
-NEVER use emojis or wide Unicode chars inside ASCII diagrams. They break alignment. Use ASCII equivalents.
-
-## Examples
-
-```bash
-# check all docs
-mdalign docs/
-
-# auto-fix all docs
-mdalign --fix docs/
-
-# check specific files
-mdalign docs/overview.md docs/architecture.md
-
-# auto-fix specific files
-mdalign --fix docs/overview.md docs/architecture.md
-```
+If unfixable issues remain after --fix, read each reported file and fix manually.
+Re-run `mdalign $ARGUMENTS` to verify. Repeat until clean.
