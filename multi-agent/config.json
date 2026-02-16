@@ -1,0 +1,9 @@
+{
+  "max_rounds": 2,
+  "agents": [
+    { "name": "PO", "file": "agents/po.md", "provider": "claude-code", "model": "claude-sonnet-4-5-20250929" },
+    { "name": "Architect", "file": "agents/architect.md", "provider": "claude-code", "model": "claude-sonnet-4-5-20250929" },
+    { "name": "Developer", "file": "agents/developer.md", "provider": "claude-code", "model": "claude-sonnet-4-5-20250929" },
+    { "name": "QA", "file": "agents/qa.md", "provider": "claude-code", "model": "claude-sonnet-4-5-20250929" }
+  ]
+}
