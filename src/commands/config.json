@@ -22,6 +22,6 @@
   "research-topic": {
     "namespace": "research",
     "title": "Topic",
-    "description": "Research a topic and create structured documentation. Use when the user wants to learn about a technology, tool, or concept. Creates docs/research/{topic}/ with numbered markdown files."
+    "description": "Research a topic and create structured documentation, or iterate on existing research. Use when the user wants to learn about a technology, tool, or concept. Pass a topic name for new research or a folder path to update existing."
   }
 }

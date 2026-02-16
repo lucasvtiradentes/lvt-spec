@@ -61,7 +61,11 @@ Each agent receives:
 - The user's request
 - The current file content (if modifying)
 - The Doc Specs from `## Reference`
-- Instruction to write changes
+- The existing `references.md` content as context (sources already consulted)
+- Instruction to:
+  - Use existing sources as starting point, NOT as limit
+  - WebSearch for new/updated information beyond existing sources
+  - Add any new sources used to `references.md`
 
 ### Step 4.5 - Align and Show Result
 

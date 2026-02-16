@@ -31,7 +31,7 @@
 
 ## Output Structure
 
-The number of files is variable based on what discovery agents find. Typical range: 5-9 files.
+The number of files is variable based on what discovery agents find. Typical range: 5-8 files.
 
 ```
 docs/research/{topic-name}/

@@ -44,7 +44,7 @@ Use `TaskOutput(block=true)` to wait for each agent.
 
 ### Step 1.4 - Build Doc List
 
-Combine agent results and build a numbered doc list. Typical range: 4-8 files.
+Combine agent results and build a numbered doc list. Typical range: 5-8 files.
 
 Fixed positions:
 - `1-overview.md` - always first: what it is, installation, core concepts
