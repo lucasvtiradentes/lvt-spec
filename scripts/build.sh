@@ -2,7 +2,7 @@
 set -e
 
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-CONFIG="$REPO_ROOT/src/config.json"
+CONFIG="$REPO_ROOT/src/commands/config.json"
 
 filter_for_agent() {
   local agent="$1"
@@ -121,7 +121,7 @@ build_for_gemini() {
 
 build_command() {
   local name="$1"
-  local dir="$REPO_ROOT/src/$name"
+  local dir="$REPO_ROOT/src/commands/$name"
 
   if [[ ! -d "$dir" ]]; then
     echo "  SKIP $name (dir not found)"
