@@ -7,26 +7,11 @@ CONFIG="$REPO_ROOT/src/config.json"
 filter_for_agent() {
   local agent="$1"
   local src="$2"
-  local in_block=false
-  local block_visible=false
   local in_variant=false
   local variant_match=false
 
   while IFS= read -r line; do
-    if [[ "$line" =~ ^'<!--@only '(.+)'-->'$ ]]; then
-      local agents="${BASH_REMATCH[1]}"
-      in_block=true
-      block_visible=false
-      IFS=',' read -ra arr <<< "$agents"
-      for a in "${arr[@]}"; do
-        [[ "$a" == "$agent" ]] && block_visible=true && break
-      done
-      continue
-    fi
-
     if [[ "$line" =~ ^'<!--@end-->'$ ]]; then
-      in_block=false
-      block_visible=false
       in_variant=false
       variant_match=false
       continue
@@ -43,9 +28,7 @@ filter_for_agent() {
       continue
     fi
 
-    if $in_block; then
-      $block_visible && echo "$line"
-    elif $in_variant; then
+    if $in_variant; then
       $variant_match && echo "$line"
     else
       echo "$line"
@@ -55,6 +38,25 @@ filter_for_agent() {
 
 strip_empty_edges() {
   sed '/./,$!d' | sed -e :a -e '/^\n*$/{$d;N;ba;}'
+}
+
+header_for_claude() {
+  local title="$1" description="$2"
+  printf '# %s\n\n%s\n' "$title" "$description"
+}
+
+header_for_codex() {
+  local name="$1" description="$2"
+  printf -- '---\nname: %s\ndescription: %s\n---\n' "$name" "$description"
+}
+
+header_for_gemini() {
+  local description="$1"
+  printf 'description = "%s"\nprompt = """\n' "$description"
+}
+
+footer_for_gemini() {
+  printf '"""'
 }
 
 resolve_source() {
@@ -81,27 +83,40 @@ build_agent() {
   local agent="$1"
   local src="$2"
   local out="$3"
+  local header="$4"
+  local footer="$5"
 
   mkdir -p "$(dirname "$out")"
-  filter_for_agent "$agent" "$src" | strip_empty_edges > "$out"
+  {
+    [[ -n "$header" ]] && printf '%s\n\n' "$header"
+    filter_for_agent "$agent" "$src" | strip_empty_edges
+    [[ -n "$footer" ]] && printf '\n%s\n' "$footer"
+  } > "$out"
   local rel
   rel="$(realpath --relative-to="$REPO_ROOT" "$out")"
   echo "  $agent -> $rel ($(wc -l < "$out") lines)"
 }
 
 build_for_claude() {
-  local name="$1" namespace="$2" src="$3"
-  build_agent "claude" "$src" "$REPO_ROOT/.claude/commands/$namespace/$name.md"
+  local name="$1" namespace="$2" src="$3" title="$4" description="$5"
+  local header
+  header="$(header_for_claude "$title" "$description")"
+  build_agent "claude" "$src" "$REPO_ROOT/.claude/commands/$namespace/$name.md" "$header" ""
 }
 
 build_for_codex() {
-  local name="$1" namespace="$2" src="$3"
-  build_agent "codex" "$src" "$REPO_ROOT/.agents/skills/$name/SKILL.md"
+  local name="$1" namespace="$2" src="$3" title="$4" description="$5"
+  local header
+  header="$(header_for_codex "$name" "$description")"
+  build_agent "codex" "$src" "$REPO_ROOT/.agents/skills/$name/SKILL.md" "$header" ""
 }
 
 build_for_gemini() {
-  local name="$1" namespace="$2" src="$3"
-  build_agent "gemini" "$src" "$REPO_ROOT/.gemini/commands/$namespace/$name.toml"
+  local name="$1" namespace="$2" src="$3" title="$4" description="$5"
+  local header footer
+  header="$(header_for_gemini "$description")"
+  footer="$(footer_for_gemini)"
+  build_agent "gemini" "$src" "$REPO_ROOT/.gemini/commands/$namespace/$name.toml" "$header" "$footer"
 }
 
 build_command() {
@@ -113,8 +128,10 @@ build_command() {
     return
   fi
 
-  local namespace
+  local namespace title description
   namespace="$(jq -r --arg n "$name" '.[$n].namespace' "$CONFIG")"
+  title="$(jq -r --arg n "$name" '.[$n].title // ""' "$CONFIG")"
+  description="$(jq -r --arg n "$name" '.[$n].description // ""' "$CONFIG")"
 
   local src
   src="$(resolve_source "$dir")" || { echo "  SKIP $name (no .md files)"; return; }
@@ -124,9 +141,9 @@ build_command() {
   echo "$name:"
   for agent in "${agents[@]}"; do
     case "$agent" in
-      claude) build_for_claude "$name" "$namespace" "$src" ;;
-      codex)  build_for_codex  "$name" "$namespace" "$src" ;;
-      gemini) build_for_gemini "$name" "$namespace" "$src" ;;
+      claude) build_for_claude "$name" "$namespace" "$src" "$title" "$description" ;;
+      codex)  build_for_codex  "$name" "$namespace" "$src" "$title" "$description" ;;
+      gemini) build_for_gemini "$name" "$namespace" "$src" "$title" "$description" ;;
     esac
   done
 }

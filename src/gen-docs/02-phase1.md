@@ -5,6 +5,7 @@
 
 ### Step 1.1 - Ask project type
 
+<!--@claude-->
 Use `AskUserQuestion`:
 - question: "What type of project is this?"
 - header: "Project type"
@@ -13,6 +14,11 @@ Use `AskUserQuestion`:
     description: "One language/concern, personal projects, libraries, single-service apps"
   - label: "Monorepo"
     description: "Multiple packages (api, frontend, infra), multi-team, multiple package.json"
+<!--@codex,gemini-->
+Ask the user: "What type of project is this?"
+- Single Repo: one language/concern, personal projects, libraries, single-service apps
+- Monorepo: multiple packages (api, frontend, infra), multi-team, multiple package.json
+<!--@end-->
 
 ### Step 1.2 - Identify packages (MONOREPO only)
 

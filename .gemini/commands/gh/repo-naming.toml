@@ -1,4 +1,4 @@
-description = "Generate GitHub repository names and/or descriptions following naming conventions"
+description = "Generate GitHub repository names and/or descriptions following established naming conventions. Use when the user asks for help naming a repo, generating a repo description, or both. Do NOT use for renaming existing repos or updating GitHub settings."
 prompt = """
 
 ```
@@ -125,4 +125,5 @@ If scope is "both":
 After presenting, STOP and ask which one they prefer, or if they want to mix-and-match parts from different options. The user may also ask for more options or tweaks.
 
 You may run read-only commands to inspect the repo as part of Phase 2. Do not create or modify files.
+
 """

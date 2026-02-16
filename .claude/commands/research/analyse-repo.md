@@ -1,6 +1,6 @@
-# Analyse Repo Command
+# Analyse Repo
 
-Analyse a GitHub repository and create structured documentation about its codebase.
+Analyse a GitHub repository and create structured documentation about its codebase. Use when the user wants to understand or document an external repo. Do NOT use for the current project.
 
 ## Arguments
 

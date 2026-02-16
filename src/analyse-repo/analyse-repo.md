@@ -1,19 +1,3 @@
-<!--@only codex-->
----
-name: analyse-repo
-description: Analyse a GitHub repository and create structured documentation about its codebase. Use when the user wants to understand or document an external repo. Do NOT use for the current project.
----
-<!--@end-->
-<!--@only claude-->
-# Analyse Repo Command
-
-Analyse a GitHub repository and create structured documentation about its codebase.
-<!--@end-->
-<!--@only gemini-->
-description = "Analyse a GitHub repository and create structured documentation about its codebase"
-prompt = """
-<!--@end-->
-
 ## Arguments
 
 <!--@claude-->
@@ -136,6 +120,3 @@ prompt = """
 <!--@end-->
 
 12. Output: Show the folder structure created and a brief summary of findings.
-<!--@only gemini-->
-"""
-<!--@end-->

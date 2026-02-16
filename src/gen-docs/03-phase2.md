@@ -7,7 +7,10 @@ This phase builds a compact preview outline. 3 discovery agents scan the codebas
 
 ### Step 2.1 - Launch 3 Discovery Agents
 
-Launch exactly 3 Explore agents in PARALLEL using `Task` with `subagent_type: "Explore"` and `run_in_background: true`.
+Launch exactly 3 agents in PARALLEL to explore the codebase.
+<!--@claude-->
+Use `Task` with `subagent_type: "Explore"` and `run_in_background: true` for each agent.
+<!--@end-->
 
 Each agent gets in its prompt:
 - the project type and packages list
@@ -22,7 +25,7 @@ Agent grouping (see `### Doc Specs` for per-doc details):
 
 IMPORTANT: agents produce OUTLINES (3-8 bullets per doc), not full docs. Full docs are written in Phase 3.
 
-AGENT PROMPT SCOPING: The prompt sent to each Explore agent must ONLY contain:
+AGENT PROMPT SCOPING: The prompt sent to each agent must ONLY contain:
 1. Project type and packages list
 2. The scan + preview instructions from Doc Specs for its covered docs
 3. If deepening: the current preview content + direction
@@ -30,7 +33,11 @@ AGENT PROMPT SCOPING: The prompt sent to each Explore agent must ONLY contain:
 
 Do NOT include in the agent prompt: the interactive menu (Step 2.4), Phase 3 instructions, or any reference to "generate", "deepen", or "adjust" options.
 
-Wait for all 3 agents using TaskOutput(block=true). If an agent fails or times out, log which agent failed and proceed with the results from the remaining agents. Then proceed to `Step 2.2`.
+Wait for all 3 agents to complete.
+<!--@claude-->
+Use `TaskOutput(block=true)` to wait for each agent.
+<!--@end-->
+If an agent fails or times out, log which agent failed and proceed with the results from the remaining agents. Then proceed to `Step 2.2`.
 
 ### Step 2.2 - Assemble Preview
 

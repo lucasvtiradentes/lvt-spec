@@ -1,17 +1,3 @@
-<!--@only codex-->
----
-name: repo-naming
-description: Generate GitHub repository names and/or descriptions following established naming conventions. Use when the user asks for help naming a repo, generating a repo description, or both. Do NOT use for renaming existing repos or updating GitHub settings.
----
-<!--@end-->
-<!--@only claude-->
-You help the user generate GitHub repository names and/or descriptions following their established conventions.
-<!--@end-->
-<!--@only gemini-->
-description = "Generate GitHub repository names and/or descriptions following naming conventions"
-prompt = """
-<!--@end-->
-
 ```
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
 │  PHASE 0    │    │  PHASE 1    │    │  PHASE 2    │    │  PHASE 3    │    │  PHASE 4    │
@@ -165,7 +151,4 @@ Do NOT run any commands or create anything — this is purely a suggestion tool.
 You may run read-only commands to inspect the repo (e.g., `ls`, `rg`, `cat`, `sed`) as part of Phase 2. Do not create or modify files.
 <!--@gemini-->
 You may run read-only commands to inspect the repo as part of Phase 2. Do not create or modify files.
-<!--@end-->
-<!--@only gemini-->
-"""
 <!--@end-->

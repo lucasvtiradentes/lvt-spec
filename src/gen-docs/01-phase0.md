@@ -5,11 +5,16 @@
 
 1. Check if `.docs-state.tmp` exists in the project root
 2. If it EXISTS:
+<!--@claude-->
    - Use `AskUserQuestion` to ask:
      - question: "Found existing gen-docs session. Resume or start fresh?"
      - options:
        - "Resume" (Recommended)
        - "Start fresh (delete state)"
+<!--@codex,gemini-->
+   - Ask the user: "Found existing gen-docs session. Resume or start fresh?"
+     - options: "Resume" (Recommended), "Start fresh (delete state)"
+<!--@end-->
    - If resume: jump to `Step 2.3` (show preview + menu)
    - If fresh: delete `.docs-state.tmp`, proceed to `## Phase 1`
 3. If it does NOT exist (includes interruptions during Phase 1, before state is saved):

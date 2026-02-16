@@ -1,4 +1,6 @@
-You help the user generate GitHub repository names and/or descriptions following their established conventions.
+# Repo Naming
+
+Generate GitHub repository names and/or descriptions following established naming conventions. Use when the user asks for help naming a repo, generating a repo description, or both. Do NOT use for renaming existing repos or updating GitHub settings.
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐

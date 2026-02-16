@@ -1,6 +1,6 @@
 # Align Docs
 
-Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists).
+Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists). Use when the user asks to fix or check markdown alignment. Do NOT use for general markdown editing.
 
 ```
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐

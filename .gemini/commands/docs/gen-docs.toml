@@ -1,6 +1,5 @@
-# Gen Docs
-
-Interactive, state-aware command that generates structured project documentation for AI context. Supports single repo and monorepo. Use when the user asks to generate or create project documentation. Do NOT use for editing existing docs.
+description = "Interactive, state-aware command that generates structured project documentation for AI context. Supports single repo and monorepo. Use when the user asks to generate or create project documentation. Do NOT use for editing existing docs."
+prompt = """
 
 ```
 ┌─────────────┐    ┌─────────────┐    ┌──────────────────────────────┐    ┌───────────────┐
@@ -104,11 +103,8 @@ The phase stays at 2 until docs are fully generated. There is no `phase: 3` - wh
 
 1. Check if `.docs-state.tmp` exists in the project root
 2. If it EXISTS:
-   - Use `AskUserQuestion` to ask:
-     - question: "Found existing gen-docs session. Resume or start fresh?"
-     - options:
-       - "Resume" (Recommended)
-       - "Start fresh (delete state)"
+   - Ask the user: "Found existing gen-docs session. Resume or start fresh?"
+     - options: "Resume" (Recommended), "Start fresh (delete state)"
    - If resume: jump to `Step 2.3` (show preview + menu)
    - If fresh: delete `.docs-state.tmp`, proceed to `## Phase 1`
 3. If it does NOT exist (includes interruptions during Phase 1, before state is saved):
@@ -120,14 +116,9 @@ The phase stays at 2 until docs are fully generated. There is no `phase: 3` - wh
 
 ### Step 1.1 - Ask project type
 
-Use `AskUserQuestion`:
-- question: "What type of project is this?"
-- header: "Project type"
-- options:
-  - label: "Single Repo"
-    description: "One language/concern, personal projects, libraries, single-service apps"
-  - label: "Monorepo"
-    description: "Multiple packages (api, frontend, infra), multi-team, multiple package.json"
+Ask the user: "What type of project is this?"
+- Single Repo: one language/concern, personal projects, libraries, single-service apps
+- Monorepo: multiple packages (api, frontend, infra), multi-team, multiple package.json
 
 ### Step 1.2 - Identify packages (MONOREPO only)
 
@@ -175,7 +166,6 @@ This phase builds a compact preview outline. 3 discovery agents scan the codebas
 ### Step 2.1 - Launch 3 Discovery Agents
 
 Launch exactly 3 agents in PARALLEL to explore the codebase.
-Use `Task` with `subagent_type: "Explore"` and `run_in_background: true` for each agent.
 
 Each agent gets in its prompt:
 - the project type and packages list
@@ -199,7 +189,6 @@ AGENT PROMPT SCOPING: The prompt sent to each agent must ONLY contain:
 Do NOT include in the agent prompt: the interactive menu (Step 2.4), Phase 3 instructions, or any reference to "generate", "deepen", or "adjust" options.
 
 Wait for all 3 agents to complete.
-Use `TaskOutput(block=true)` to wait for each agent.
 If an agent fails or times out, log which agent failed and proceed with the results from the remaining agents. Then proceed to `Step 2.2`.
 
 ### Step 2.2 - Assemble Preview
@@ -248,12 +237,10 @@ Option 3 - generate:
 ## Phase 3 - Generate
 
 The ENTIRE Phase 3 is executed by a SINGLE orchestrator agent to keep the main agent's context clean.
-The main agent only makes 1 `Task` call.
 
 ### Step 3.0 - Launch Orchestrator
 
 Read `.docs-state.tmp` and launch a SINGLE orchestrator agent (NOT in background).
-Use `Task` with `subagent_type: "general-purpose"` (NOT `run_in_background`).
 Pass in the prompt:
 - the full content of `.docs-state.tmp` (header + preview)
 - the project type, packages list, selected docs
@@ -277,7 +264,6 @@ Create directories based on the Output Structure tree. Generate all docs unless 
 ### Step 3.2 - Launch Generation Agents
 
 Launch one agent per selected doc type (up to 11 agents) in PARALLEL.
-Use `Task` with `subagent_type: "general-purpose"` and `run_in_background: true` for each agent.
 Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
 
 Each agent receives in its prompt:
@@ -288,7 +274,6 @@ Each agent receives in its prompt:
 - the scan instructions from `### Doc Specs` for its doc type
 
 Wait for all agents to complete.
-Use `TaskOutput(block=true)` to wait for each agent.
 If an agent fails or times out, log the failure and continue with the remaining agents. After all agents finish, retry failed doc types once. If still failing, skip them and note in the final summary.
 
 Doc writing rules (include in every agent prompt):
@@ -487,5 +472,6 @@ Rules:
 - Generate all docs unless the user skipped them in Step 1.3
 - The preview in `.docs-state.tmp` is the SOURCE OF TRUTH for `## Phase 3` - only generate what's in the preview
 - Phase 2 uses 3 agents for discovery (compact outlines). Phase 3 is delegated to a SINGLE orchestrator agent that internally launches up to 11 generation agents. The main agent NEVER launches 11 agents directly.
-- Phase 2 agents: `Task` with `subagent_type: "Explore"`, `run_in_background: true`, results via `TaskOutput(block=true)`. Phase 3 orchestrator: single `Task` with `subagent_type: "general-purpose"` (foreground), which internally launches generation `Task` agents in background.
 - Step 2.2 is done by the MAIN agent (combines 3 agent results into .docs-state.tmp).
+
+"""

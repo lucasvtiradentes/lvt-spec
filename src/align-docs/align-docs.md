@@ -1,19 +1,3 @@
-<!--@only codex-->
----
-name: align-docs
-description: Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists). Use when the user asks to fix or check markdown alignment. Do NOT use for general markdown editing.
----
-<!--@end-->
-<!--@only claude-->
-# Align Docs
-
-Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists).
-<!--@end-->
-<!--@only gemini-->
-description = "Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists)"
-prompt = """
-<!--@end-->
-
 ```
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
 │  PHASE 0     │    │  PHASE 1     │    │  PHASE 2     │    │  PHASE 3     │
@@ -85,7 +69,4 @@ If unfixable issues remain after --fix, read each reported file and fix manually
 Re-run `mdalign $ARGUMENTS` to verify. Repeat until clean.
 <!--@gemini-->
 Re-run `mdalign {{args}}` to verify. Repeat until clean.
-<!--@end-->
-<!--@only gemini-->
-"""
 <!--@end-->

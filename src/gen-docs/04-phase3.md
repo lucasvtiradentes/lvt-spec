@@ -3,11 +3,18 @@
 
 ## Phase 3 - Generate
 
-The ENTIRE Phase 3 is executed by a SINGLE orchestrator subagent to keep the main agent's context clean. The main agent only makes 1 Task call.
+The ENTIRE Phase 3 is executed by a SINGLE orchestrator agent to keep the main agent's context clean.
+<!--@claude-->
+The main agent only makes 1 `Task` call.
+<!--@end-->
 
 ### Step 3.0 - Launch Orchestrator
 
-Read `.docs-state.tmp` and launch a SINGLE `Task` with `subagent_type: "general-purpose"` (NOT in background). Pass in the prompt:
+Read `.docs-state.tmp` and launch a SINGLE orchestrator agent (NOT in background).
+<!--@claude-->
+Use `Task` with `subagent_type: "general-purpose"` (NOT `run_in_background`).
+<!--@end-->
+Pass in the prompt:
 - the full content of `.docs-state.tmp` (header + preview)
 - the project type, packages list, selected docs
 - the Output Structure tree (from `## Output Structure`)
@@ -29,7 +36,11 @@ Create directories based on the Output Structure tree. Generate all docs unless 
 
 ### Step 3.2 - Launch Generation Agents
 
-Launch one agent per selected doc type (up to 11 agents) in PARALLEL using `Task` with `subagent_type: "general-purpose"` and `run_in_background: true`. Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
+Launch one agent per selected doc type (up to 11 agents) in PARALLEL.
+<!--@claude-->
+Use `Task` with `subagent_type: "general-purpose"` and `run_in_background: true` for each agent.
+<!--@end-->
+Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
 
 Each agent receives in its prompt:
 - the approved preview for its doc(s)
@@ -38,7 +49,11 @@ Each agent receives in its prompt:
 - the `### Metadata Format` template
 - the scan instructions from `### Doc Specs` for its doc type
 
-Wait for all agents using TaskOutput(block=true). If an agent fails or times out, log the failure and continue with the remaining agents. After all agents finish, retry failed doc types once. If still failing, skip them and note in the final summary.
+Wait for all agents to complete.
+<!--@claude-->
+Use `TaskOutput(block=true)` to wait for each agent.
+<!--@end-->
+If an agent fails or times out, log the failure and continue with the remaining agents. After all agents finish, retry failed doc types once. If still failing, skip them and note in the final summary.
 
 Doc writing rules (include in every agent prompt):
 - Be concise, use bullet points and tables

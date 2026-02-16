@@ -6,7 +6,7 @@ System for writing a single command source file that builds into CLI-specific fo
 
 ```
 src/
-├── config.json                central config for all commands
+├── config.json                central config (metadata + routing)
 ├── <command>/
 │   └── <command>.md           single-file source with agent tags
 └── <command>/
@@ -26,22 +26,45 @@ src/
                            claude codex gemini
 ```
 
+The build script auto-generates headers and footers per agent from config metadata. Source files contain only the shared body + agent-specific variant tags.
+
 ## Config
 
 All commands are registered in `src/config.json`:
 
 ```json
 {
-  "repo-naming": { "namespace": "gh" },
-  "align-docs": { "namespace": "docs" },
-  "gen-docs": { "namespace": "docs", "agents": ["claude"] }
+  "repo-naming": {
+    "namespace": "gh",
+    "title": "Repo Naming",
+    "description": "Generate GitHub repository names and/or descriptions following naming conventions."
+  },
+  "gen-docs": {
+    "namespace": "docs",
+    "title": "Gen Docs",
+    "description": "Interactive command that generates structured project documentation."
+  }
 }
 ```
 
-| Field       | Required | Default                      | Description                     |
-|-------------|----------|------------------------------|---------------------------------|
-| `namespace` | yes      | -                            | output subdirectory (gh, docs)  |
-| `agents`    | no       | `["claude","codex","gemini"]` | which agents to build for      |
+| Field         | Required | Default                       | Description                        |
+|---------------|----------|-------------------------------|------------------------------------|
+| `namespace`   | yes      | -                             | output subdirectory (gh, docs)     |
+| `title`       | yes      | -                             | command title (used in claude h1)  |
+| `description` | yes      | -                             | command description (all agents)   |
+| `agents`      | no       | `["claude","codex","gemini"]` | which agents to build for          |
+
+## Auto-generated headers and footers
+
+The build script prepends/appends the correct format per agent using config metadata:
+
+| Agent  | Header                                       | Footer |
+|--------|----------------------------------------------|--------|
+| claude | `# {title}\n\n{description}`                 | -      |
+| codex  | `---\nname: {name}\ndescription: {desc}\n---` | -      |
+| gemini | `description = "{desc}"\nprompt = """`        | `"""`  |
+
+Source files should NOT include these - they are injected automatically.
 
 ## Output paths
 
@@ -92,11 +115,11 @@ src/gen-docs/
 
 ## Tag syntax
 
-Tags are HTML comments, invisible if rendered as raw markdown.
+Tags are HTML comments, invisible if rendered as raw markdown. Only two tags exist: `<!--@agent-->` and `<!--@end-->`.
 
-### Variant blocks
+### Switch between agents
 
-Switch content per agent. Only the matching agent's lines are emitted:
+Each agent gets their own variant. Non-matching agents get nothing:
 
 ```md
 <!--@claude-->
@@ -108,30 +131,13 @@ GEMINI.md if it exists
 <!--@end-->
 ```
 
-Multiple agents in one variant:
+### Block for specific agents
+
+Same syntax, just list the agents. Unlisted agents get nothing:
 
 ```md
 <!--@codex,gemini-->
-Ask the user what they need:
-<!--@end-->
-```
-
-### Only blocks
-
-Entire block appears only for listed agents, omitted for all others:
-
-```md
-<!--@only codex-->
----
-name: my-skill
-description: does something
----
-<!--@end-->
-```
-
-```md
-<!--@only gemini-->
-"""
+You may run read-only commands.
 <!--@end-->
 ```
 
@@ -141,27 +147,25 @@ Lines without any tag are shared and appear in every output.
 
 ## Tag reference
 
-| Tag                          | Meaning                        |
-|------------------------------|--------------------------------|
-| `<!--@only agent1,agent2-->` | block for listed agents only   |
-| `<!--@agent-->`              | variant for single agent       |
-| `<!--@agent1,agent2-->`      | variant for multiple agents    |
-| `<!--@end-->`                | closes any block               |
-| (no tag)                     | shared, appears in all outputs |
+| Tag                     | Meaning                        |
+|-------------------------|--------------------------------|
+| `<!--@agent-->`         | variant for single agent       |
+| `<!--@agent1,agent2-->` | variant for multiple agents    |
+| `<!--@end-->`           | closes any variant block       |
+| (no tag)                | shared, appears in all outputs |
 
 ## Adding a new command
 
 1. Create `src/<command>/` with `<command>.md`
-2. Add agent-specific headers via `<!--@only-->` tags (codex yaml, gemini toml, claude intro)
-3. Add entry to `src/config.json` with namespace and optionally agents
+2. Add entry to `src/config.json` with namespace, title, description
+3. Use `<!--@agent-->` tags for agent-specific content in the body
 4. Run `make mount`
 
 ## CLI-specific differences to handle
 
-| Concern      | Claude Code                          | Codex CLI                  | Gemini CLI                 |
-|--------------|--------------------------------------|----------------------------|----------------------------|
-| header       | plain text intro                     | yaml front matter          | toml (description, prompt) |
-| arguments    | `<arguments>#$ARGUMENTS</arguments>` | `$ARGUMENTS`               | `{{args}}`                 |
-| config file  | CLAUDE.md                            | AGENTS.md                  | GEMINI.md                  |
-| tool ref     | AskUserQuestion                      | generic "ask the user"     | generic "ask the user"     |
-| permissions  | read-only by default                 | can run read-only commands | can run read-only commands |
+| Concern     | Claude Code                          | Codex CLI                  | Gemini CLI                 |
+|-------------|--------------------------------------|----------------------------|----------------------------|
+| arguments   | `<arguments>#$ARGUMENTS</arguments>` | `$ARGUMENTS`               | `{{args}}`                 |
+| config file | CLAUDE.md                            | AGENTS.md                  | GEMINI.md                  |
+| tool ref    | AskUserQuestion                      | generic "ask the user"     | generic "ask the user"     |
+| permissions | read-only by default                 | can run read-only commands | can run read-only commands |
