@@ -1,2 +1,3 @@
 mount:
-	./scripts/build.sh
+	./scripts/build-commands.sh
+	./scripts/build-hooks.sh
