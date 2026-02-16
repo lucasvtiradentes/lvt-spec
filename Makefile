@@ -1,0 +1,2 @@
+mount:
+	./scripts/mount.sh

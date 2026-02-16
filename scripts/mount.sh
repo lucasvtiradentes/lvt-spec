@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 SRC="$REPO_ROOT/src/gen-docs"
 OUT="$REPO_ROOT/.claude/commands/docs/gen-docs.md"
 
