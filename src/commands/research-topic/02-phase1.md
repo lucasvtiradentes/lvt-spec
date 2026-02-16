@@ -8,7 +8,16 @@ Convert the argument to kebab-case for the folder name:
 - "Docker" → "docker"
 - "Kubernetes basics" → "kubernetes-basics"
 
-### Step 1.2 - Launch Discovery Agents
+### Step 1.2 - Save Initial State
+
+Write `.research-state.tmp` BEFORE launching agents (so we can resume if agents fail):
+```
+phase: 1
+topic: {original topic}
+folder: docs/research/{kebab-case-topic}
+```
+
+### Step 1.3 - Launch Discovery Agents
 
 Launch 2 agents in PARALLEL to discover relevant subtopics.
 <!--@claude-->
@@ -33,7 +42,7 @@ Wait for both agents to complete.
 Use `TaskOutput(block=true)` to wait for each agent.
 <!--@end-->
 
-### Step 1.3 - Build Doc List
+### Step 1.4 - Build Doc List
 
 Combine agent results and build a numbered doc list:
 
@@ -48,9 +57,9 @@ Dynamic files (from discovery):
 
 Name files as kebab-case nouns (e.g., `2-commands.md`, `3-networking.md`).
 
-### Step 1.4 - Save State
+### Step 1.5 - Update State
 
-Write `.research-state.tmp`:
+Update `.research-state.tmp` with discovered docs:
 ```
 phase: 2
 topic: {original topic}

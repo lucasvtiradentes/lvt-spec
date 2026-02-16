@@ -63,15 +63,15 @@ All docs are generated unless the user explicitly skips them in Step 1.3.
 
 All progress is tracked in `.docs-state.tmp` (single file, no folder needed).
 
-After `Step 1.4` (header only):
+After `Step 1.4` (header only, before agents):
 ```
-phase: 2
+phase: 1
 type: monorepo
 packages: apps/api,apps/web,packages/infra
 docs: overview,architecture,concepts,repo,db,rules,integrations,testing,guides,features,pkg-overview
 ```
 
-After `Step 2.2` (preview appended, phase stays 2 until user picks "generate"):
+After `Step 2.2` (preview appended, phase updated to 2):
 ```
 phase: 2
 type: monorepo

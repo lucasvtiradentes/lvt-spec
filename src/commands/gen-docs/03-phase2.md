@@ -41,7 +41,11 @@ If an agent fails or times out, log which agent failed and proceed with the resu
 
 ### Step 2.2 - Assemble Preview
 
-Combine all 3 agent results into `.docs-state.tmp` after the header, prefixed with `--- PREVIEW ---`. On first run, write the preview as-is. On deepen runs, MERGE new findings into the existing preview (add new bullets, enrich existing ones) - do NOT replace the entire preview.
+Update `.docs-state.tmp`:
+1. Change `phase: 1` to `phase: 2` (if not already)
+2. Append preview after the header, prefixed with `--- PREVIEW ---`
+
+On first run, write the preview as-is. On deepen runs, MERGE new findings into the existing preview (add new bullets, enrich existing ones) - do NOT replace the entire preview.
 
 Observability findings go into the architecture.md preview entry. Cloud/infra findings go into the repo/infrastructure.md preview entry.
 

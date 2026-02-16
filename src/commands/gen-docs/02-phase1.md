@@ -45,9 +45,9 @@ Apply whatever the user says (remove docs, add custom ones, etc.). Docs to gener
 
 ### Step 1.4 - Save state
 
-Write `.docs-state.tmp`:
+Write `.docs-state.tmp` BEFORE launching agents (so we can resume if agents fail):
 ```
-phase: 2
+phase: 1
 type: {monorepo|single}
 packages: {comma-separated paths, e.g. apps/api,apps/web - empty for single repo}
 docs: {comma-separated list of selected docs}
