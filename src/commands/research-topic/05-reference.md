@@ -117,7 +117,10 @@ Include all URLs used during research. Prefer official docs over blog posts.
 - `{N}-references.md` is always last
 - Preview in `.research-state.tmp` is the SOURCE OF TRUTH for Phase 3
 - Each generation agent writes ONE file and does its own WebSearch for detailed content
+- Phase 4 allows iterating on existing research without starting over
+- When adding new files in Phase 4, renumber subsequent files to maintain order
 <!--@claude-->
 - Phase 1 agents: `Task` with `subagent_type: "general-purpose"`, `run_in_background: true`
 - Phase 3 agents: `Task` with `subagent_type: "general-purpose"`, `run_in_background: true`, one per file
+- Phase 4 agents: `Task` with `subagent_type: "general-purpose"`, targeted updates
 <!--@end-->
