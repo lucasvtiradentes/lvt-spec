@@ -1,8 +1,6 @@
 ## Arguments
 
-<!--@claude-->
-- $ARGUMENTS: GitHub repo URL (e.g., "https://github.com/user/repo") or shorthand "user/repo"
-<!--@codex-->
+<!--@claude,codex-->
 - $ARGUMENTS: GitHub repo URL (e.g., "https://github.com/user/repo") or shorthand "user/repo"
 <!--@gemini-->
 - {{args}}: GitHub repo URL (e.g., "https://github.com/user/repo") or shorthand "user/repo"
@@ -10,13 +8,7 @@
 
 ## Instructions
 
-<!--@claude-->
-1. Parse Input: Extract owner and repo name from $ARGUMENTS. Support both full URL and shorthand format.
-<!--@codex-->
-1. Parse Input: Extract owner and repo name from $ARGUMENTS. Support both full URL and shorthand format.
-<!--@gemini-->
-1. Parse Input: Extract owner and repo name from {{args}}. Support both full URL and shorthand format.
-<!--@end-->
+1. Parse Input: Extract owner and repo name from the input. Support both full URL and shorthand format.
 
 2. Fetch Repo Metadata: Use `gh repo view {owner}/{repo} --json url,createdAt,stargazerCount` to get repo info.
 
@@ -111,12 +103,11 @@
 
 10. Cleanup: Remove the cloned temp directory after analysis.
 
-<!--@claude-->
-11. Post-Generation: After all docs are created, run `/docs:align-docs` on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
+11. Post-Generation: After all docs are created, run the align-docs command on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
+<!--@claude,gemini-->
+    Use `/docs:align-docs`.
 <!--@codex-->
-11. Post-Generation: After all docs are created, run `$align-docs` on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
-<!--@gemini-->
-11. Post-Generation: After all docs are created, run `/docs:align-docs` on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
+    Use `$align-docs`.
 <!--@end-->
 
 12. Output: Show the folder structure created and a brief summary of findings.

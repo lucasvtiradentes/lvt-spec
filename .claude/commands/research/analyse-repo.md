@@ -8,7 +8,7 @@ Analyse a GitHub repository and create structured documentation about its codeba
 
 ## Instructions
 
-1. Parse Input: Extract owner and repo name from $ARGUMENTS. Support both full URL and shorthand format.
+1. Parse Input: Extract owner and repo name from the input. Support both full URL and shorthand format.
 
 2. Fetch Repo Metadata: Use `gh repo view {owner}/{repo} --json url,createdAt,stargazerCount` to get repo info.
 
@@ -103,6 +103,7 @@ Analyse a GitHub repository and create structured documentation about its codeba
 
 10. Cleanup: Remove the cloned temp directory after analysis.
 
-11. Post-Generation: After all docs are created, run `/docs:align-docs` on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
+11. Post-Generation: After all docs are created, run the align-docs command on the generated folder to auto-fix alignment issues in tables and ASCII diagrams. Re-run until clean.
+    Use `/docs:align-docs`.
 
 12. Output: Show the folder structure created and a brief summary of findings.

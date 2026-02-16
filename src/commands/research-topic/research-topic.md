@@ -1,3 +1,14 @@
+```
+┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
+│ PHASE 0      │    │ PHASE 1      │    │ PHASE 2      │    │ PHASE 3      │
+│ Research     │    │ Agents       │    │ Generate     │    │ Validate     │
+│              │    │              │    │              │    │              │
+│ WebSearch    │───>│ launch       │───>│ create       │───>│ align-docs   │
+│ for docs,    │    │ parallel     │    │ folder +     │    │ show folder  │
+│ tutorials    │    │ agents       │    │ markdown     │    │ structure    │
+└──────────────┘    └──────────────┘    └──────────────┘    └──────────────┘
+```
+
 ## Arguments
 
 <!--@claude,codex-->
@@ -29,24 +40,17 @@
    - `4-{subtopic}.md`     - Advanced topics
    - `5-best-practices.md` - Best practices, tips, troubleshooting, sources
 
-5. File Format:
-   - Use tables for commands/options when applicable
-   - Include code examples with proper syntax highlighting
-   - Keep explanations concise
+5. File Format: Follow rules in `docs/doc-style.md`. Additionally:
+   - Use tables for commands/options
+   - Include code examples with syntax highlighting
    - Add sources at the end of the last file
    - Write in English
-   - Tables must have "|" aligned vertically:
-     ```
-     | Command              | Description                              |
-     |----------------------|------------------------------------------|
-     | `terraform init`     | Initialize directory, download providers |
-     | `terraform plan`     | Show changes to be made (dry run)        |
-     ```
-   - Lists with descriptions must have " - " aligned vertically:
-     ```
-     1. Remote state       - use GCS bucket with versioning
-     2. State locking      - use Cloud Firestore or Terraform Cloud
-     3. Secrets            - never hardcode, use Secret Manager
-     ```
 
-6. Output: After creating files, show the folder structure created.
+6. Post-Generation: Run align-docs on the generated folder. Re-run until clean.
+<!--@claude,gemini-->
+   Use `/docs:align-docs`.
+<!--@codex-->
+   Use `$align-docs`.
+<!--@end-->
+
+7. Output: Show the folder structure created.

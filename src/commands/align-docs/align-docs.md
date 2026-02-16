@@ -12,9 +12,7 @@
 
 ## Arguments
 
-<!--@claude-->
-- $ARGUMENTS: file or folder paths to check (optional, defaults to docs/)
-<!--@codex-->
+<!--@claude,codex-->
 - $ARGUMENTS: file or folder paths to check (optional, defaults to docs/)
 <!--@gemini-->
 - {{args}}: file or folder paths to check (optional, defaults to docs/)
