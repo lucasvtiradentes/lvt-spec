@@ -1,6 +1,5 @@
-# Align Docs
-
-Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists).
+description = "Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists)"
+prompt = """
 
 ```
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
@@ -16,7 +15,7 @@ Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagram
 
 ## Arguments
 
-- $ARGUMENTS: file or folder paths to check (optional, defaults to docs/)
+- {{args}}: file or folder paths to check (optional, defaults to docs/)
 
 ## Instructions
 
@@ -35,7 +34,7 @@ If not found, ask the user if they want to install it (`pipx install mdalign`). 
 Run alignment check on target files:
 
 ```bash
-mdalign --verbose $ARGUMENTS
+mdalign --verbose {{args}}
 ```
 
 If exit code 0 (all aligned), report success and stop.
@@ -45,10 +44,11 @@ If exit code 0 (all aligned), report success and stop.
 If errors found, auto-fix them:
 
 ```bash
-mdalign --fix $ARGUMENTS
+mdalign --fix {{args}}
 ```
 
 ### Phase 3 - Manual fix
 
 If unfixable issues remain after --fix, read each reported file and fix manually.
-Re-run `mdalign $ARGUMENTS` to verify. Repeat until clean.
+Re-run `mdalign {{args}}` to verify. Repeat until clean.
+"""

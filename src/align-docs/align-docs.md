@@ -1,6 +1,18 @@
+<!--@only codex-->
+---
+name: align-docs
+description: Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists). Use when the user asks to fix or check markdown alignment. Do NOT use for general markdown editing.
+---
+<!--@end-->
+<!--@only claude-->
 # Align Docs
 
 Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists).
+<!--@end-->
+<!--@only gemini-->
+description = "Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists)"
+prompt = """
+<!--@end-->
 
 ```
 ┌──────────────┐    ┌──────────────┐    ┌──────────────┐    ┌──────────────┐
@@ -16,7 +28,13 @@ Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagram
 
 ## Arguments
 
+<!--@claude-->
 - $ARGUMENTS: file or folder paths to check (optional, defaults to docs/)
+<!--@codex-->
+- $ARGUMENTS: file or folder paths to check (optional, defaults to docs/)
+<!--@gemini-->
+- {{args}}: file or folder paths to check (optional, defaults to docs/)
+<!--@end-->
 
 ## Instructions
 
@@ -34,9 +52,15 @@ If not found, ask the user if they want to install it (`pipx install mdalign`). 
 
 Run alignment check on target files:
 
+<!--@claude,codex-->
 ```bash
 mdalign --verbose $ARGUMENTS
 ```
+<!--@gemini-->
+```bash
+mdalign --verbose {{args}}
+```
+<!--@end-->
 
 If exit code 0 (all aligned), report success and stop.
 
@@ -44,11 +68,24 @@ If exit code 0 (all aligned), report success and stop.
 
 If errors found, auto-fix them:
 
+<!--@claude,codex-->
 ```bash
 mdalign --fix $ARGUMENTS
 ```
+<!--@gemini-->
+```bash
+mdalign --fix {{args}}
+```
+<!--@end-->
 
 ### Phase 3 - Manual fix
 
 If unfixable issues remain after --fix, read each reported file and fix manually.
+<!--@claude,codex-->
 Re-run `mdalign $ARGUMENTS` to verify. Repeat until clean.
+<!--@gemini-->
+Re-run `mdalign {{args}}` to verify. Repeat until clean.
+<!--@end-->
+<!--@only gemini-->
+"""
+<!--@end-->

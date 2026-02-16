@@ -1,4 +1,5 @@
 {
+  "align-docs": { "namespace": "docs" },
   "repo-naming": { "namespace": "gh" },
   "gen-docs": { "namespace": "docs", "agents": ["claude"] }
 }
