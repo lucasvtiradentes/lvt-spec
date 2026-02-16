@@ -6,7 +6,7 @@
 │             │    │             │    │                              │    │               │
 │ .tmp exists?│───>│ project     │───>│ 2.1 launch agents → scan     │───>│ write docs/   │
 │ docs/ exists│    │ type?       │    │ 2.2 build preview in .tmp    │    │ from approved │
-│ or fresh?   │    │ packages?   │    │ 2.3 show preview to user     │    │ preview       │
+│ or new?     │    │ packages?   │    │ 2.3 show preview to user     │    │ preview       │
 └──────┬──────┘    │ skip docs?  │    │      <loop until "go">       │    │               │
        │           └─────────────┘    └──────────────────────────────┘    └───────────────┘
        │

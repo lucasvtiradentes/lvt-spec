@@ -10,7 +10,7 @@ description: Interactive, state-aware command that generates or updates structur
 │             │    │             │    │                              │    │               │
 │ .tmp exists?│───>│ project     │───>│ 2.1 launch agents → scan     │───>│ write docs/   │
 │ docs/ exists│    │ type?       │    │ 2.2 build preview in .tmp    │    │ from approved │
-│ or fresh?   │    │ packages?   │    │ 2.3 show preview to user     │    │ preview       │
+│ or new?     │    │ packages?   │    │ 2.3 show preview to user     │    │ preview       │
 └──────┬──────┘    │ skip docs?  │    │      <loop until "go">       │    │               │
        │           └─────────────┘    └──────────────────────────────┘    └───────────────┘
        │
@@ -125,13 +125,10 @@ If `docs/` folder exists AND contains gen-docs generated files (overview.md, arc
 ### Step 0.2 - Check for .tmp file
 
 If `.docs-state.tmp` exists in the project root:
-- Ask the user: "Found existing gen-docs session. Resume or start fresh?"
-  - options: "Resume" (Recommended), "Start fresh (delete state)"
-- If resume: read phase from file
+- Read phase from file and resume:
   - If `phase: 1` → jump to `Step 2.1` (launch discovery agents)
   - If `phase: 2` and NO preview → jump to `Step 2.1` (launch discovery agents)
   - If `phase: 2` and HAS preview → jump to `Step 2.3` (show preview + menu)
-- If fresh: delete `.docs-state.tmp`, proceed to `## Phase 1`
 
 ### Step 0.3 - New project
 
