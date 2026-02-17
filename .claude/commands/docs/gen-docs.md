@@ -593,7 +593,11 @@ related sources:
 ```
 
 Rules:
-- related docs: other docs in docs/ that THIS doc depends on (unidirectional, no back-links)
+- related docs: other docs that THIS doc PULLS information from (true dependencies only)
+  - UNIDIRECTIONAL: if A references B, do NOT add B references A (creates circular deps)
+  - Ask: "does this doc need info from that doc to be correct?" - if yes, add it; if it's just "see also", don't
+  - Example: features/auth.md depends on concepts.md (uses types defined there) → add
+  - Example: concepts.md does NOT depend on features/auth.md (just "see also") → don't add
 - related sources: actual codebase files AND folders relevant to this doc's topic
 - list folders when the whole directory is relevant, list specific files when only that file matters
 - keep it focused: only list things that are directly relevant, not tangentially related
