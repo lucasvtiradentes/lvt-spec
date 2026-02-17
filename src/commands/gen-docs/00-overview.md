@@ -30,8 +30,7 @@
 ## Output Structure
 
 ```
-single repo:                         monorepo:
-docs/                                docs/
+docs/ (single repo)                  docs/ (monorepo)
 ├── overview.md                      ├── overview.md
 ├── architecture.md                  ├── architecture.md
 ├── concepts.md                      ├── concepts.md
@@ -42,18 +41,19 @@ docs/                                docs/
 │   ├── cicd.md                      │   ├── cicd.md
 │   └── infrastructure.md            │   └── infrastructure.md
 ├── features/                        ├── features/
----------------------------------------------------
+│   └── {feature}.md                 │   └── {feature}.md
 ├── db.md                            └── packages/
 ├── rules.md                             └── {pkg}/
 ├── integrations.md                          ├── overview.md
 ├── testing.md                               ├── db.md
 └── guides/                                  ├── rules.md
-                                             ├── integrations.md
+    └── {topic}.md                           ├── integrations.md
                                              ├── testing.md
                                              └── guides/
-(above the line: shared between both types)
-(below the line: single repo has files at root, monorepo nests them under packages/{pkg}/)
+                                                 └── {topic}.md
 ```
+
+Package-specific docs (db, rules, integrations, testing, guides) are at root in single repo, nested under `packages/{pkg}/` in monorepo.
 
 All docs are generated unless the user explicitly skips them in Step 1.3.
 

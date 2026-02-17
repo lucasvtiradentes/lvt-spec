@@ -3,7 +3,7 @@
 
 ## Phase 2 - Preview Loop
 
-This phase builds a compact preview outline. 3 discovery agents scan the codebase in parallel. The heavy 11-agent generation only happens in Phase 3 when the user says "generate".
+This phase builds a compact preview outline. 3 discovery agents scan the codebase in parallel. The heavy generation (one agent per doc type, up to 11 types) only happens in Phase 3 when the user says "generate".
 
 ### Step 2.1 - Launch 3 Discovery Agents
 
@@ -55,7 +55,7 @@ Observability findings go into the architecture.md preview entry. Cloud/infra fi
 
 ### Step 2.3 - Show Preview
 
-Read `.docs-state.tmp` and display the preview section (everything after `--- PREVIEW ---`) to the user.
+Read `.docs-state.tmp` and display the preview section (everything after `--- PREVIEW ---`) to the user. Then proceed to Step 2.4.
 
 ### Step 2.4 - Interactive Menu
 

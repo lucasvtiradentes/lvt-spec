@@ -33,8 +33,7 @@ Interactive, state-aware command that generates or updates structured project do
 ## Output Structure
 
 ```
-single repo:                         monorepo:
-docs/                                docs/
+docs/ (single repo)                  docs/ (monorepo)
 ├── overview.md                      ├── overview.md
 ├── architecture.md                  ├── architecture.md
 ├── concepts.md                      ├── concepts.md
@@ -45,18 +44,19 @@ docs/                                docs/
 │   ├── cicd.md                      │   ├── cicd.md
 │   └── infrastructure.md            │   └── infrastructure.md
 ├── features/                        ├── features/
----------------------------------------------------
+│   └── {feature}.md                 │   └── {feature}.md
 ├── db.md                            └── packages/
 ├── rules.md                             └── {pkg}/
 ├── integrations.md                          ├── overview.md
 ├── testing.md                               ├── db.md
 └── guides/                                  ├── rules.md
-                                             ├── integrations.md
+    └── {topic}.md                           ├── integrations.md
                                              ├── testing.md
                                              └── guides/
-(above the line: shared between both types)
-(below the line: single repo has files at root, monorepo nests them under packages/{pkg}/)
+                                                 └── {topic}.md
 ```
+
+Package-specific docs (db, rules, integrations, testing, guides) are at root in single repo, nested under `packages/{pkg}/` in monorepo.
 
 All docs are generated unless the user explicitly skips them in Step 1.3.
 
@@ -194,7 +194,7 @@ Proceed to `## Phase 2`.
 
 ## Phase 2 - Preview Loop
 
-This phase builds a compact preview outline. 3 discovery agents scan the codebase in parallel. The heavy 11-agent generation only happens in Phase 3 when the user says "generate".
+This phase builds a compact preview outline. 3 discovery agents scan the codebase in parallel. The heavy generation (one agent per doc type, up to 11 types) only happens in Phase 3 when the user says "generate".
 
 ### Step 2.1 - Launch 3 Discovery Agents
 
@@ -238,7 +238,7 @@ Observability findings go into the architecture.md preview entry. Cloud/infra fi
 
 ### Step 2.3 - Show Preview
 
-Read `.docs-state.tmp` and display the preview section (everything after `--- PREVIEW ---`) to the user.
+Read `.docs-state.tmp` and display the preview section (everything after `--- PREVIEW ---`) to the user. Then proceed to Step 2.4.
 
 ### Step 2.4 - Interactive Menu
 
@@ -304,7 +304,7 @@ Create directories based on the Output Structure tree. Generate all docs unless 
 
 ### Step 3.2 - Launch Generation Agents
 
-Launch one agent per selected doc type (up to 11 agents) in PARALLEL.
+Launch one agent per selected doc type (up to 11 doc types) in PARALLEL. Note: some doc types generate multiple files (e.g., repo generates 5 files).
 Use `Task` with `subagent_type: "general-purpose"` and `run_in_background: true` for each agent.
 Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
 
@@ -347,9 +347,16 @@ You MUST NOT proceed to Step 3.4 until mdalign passes clean.
 2. Reply with: "Generated {N} files in docs/. mdalign: clean." + list of generated files.
 3. If mdalign was NOT run (e.g. install failed), say so explicitly in the reply.
 
-### Step 3.5 - Transition to Phase 4
+(end of orchestrator instructions)
 
-After generation completes, proceed to `## Phase 4` Step 4.2 to show the iterate menu.
+---
+
+### Step 3.5 - Transition to Phase 4 (MAIN AGENT)
+
+After the orchestrator completes and returns its summary, the MAIN agent:
+1. Displays the orchestrator's summary to the user
+2. Proceeds to `## Phase 4` Step 4.2 to show the iterate menu
+
 This allows the user to review and make adjustments immediately.
 
 ---

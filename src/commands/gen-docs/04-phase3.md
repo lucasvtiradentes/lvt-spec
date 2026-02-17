@@ -38,7 +38,7 @@ Create directories based on the Output Structure tree. Generate all docs unless 
 
 ### Step 3.2 - Launch Generation Agents
 
-Launch one agent per selected doc type (up to 11 agents) in PARALLEL.
+Launch one agent per selected doc type (up to 11 doc types) in PARALLEL. Note: some doc types generate multiple files (e.g., repo generates 5 files).
 <!--@claude-->
 Use `Task` with `subagent_type: "general-purpose"` and `run_in_background: true` for each agent.
 <!--@gemini,codex-->
@@ -89,7 +89,14 @@ You MUST NOT proceed to Step 3.4 until mdalign passes clean.
 2. Reply with: "Generated {N} files in docs/. mdalign: clean." + list of generated files.
 3. If mdalign was NOT run (e.g. install failed), say so explicitly in the reply.
 
-### Step 3.5 - Transition to Phase 4
+(end of orchestrator instructions)
 
-After generation completes, proceed to `## Phase 4` Step 4.2 to show the iterate menu.
+---
+
+### Step 3.5 - Transition to Phase 4 (MAIN AGENT)
+
+After the orchestrator completes and returns its summary, the MAIN agent:
+1. Displays the orchestrator's summary to the user
+2. Proceeds to `## Phase 4` Step 4.2 to show the iterate menu
+
 This allows the user to review and make adjustments immediately.
