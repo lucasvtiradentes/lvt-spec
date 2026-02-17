@@ -4,6 +4,11 @@
     "title": "Align Docs",
     "description": "Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists). Use when the user asks to fix or check markdown alignment. Do NOT use for general markdown editing."
   },
+  "brainstorm": {
+    "namespace": "research",
+    "title": "Brainstorm",
+    "description": "Interactive brainstorm session that captures ideas, asks clarifying questions, and organizes decisions into a structured markdown file. Use when the user wants to brainstorm, explore ideas, or think through a topic. Pass a topic name for new session or existing file to continue."
+  },
   "analyse-repo": {
     "namespace": "research",
     "title": "Analyse Repo",
