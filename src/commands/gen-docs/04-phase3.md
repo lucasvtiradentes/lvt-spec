@@ -13,6 +13,8 @@ The main agent only makes 1 `Task` call.
 Read `.docs-state.tmp` and launch a SINGLE orchestrator agent (NOT in background).
 <!--@claude-->
 Use `Task` with `subagent_type: "general-purpose"` (NOT `run_in_background`).
+<!--@gemini,codex-->
+Launch a single foreground agent to orchestrate the generation.
 <!--@end-->
 Pass in the prompt:
 - the full content of `.docs-state.tmp` (header + preview)
@@ -39,6 +41,8 @@ Create directories based on the Output Structure tree. Generate all docs unless 
 Launch one agent per selected doc type (up to 11 agents) in PARALLEL.
 <!--@claude-->
 Use `Task` with `subagent_type: "general-purpose"` and `run_in_background: true` for each agent.
+<!--@gemini,codex-->
+Launch one background agent per doc type to generate content in parallel.
 <!--@end-->
 Each agent writes doc files directly to `docs/`. Each agent MUST reply with ONLY "done" when finished.
 
@@ -52,6 +56,8 @@ Each agent receives in its prompt:
 Wait for all agents to complete.
 <!--@claude-->
 Use `TaskOutput(block=true)` to wait for each agent.
+<!--@gemini,codex-->
+Wait for all background agents to finish before proceeding.
 <!--@end-->
 If an agent fails or times out, log the failure and continue with the remaining agents. After all agents finish, retry failed doc types once. If still failing, skip them and note in the final summary.
 
@@ -80,5 +86,10 @@ You MUST NOT proceed to Step 3.4 until mdalign passes clean.
 ### Step 3.4 - Cleanup
 
 1. Delete `.docs-state.tmp`
-2. Reply with: "Done! Generated {N} files in docs/. mdalign: clean. Review them and adjust as needed." + list of generated files.
+2. Reply with: "Generated {N} files in docs/. mdalign: clean." + list of generated files.
 3. If mdalign was NOT run (e.g. install failed), say so explicitly in the reply.
+
+### Step 3.5 - Transition to Phase 4
+
+After generation completes, proceed to `## Phase 4` Step 4.2 to show the iterate menu.
+This allows the user to review and make adjustments immediately.

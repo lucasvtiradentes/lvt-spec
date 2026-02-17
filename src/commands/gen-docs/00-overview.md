@@ -1,26 +1,30 @@
 
 ```
-┌─────────────┐    ┌─────────────┐    ┌──────────────────────────────┐    ┌───────────────┐
-│ PHASE 0     │    │ PHASE 1     │    │  PHASE 2                     │    │ PHASE 3       │
-│ Route       │    │ Setup       │    │  Preview Loop                │    │ Generate      │
-│             │    │             │    │                              │    │               │
-│ .tmp exists?│───>│ project     │───>│ 2.1 launch agents → scan     │───>│ write docs/   │
-│ docs/ exists│    │ type?       │    │ 2.2 build preview in .tmp    │    │ from approved │
-│ or new?     │    │ packages?   │    │ 2.3 show preview to user     │    │ preview       │
-└──────┬──────┘    │ skip docs?  │    │      <loop until "go">       │    │               │
-       │           └─────────────┘    └──────────────────────────────┘    └───────────────┘
-       │
-       │ (if docs/ exists)
-       v
-┌─────────────────────────────────┐
-│ PHASE 4                         │
-│ Iterate                         │
-│                                 │
-│ show current docs               │
-│ menu: update / exit             │
-│ user describes changes          │
-│ agents update → align-docs      │
-└─────────────────────────────────┘
+┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐    ┌───────────────────┐
+│ PHASE 0           │    │ PHASE 1           │    │ PHASE 2           │    │ PHASE 3           │
+│ Route             │    │ Setup             │    │ Preview Loop      │    │ Generate          │
+│                   │    │                   │    │                   │    │                   │
+│ .tmp exists?      │───>│ project type?     │───>│ launch agents     │───>│ write docs/       │
+│ docs/ exists?     │    │ packages?         │    │ build preview     │    │ from approved     │
+│ or new?           │    │ skip docs?        │    │ <loop until "go"> │    │ preview           │
+└─────────┬─────────┘    └───────────────────┘    └───────────────────┘    └─────────┬─────────┘
+          │                                                                          │
+          │ (docs/ exists)                                                           │
+          │                                                                          │
+          │    ┌─────────────────────────────────────────────────────────────────────┘
+          │    │
+          v    v
+    ┌───────────────────┐
+    │ PHASE 4           │<───┐
+    │ Iterate           │    │
+    │                   │    │
+    │ show current docs │    │ (update)
+    │ menu: update/exit │    │
+    │ agents + align    │────┘
+    └─────────┬─────────┘
+              │ (exit)
+              v
+           [done]
 ```
 
 ## Output Structure

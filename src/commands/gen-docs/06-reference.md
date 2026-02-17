@@ -171,5 +171,8 @@ Rules:
 <!--@claude-->
 - Phase 2 agents: `Task` with `subagent_type: "Explore"`, `run_in_background: true`, results via `TaskOutput(block=true)`. Phase 3 orchestrator: single `Task` with `subagent_type: "general-purpose"` (foreground), which internally launches generation `Task` agents in background.
 - Phase 4 agents: `Task` with `subagent_type: "general-purpose"`, targeted updates based on user request.
+<!--@gemini,codex-->
+- Phase 2: launch 3 background agents, wait for completion. Phase 3: single foreground orchestrator that launches generation agents in background.
+- Phase 4: launch agents for targeted updates based on user request.
 <!--@end-->
 - Step 2.2 is done by the MAIN agent (combines 3 agent results into .docs-state.tmp).

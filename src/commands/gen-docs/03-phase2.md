@@ -10,6 +10,8 @@ This phase builds a compact preview outline. 3 discovery agents scan the codebas
 Launch exactly 3 agents in PARALLEL to explore the codebase.
 <!--@claude-->
 Use `Task` with `subagent_type: "Explore"` and `run_in_background: true` for each agent.
+<!--@gemini,codex-->
+Launch 3 background agents to explore the codebase in parallel.
 <!--@end-->
 
 Each agent gets in its prompt:
@@ -36,6 +38,8 @@ Do NOT include in the agent prompt: the interactive menu (Step 2.4), Phase 3 ins
 Wait for all 3 agents to complete.
 <!--@claude-->
 Use `TaskOutput(block=true)` to wait for each agent.
+<!--@gemini,codex-->
+Wait for all background agents to finish before proceeding.
 <!--@end-->
 If an agent fails or times out, log which agent failed and proceed with the results from the remaining agents. Then proceed to `Step 2.2`.
 

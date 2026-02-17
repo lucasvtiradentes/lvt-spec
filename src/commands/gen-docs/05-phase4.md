@@ -56,13 +56,15 @@ Option 2 - exit:
 Based on user description, launch agent(s) to:
 <!--@claude-->
 Use `Task` with `subagent_type: "general-purpose"`.
+<!--@gemini,codex-->
+Launch an agent to perform the requested update.
 <!--@end-->
 
 Possible actions:
-- **Add content** - scan codebase + append/modify existing file
-- **Add new file** - scan codebase + create new doc file
-- **Update existing** - re-scan relevant code + modify file
-- **Fix formatting** - Read file + apply fixes
+- Add content: scan codebase + append/modify existing file
+- Add new file: scan codebase + create new doc file
+- Update existing: re-scan relevant code + modify file
+- Fix formatting: Read file + apply fixes
 
 Each agent receives:
 - The user's request
