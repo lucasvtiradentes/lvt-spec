@@ -40,6 +40,12 @@ When user responds with their ideas:
 
 ## Context
 
+## Raw
+
+```
+{user's exact input here, unprocessed}
+```
+
 ## Raw Ideas
 
 - {parsed bullet 1 from user input}
@@ -57,7 +63,8 @@ When user responds with their ideas:
 ### Codebase Findings
 ```
 
-Parse user's free-form text into bullet points. Keep their words, just structure them.
+1. Save user's exact input in `## Raw` section (inside code block, unprocessed)
+2. Parse user's free-form text into bullet points for `## Raw Ideas`. Keep their words, just structure them.
 
 Update `## Meta`: set `phase: clarification`, `last-action: initial ideas captured`.
 

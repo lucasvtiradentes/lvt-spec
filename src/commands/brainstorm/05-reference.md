@@ -15,6 +15,12 @@
 - Processed insights (not raw)
 - Key constraints identified
 
+## Raw
+```
+Exact user input, original language, no processing.
+Appended on each dump. Preserved as-is.
+```
+
 ## Raw Ideas
 - Unprocessed user thoughts
 - Kept as-is, user's words
@@ -91,7 +97,8 @@ When updating `## Decisions`:
 - File is always at project root: `brainstorm-{topic-kebab}.md`
 - `## Meta` tracks phase + last-action for resume capability
 - `## Context` holds processed understanding (not raw)
-- Raw Ideas preserve user's words, minimal processing
+- `## Raw` holds exact user input, unprocessed, in code block
+- `## Raw Ideas` parses raw into bullet points
 - Decisions are auto-consolidated by subtopic
 - Research findings have confidence tags: `[HIGH]`, `[MED]`, `[LOW]`
 - Questions use inline options format with [R] for recommended

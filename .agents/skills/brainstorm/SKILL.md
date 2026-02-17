@@ -50,6 +50,12 @@ Example filenames:
 - accumulated understanding from Q&A
 - processed insights
 
+## Raw
+
+```
+{exact text as typed by user, original language, no processing}
+```
+
 ## Raw Ideas
 
 - initial idea 1
@@ -146,6 +152,12 @@ When user responds with their ideas:
 
 ## Context
 
+## Raw
+
+```
+{user's exact input here, unprocessed}
+```
+
 ## Raw Ideas
 
 - {parsed bullet 1 from user input}
@@ -163,7 +175,8 @@ When user responds with their ideas:
 ### Codebase Findings
 ```
 
-Parse user's free-form text into bullet points. Keep their words, just structure them.
+1. Save user's exact input in `## Raw` section (inside code block, unprocessed)
+2. Parse user's free-form text into bullet points for `## Raw Ideas`. Keep their words, just structure them.
 
 Update `## Meta`: set `phase: clarification`, `last-action: initial ideas captured`.
 
@@ -304,8 +317,9 @@ Go ahead, tell me more:
 CRITICAL: After prompting you MUST STOP. The NEXT message MUST come from the USER.
 
 When user responds:
+- Append exact input to `## Raw` section (inside code block)
 - Parse their input into bullet points
-- Append to `## Raw Ideas`
+- Append parsed bullets to `## Raw Ideas`
 - Analyze new input and optionally update `## Decisions` if clear conclusions emerge
 - Auto-consolidate: merge related decisions under same subtopic
 - Update `## Meta`: `last-action: user dump`
@@ -344,6 +358,12 @@ Stop execution.
 - Accumulated understanding from Q&A
 - Processed insights (not raw)
 - Key constraints identified
+
+## Raw
+```
+Exact user input, original language, no processing.
+Appended on each dump. Preserved as-is.
+```
 
 ## Raw Ideas
 - Unprocessed user thoughts
@@ -421,7 +441,8 @@ When updating `## Decisions`:
 - File is always at project root: `brainstorm-{topic-kebab}.md`
 - `## Meta` tracks phase + last-action for resume capability
 - `## Context` holds processed understanding (not raw)
-- Raw Ideas preserve user's words, minimal processing
+- `## Raw` holds exact user input, unprocessed, in code block
+- `## Raw Ideas` parses raw into bullet points
 - Decisions are auto-consolidated by subtopic
 - Research findings have confidence tags: `[HIGH]`, `[MED]`, `[LOW]`
 - Questions use inline options format with [R] for recommended

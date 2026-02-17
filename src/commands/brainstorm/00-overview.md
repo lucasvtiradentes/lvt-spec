@@ -49,6 +49,12 @@ Example filenames:
 - accumulated understanding from Q&A
 - processed insights
 
+## Raw
+
+```
+{exact text as typed by user, original language, no processing}
+```
+
 ## Raw Ideas
 
 - initial idea 1

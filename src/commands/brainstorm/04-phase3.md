@@ -88,8 +88,9 @@ Go ahead, tell me more:
 CRITICAL: After prompting you MUST STOP. The NEXT message MUST come from the USER.
 
 When user responds:
+- Append exact input to `## Raw` section (inside code block)
 - Parse their input into bullet points
-- Append to `## Raw Ideas`
+- Append parsed bullets to `## Raw Ideas`
 - Analyze new input and optionally update `## Decisions` if clear conclusions emerge
 - Auto-consolidate: merge related decisions under same subtopic
 - Update `## Meta`: `last-action: user dump`
