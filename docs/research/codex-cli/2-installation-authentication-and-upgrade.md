@@ -19,12 +19,12 @@
 
 ## Authentication Paths
 
-| Method                   | Command                         | When To Use                      |
-|--------------------------|---------------------------------|----------------------------------|
-| API key via login command| `printenv OPENAI_API_KEY        | codex login --with-api-key`      | CI, scripting, explicit key control|
-| Interactive login        | `codex --login` or `codex login`| Local developer setup            |
-| Status check             | `codex login status`            | Confirm authenticated identity   |
-| Logout                   | `codex logout`                  | Rotate credentials or reset state|
+| Method                   | Command                                                      | When To Use                        |
+|--------------------------|--------------------------------------------------------------|------------------------------------|
+| API key via login command| `printenv OPENAI_API_KEY | codex login --with-api-key`       | CI, scripting, explicit key control|
+| Interactive login        | `codex --login` or `codex login`                             | Local developer setup              |
+| Status check             | `codex login status`                                         | Confirm authenticated identity     |
+| Logout                   | `codex logout`                                               | Rotate credentials or reset state  |
 
 ## Common Auth Problems
 
