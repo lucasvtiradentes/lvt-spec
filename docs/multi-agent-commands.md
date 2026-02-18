@@ -37,7 +37,7 @@ All commands are registered in `src/config.json`:
   "align-docs": {
     "namespace": "docs",
     "title": "Align Docs",
-    "description": "Auto-fix alignment issues in markdown files using mdalign..."
+    "description": "Auto-fix alignment issues in markdown files using docalign..."
   },
   "analyse-repo": {
     "namespace": "research",

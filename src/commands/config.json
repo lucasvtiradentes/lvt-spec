@@ -2,7 +2,7 @@
   "align-docs": {
     "namespace": "docs",
     "title": "Align Docs",
-    "description": "Auto-fix alignment issues in markdown files using mdalign (tables, ASCII diagrams, lists). Use when the user asks to fix or check markdown alignment. Do NOT use for general markdown editing."
+    "description": "Auto-fix alignment issues in markdown files using docalign (tables, ASCII diagrams, lists). Use when the user asks to fix or check markdown alignment. Do NOT use for general markdown editing."
   },
   "brainstorm": {
     "namespace": "research",

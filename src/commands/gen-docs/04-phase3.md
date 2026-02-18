@@ -76,18 +76,18 @@ Doc writing rules (include in every agent prompt):
 ### Step 3.3 - Align Docs (MANDATORY - do NOT skip)
 
 AFTER all generation agents finish, you MUST run this step before cleanup:
-1. Check if `mdalign` is available (`which mdalign`). If not, install: `pipx install mdalign`
-2. Run `mdalign docs/` to check alignment issues in tables and ASCII diagrams
-3. If errors found, run `mdalign --fix docs/`
-4. Re-run `mdalign docs/` to verify clean. If unfixable issues remain, fix manually and re-run until clean.
+1. Check if `docalign` is available (`which docalign`). If not, install: `pipx install docalign`
+2. Run `docalign docs/` to check alignment issues in tables and ASCII diagrams
+3. If errors found, run `docalign --fix docs/`
+4. Re-run `docalign docs/` to verify clean. If unfixable issues remain, fix manually and re-run until clean.
 
-You MUST NOT proceed to Step 3.4 until mdalign passes clean.
+You MUST NOT proceed to Step 3.4 until docalign passes clean.
 
 ### Step 3.4 - Cleanup
 
 1. Delete `.docs-state.tmp`
-2. Reply with: "Generated {N} files in docs/. mdalign: clean." + list of generated files.
-3. If mdalign was NOT run (e.g. install failed), say so explicitly in the reply.
+2. Reply with: "Generated {N} files in docs/. docalign: clean." + list of generated files.
+3. If docalign was NOT run (e.g. install failed), say so explicitly in the reply.
 
 (end of orchestrator instructions)
 

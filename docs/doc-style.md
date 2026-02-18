@@ -27,7 +27,7 @@ Formatting rules for markdown documentation files.
 
 ## Tables
 
-Every column must be padded to equal width (enforced by mdalign):
+Every column must be padded to equal width (enforced by docalign):
 
 ```md
 | Name   | Type   | Description        |
@@ -191,8 +191,8 @@ const result = await service.create(input);
 
 ## Alignment
 
-Use mdalign to auto-fix alignment issues in tables, diagrams, and lists:
+Use docalign to auto-fix alignment issues in tables, diagrams, and lists:
 
 ```bash
-mdalign --fix docs/
+docalign --fix docs/
 ```
